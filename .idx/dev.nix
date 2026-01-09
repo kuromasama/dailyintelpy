@@ -6,8 +6,12 @@
   # Use https://search.nixos.org/packages to find packages
   packages = [
     # pkgs.go
-    pkgs.python314
+    pkgs.python312
     pkgs.uv
+    pkgs.python312Packages.pip
+    pkgs.python312Packages.requests
+    pkgs.python312Packages.feedparser
+    pkgs.python312Packages.google-generativeai
     # pkgs.python311Packages.pip
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
@@ -54,3 +58,6 @@
     };
   };
 }
+# Trigger rebuild
+
+# Trigger rebuild 2

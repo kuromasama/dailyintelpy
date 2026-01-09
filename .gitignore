@@ -1,0 +1,15 @@
+# 忽略虛擬環境
+.venv/
+.idx/
+
+# 忽略 Python 編譯檔
+__pycache__/
+*.pyc
+
+# 忽略系統檔
+.DS_Store
+
+# 如果你有本地測試用的金鑰檔，記得忽略
+.env
+secret.py
+check_models.py

@@ -2,8 +2,8 @@
 name: 🛡️ Morning Security
 on:
   schedule:
-    #- cron: '0 0 * * *' # 台灣 08:00
-    - cron: '20 4 * * *' # 台灣 12:05 (測試用)
+    - cron: '0 0 * * *' # 台灣 08:00
+    #- cron: '20 4 * * *' # 台灣 12:05 (測試用)
   workflow_dispatch:
 jobs:
   run_job:

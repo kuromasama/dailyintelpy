@@ -1,8 +1,8 @@
 name: 💰 Evening Finance
 on:
   schedule:
-    #- cron: '30 10 * * *' # 台灣 18:30
-    - cron: '20 4 * * *' # 台灣 12:05 (測試用)
+    - cron: '30 10 * * *' # 台灣 18:30
+    #- cron: '20 4 * * *' # 台灣 12:05 (測試用)
   workflow_dispatch:
 jobs:
   run_job:

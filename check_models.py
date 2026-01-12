@@ -11,16 +11,16 @@ for m in genai.list_models():
         print(f" - {m.name}")
 
 # 步驟 1：把你的「本地修改」先暫存起來 (藏到抽屜裡)
-git stash
+#git stash
 
 # 步驟 2：把雲端的最新版拉下來 (現在抽屜清空了，可以安全下載)
-git pull origin main
+#git pull origin main
 
 # 步驟 3：(選擇性) 如果你不需要剛剛手動改的內容，這步可以不做。
 # 如果你想把你剛剛改的東西「合併」回來，請執行：
 # git stash pop
 
 # 加入新的 Python 主程式 和 Workflow 設定檔
-git add Daily_Cyber_Fin_v0.0.1.py .github/workflows/
-git add Daily_Cyber_Fin_v0.0.1.py .github/workflows/ finance_log_v2.md security_log_v2.md
-git commit -m "Deploy v0.0.1 system & upload V2 historical logs"
+#git add Daily_Cyber_Fin_v0.0.1.py .github/workflows/
+#git add Daily_Cyber_Fin_v0.0.1.py .github/workflows/ finance_log_v2.md security_log_v2.md
+#git commit -m "Deploy v0.0.1 system & upload V2 historical logs"

@@ -1,7 +1,8 @@
 name: 🛡️ Morning Security
 on:
   schedule:
-    - cron: '0 0 * * *' # 台灣 08:00
+    #- cron: '0 0 * * *' # 台灣 08:00
+    - cron: '0 4 * * *'
   workflow_dispatch:
 jobs:
   run_job:
@@ -12,17 +13,20 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with: { python-version: '3.10' }
-      - run: pip install requests feedparser google-generativeai
+      # 👇 修正 1：補上 yfinance
+      - run: pip install requests feedparser google-generativeai yfinance
       - name: Run
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          # 👇 修正 2：使用資安專用 Token
+          TG_BOT_TOKEN_SEC: ${{ secrets.TG_BOT_TOKEN_SEC }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: python daily_intel.py --mode security
+        # 👇 修正 3：執行新版程式
+        run: python Daily_Cyber_Fin_v0.0.1.py --mode security
       - name: Commit
         run: |
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
           git add security_log.md || true
-          git commit -m "🛡️ Log Update" || echo "No changes"
+          git commit -m "🛡️ Security Log Update" || echo "No changes"
           git push

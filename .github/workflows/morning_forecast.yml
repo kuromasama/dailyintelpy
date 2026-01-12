@@ -2,7 +2,7 @@ name: 📈 Morning Forecast
 on:
   schedule:
     #- cron: '30 0 * * *' # 台灣 08:30
-    - cron: '0 4 * * *'
+    - cron: '5 4 * * *'
   workflow_dispatch:
 jobs:
   run_job:

@@ -17,9 +17,8 @@ TG_BOT_TOKEN_FIN = os.getenv("TG_BOT_TOKEN_FIN")
 PORTFOLIO_FILE = "portfolio.json"
 SECURITY_LOG_FILE = "security_log.md"
 
-# ================= 模型配置 (V12.2 救火穩定版) =================
-# 策略：為了避開 429/Limit:0 錯誤，回歸最穩定的 1.5 Flash
-MODEL_NAME = 'models/gemini-2.5-flash'
+# ================= 模型配置 (3-Flash) =================
+MODEL_NAME = 'models/gemini-3-flash-preview'
 
 # ================= 核心工具 =================
 
@@ -45,9 +44,13 @@ def get_stock_code(name_or_code, alias_dict):
 
 def send_telegram(token, message):
     if not token: print(f"[模擬發送] {message[:50]}..."); return
+    
+    # 🧼 V13.1 新增：強制清洗 Markdown 符號，確保 TG 顯示乾淨
+    clean_message = message.replace("**", "").replace("##", "").replace("__", "").replace("`", "")
+    
     try:
         requests.post(f"https://api.telegram.org/bot{token}/sendMessage", json={
-            "chat_id": TG_CHAT_ID, "text": message, "disable_web_page_preview": False 
+            "chat_id": TG_CHAT_ID, "text": clean_message, "disable_web_page_preview": False 
         })
     except Exception as e: print(f"TG 發送失敗: {e}")
 
@@ -67,10 +70,12 @@ def get_rss_data(urls, limit=10, hours_limit=24, history_content=""):
             feed = feedparser.parse(url)
             for entry in feed.entries:
                 if len(processed) >= limit: break
+                
+                # 去重
                 if entry.title in processed: continue
-                # 歷史去重
                 if history_content and (entry.link in history_content or entry.title in history_content):
                     continue 
+
                 # 時間過濾
                 if hasattr(entry, 'published_parsed') and entry.published_parsed:
                     pub_time = datetime(*entry.published_parsed[:6])
@@ -106,14 +111,13 @@ def get_stock_technical(code):
         pct = round(((price - hist['Close'].iloc[-2]) / hist['Close'].iloc[-2]) * 100, 2)
         ma5 = round(hist['Close'].rolling(5).mean().iloc[-1], 2)
         ma20 = round(hist['Close'].rolling(20).mean().iloc[-1], 2)
-        ma60 = round(hist['Close'].rolling(60).mean().iloc[-1], 2) if len(hist) >= 60 else 0
         
         trend = "盤整 ⚖️"
         if price > ma5 > ma20: trend = "強勢多頭 🔥"
         elif price > ma20: trend = "多頭格局 📈"
         elif price < ma5 < ma20: trend = "空頭修正 📉"
         
-        return {"price": price, "pct": pct, "trend": trend, "ma5": ma5, "ma20": ma20, "ma60": ma60}
+        return {"price": price, "pct": pct, "trend": trend, "ma20": ma20}
     except: return None
 
 # ================= 指令處理 =================
@@ -183,12 +187,14 @@ def process_tg_commands(token):
         return logs, pf_data
     except: return [], load_portfolio()
 
-# ================= 執行模式 (歷史比對 + 損益計算) =================
+# ================= 執行模式 (V13.1 - 繁中 & 乾淨排版) =================
 
 def run_security_mode(config):
+    """ 資安 Bot """
     token = TG_BOT_TOKEN_SEC
-    print(f"🛡️ [資安 Bot] 啟動... ")
+    print(f"🛡️ [資安 Bot] 啟動... ({MODEL_NAME})")
     
+    # 7天回溯
     history = read_history_log(SECURITY_LOG_FILE)
     time_limit = 168 if len(history) < 100 else 24
     
@@ -202,30 +208,48 @@ def run_security_mode(config):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(MODEL_NAME)
     
+    # 1. 新聞快報 (繁體中文 + 說明)
+    print(" ↳ 發送新聞快報...")
     news_prompt = f"""
-    整理資安情報。
+    你是資安情報官。請整理以下情報。
     【內容】{raw}
-    【要求】
-    1. 標題 Emoji (🚨, 🛡️)。
-    2. **每則新聞附上原始連結 (Link)**。
-    3. 標註 Fortinet, Windows, VPN。
-    (純文字)
+    【格式要求】
+    1. **必須使用繁體中文 (Traditional Chinese)**。
+    2. 每個新聞請列出：
+       - 標題 (Emoji: 🚨, 🛡️)
+       - 📅 **事件背景**：(一句話解釋發生什麼事)
+       - 🔗 **原始連結**：(必須附上)
+    3. 嚴禁使用 Markdown 符號 (如 ** 或 ##)，請用 Emoji 排版。
     """
     send_telegram(token, model.generate_content(news_prompt).text)
     
+    # 2. CISSP 深度教學 (繁體中文 + 專有名詞)
+    print(" ↳ 發送 CISSP 微課程...")
     class_prompt = f"""
-    CISSP 微課程。
-    【內容】{raw}
-    【格式】
-    🎓 **CISSP 戰略**
-    📚 **案例**：
-    🧠 **考點**：
-    ⚔️ **攻擊原理**：
-    🛡️ **防禦建議**：
-    (純文字+Emoji)
+    你是 CISSP 資深教練。請針對今日新聞寫一份「深度技術分析」。
+    【新聞】{raw}
+    【格式嚴格要求】
+    1. **全篇必須使用繁體中文**。
+    2. 結構如下 (請使用 Emoji 當標題，不要用 Markdown)：
+    
+    🎓 **CISSP 實戰教練**
+    
+    📚 **案例事件**：(詳細說明事件背景)
+    
+    🧠 **CISSP 考點 & 名詞解釋**：(解釋專有名詞，如 Zero Trust, CVE, XSS, Buffer Overflow)
+    
+    ⚔️ **攻擊技術解構 (Red Team)**：
+    (深入技術細節：駭客利用了什麼底層機制？Payload 是什麼概念？)
+    
+    🛡️ **防禦架構設計 (Blue Team)**：
+    (企業級防禦建議：WAF, IPS, 分段, 權限控管)
+    
+    (嚴禁 Markdown 粗體符號)
     """
     send_telegram(token, model.generate_content(class_prompt).text)
-    save_log(SECURITY_LOG_FILE, model.generate_content(f"CISSP 日報\n{raw}").text)
+    
+    # 3. 寫入 Log
+    save_log(SECURITY_LOG_FILE, model.generate_content(f"CISSP 日報 (繁中)\n{raw}").text)
 
 def run_morning_forecast(pf_data):
     token = TG_BOT_TOKEN_FIN
@@ -241,7 +265,7 @@ def run_morning_forecast(pf_data):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(MODEL_NAME)
     
-    prompt = f"華爾街操盤手簡報。新聞:{raw_us}\n關注:{', '.join(targets)}\n分析美股對台股影響、台積電ADR。(純文字+Emoji)"
+    prompt = f"華爾街操盤手簡報。新聞:{raw_us}\n關注:{', '.join(targets)}\n任務:美股收盤簡報+台股開盤預測。\n要求: 繁體中文, 純文字, Emoji 排版。"
     send_telegram(token, model.generate_content(prompt).text)
 
 def run_finance_mode(pf_data, mode="finance"):
@@ -255,7 +279,6 @@ def run_finance_mode(pf_data, mode="finance"):
     market_open = is_market_open()
     tech_lines = []
     
-    # 計算總資產與損益
     total_market_value = 0
     total_cost = 0
     
@@ -271,7 +294,6 @@ def run_finance_mode(pf_data, mode="finance"):
                     price = t['price']
                     if code in holdings: holdings[code]['current_price'] = price
                     
-                    # 損益計算
                     detail_str = ""
                     if is_holding:
                         shares = holdings[code]['shares']
@@ -283,17 +305,11 @@ def run_finance_mode(pf_data, mode="finance"):
                         
                         total_market_value += market_val
                         total_cost += cost_basis
-                        
-                        detail_str = f"\n   📦 **庫存**: {shares}股 | 均價: {avg_cost}\n   💰 **市值**: ${market_val:,} | **損益**: ${unrealized_pl:,} ({roi}%)"
+                        detail_str = f"\n   📦 **庫存**: {shares} | 均價: {avg_cost}\n   💰 **損益**: ${unrealized_pl:,} ({roi}%)"
                     
-                    tech_lines.append(
-                        f"🔹 **{name} ({code})**\n"
-                        f"   📈 現價: {price} ({t['pct']}%){detail_str}\n"
-                        f"   📊 MA20: {t['ma20']} | {t['trend']}"
-                    )
+                    tech_lines.append(f"🔹 **{name} ({code})**\n   📈 現價: {price} ({t['pct']}%){detail_str}\n   📊 {t['trend']}")
         save_portfolio(pf_data)
     
-    # 總結算
     total_pl = total_market_value - total_cost
     total_roi = round((total_pl / total_cost * 100), 2) if total_cost > 0 else 0
     summary_line = f"🏆 **總資產**: ${total_market_value:,} | **總損益**: ${total_pl:,} ({total_roi}%)" if total_cost > 0 else ""
@@ -305,21 +321,27 @@ def run_finance_mode(pf_data, mode="finance"):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(MODEL_NAME)
     
-    status_emoji = "🟢" if market_open else "🔴"
+    # 1. 持股戰情牆 (TG)
     if tech_lines:
-        msg = f"📊 **持股戰情牆** ({status_emoji})\n\n{summary_line}\n\n{tech_str}\n\n📝 **系統**: {' '.join(logs) if logs else '無交易'}"
+        clean_tech = tech_str.replace("**", "") # 雙重保險
+        status = "🟢" if market_open else "🔴"
+        clean_summary = summary_line.replace("**", "")
+        msg = f"📊 **持股戰情牆** ({status})\n\n{clean_summary}\n\n{clean_tech}\n\n📝 **系統**: {' '.join(logs) if logs else '無交易'}"
         send_telegram(token, msg)
     
+    # 2. 新聞分析與教學 (TG)
+    print(" ↳ 發送新聞與教學...")
     strategy_prompt = f"""
-    你是 CFO。
-    【持股與損益】
-    總損益: {total_pl} ({total_roi}%)
+    你是 CFO 與技術導師。
+    【持股狀態】
     {tech_str}
-    【新聞】{raw_news}
+    【新聞】
+    {raw_news}
     【任務】
-    1. 財報/新聞分析。
-    2. K 線實戰教學。
-    (純文字+Emoji)
+    1. **使用繁體中文**。
+    2. 新聞分析：對持股是利多還是利空？
+    3. K 線教學：挑一支股票，解釋型態 (黃金交叉, 背離, 支撐壓力)。
+    4. 嚴禁 Markdown。
     """
     send_telegram(token, model.generate_content(strategy_prompt).text)
     

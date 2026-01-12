@@ -27,6 +27,7 @@ jobs:
         run: |
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
+          git pull --rebase origin main
           git add security_log.md || true
           git commit -m "🛡️ Log Update" || echo "No changes"
           git push

@@ -27,7 +27,10 @@ jobs:
         run: |
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
-          git pull --rebase origin main
+          # 👇 修改順序：先 Add/Commit，保護好機器人生成的檔案
           git add security_log.md || true
-          git commit -m "🛡️ Log Update" || echo "No changes"
+          git commit -m "🛡️ Security Log Update" || echo "No changes"
+          # 👇 檔案安全了，現在可以拉取雲端更新 (Rebase 模式)
+          git pull --rebase origin main
+          # 👇 最後推上去
           git push

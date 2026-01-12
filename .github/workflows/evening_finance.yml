@@ -26,7 +26,10 @@ jobs:
         run: |
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
-          git pull --rebase origin main
+          # 👇 修改順序：先 Add/Commit
           git add finance_log.md portfolio.json || true
           git commit -m "💰 Portfolio Update" || echo "No changes"
+          # 👇 再 Pull
+          git pull --rebase origin main
+          # 👇 最後 Push
           git push

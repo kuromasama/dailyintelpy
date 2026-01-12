@@ -18,8 +18,8 @@ PORTFOLIO_FILE = "portfolio.json"
 
 # ================= 模型配置 (Model Config) =================
 # 根據你的清單，指派最強模型
-MODEL_RESEARCH = 'models/deep-research-pro-preview-12-2025' # 深度研究 (早報用)
-MODEL_PRO      = 'models/gemini-3-pro-preview'            # 邏輯推理 (教學/分析用)
+MODEL_RESEARCH = 'models/gemini-3-flash-preview' # 深度研究 (早報用)
+MODEL_PRO      = 'models/gemini-3-flash-preview'            # 邏輯推理 (教學/分析用)
 MODEL_FAST     = 'models/gemini-3-flash-preview'          # 快速回應 (備用)
 
 # ================= 核心工具 =================

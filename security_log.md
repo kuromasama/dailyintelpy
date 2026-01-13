@@ -203,3 +203,82 @@
 ### 💡 CISSP 每日金句
 **"Security is a process, not a product."** — 了解供應鏈（如 n8n 案例）與開發生命週期的每一個環節，遠比購買單一防禦工具更重要。
 ---
+
+
+# 🛡️ 資安戰情白皮書 (2026/01/13)
+
+## 1. 👨‍💼 CISO 架構師總結 (Executive Summary)
+
+今日的威脅態勢顯示出**「供應鏈污染」**與**「基礎設施弱點」**的高度耦合。從自動化平台 n8n 的社群節點攻擊，到 Gogs 自託管 Git 服務的 RCE 漏洞被利用，攻擊者正精準打擊企業的生產力工具鏈與開發環境。此外，針對醫療保健（Anthropic 新動態）與關鍵基礎設施（歐洲港口駭客判刑案例）的關注，反映了數據資產與實體物流運行的脆弱性。
+
+**當前威脅核心觀察：**
+1.  **供應鏈生態系統成為滲透突破口**：攻擊者不再僅攻擊核心軟體，而是轉向攻擊「擴充套件」或「社群貢獻節點」（如 n8n），藉此竊取高價值的 OAuth Token 或憑證。
+2.  **憑證竊取技術的精進**：Browser-in-Browser (BitB) 技術與針對加密貨幣資料庫的暴力破解，顯示身份驗證依然是防線中最薄弱的一環。
+3.  **地緣政治與經濟犯罪重疊**：工業規模的殺豬盤（Pig Butchering）服務供應鏈與針對關鍵港口的滲透，顯示網路犯罪已具備國家級規模的組織力。
+
+> **💡 一句話戰略建議：**
+> 「應立即將資安防禦邊界從『基礎設施』擴展至『軟體供應鏈與自動化節點』，針對第三方套件實施嚴格的動態行為監控與最小權限 OAuth 授權。」
+
+---
+
+## 2. 🌍 全球威脅快報
+
+1.  **[01/12] n8n Supply Chain Attack Abuses Community Nodes to Steal OAuth Tokens**
+    *   [新聞連結](https://thehackernews.com/2026/01/n8n-supply-chain-attack-abuses.html)
+2.  **[01/12] ⚡ Weekly Recap: AI Automation Exploits, Telecom Espionage, Prompt Poaching & More**
+    *   [新聞連結](https://thehackernews.com/2026/01/weekly-recap-ai-automation-exploits.html)
+3.  **[01/12] GoBruteforcer Botnet Targets Crypto Project Databases by Exploiting Weak Credentials**
+    *   [新聞連結](https://thehackernews.com/2026/01/gobruteforcer-botnet-targets-crypto.html)
+4.  **[01/12] Anthropic Launches Claude AI for Healthcare with Secure Health Record Access**
+    *   [新聞連結](https://thehackernews.com/2026/01/anthropic-launches-claude-ai-for.html)
+5.  **[01/12] Researchers Uncover Service Providers Fueling Industrial-Scale Pig Butchering Fraud**
+    *   [新聞連結](https://thehackernews.com/2026/01/researchers-uncover-service-providers.html)
+6.  **[01/12] Hacker gets seven years for breaching Rotterdam and Antwerp ports**
+    *   [新聞連結](https://www.bleepingcomputer.com/news/security/hacker-gets-seven-years-for-breaching-rotterdam-and-antwerp-ports/)
+7.  **[01/12] Facebook login thieves now using browser-in-browser trick**
+    *   [新聞連結](https://www.bleepingcomputer.com/news/security/facebook-login-thieves-now-using-browser-in-browser-trick/)
+8.  **[01/12] CISA orders feds to patch Gogs RCE flaw exploited in zero-day attacks**
+    *   [新聞連結](https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-gogs-rce-flaw-exploited-in-zero-day-attacks/)
+9.  **[01/12] 'Bad actor' hijacks Apex Legends characters in live matches**
+    *   [新聞連結](https://www.bleepingcomputer.com/news/security/bad-actor-hijacks-apex-legends-characters-in-live-matches/)
+10. **[01/12] University of Hawaii Cancer Center hit by ransomware attack**
+    *   [新聞連結](https://www.bleepingcomputer.com/news/security/university-of-hawaii-cancer-center-hit-by-ransomware-attack/)
+
+---
+
+## 3. 🎯 深度技術分析 (Deep Dive)
+
+### 案例 A：n8n 供應鏈攻擊與 OAuth 令牌竊取
+*   **技術原理**：攻擊者開發並發布看似功能強大的「社群節點 (Community Nodes)」。當開發者在 n8n 工作流中安裝這些節點時，惡意代碼會隨之運行。
+*   **攻擊向量 (Red Team View)**：
+    1.  **注入 (Injection)**：在 `node-red` 或 `n8n` 的社群市集上傳包含惡意 `postinstall` 腳本或混淆邏輯的節點。
+    2.  **滲漏 (Exfiltration)**：利用節點對環境變數的訪問權限，讀取 `N8N_ENCRYPTION_KEY` 或數據庫中的 OAuth 憑證，並透過 HTTP 請求回傳至 C2 伺服器。
+*   **防禦對策 (Blue Team View)**：
+    1.  **靜態代碼掃描**：強制對下載的 npm 套件進行 `audit` 與 `snyk` 掃描。
+    2.  **出口過濾 (Egress Filtering)**：針對執行自動化工作流的伺服器實施嚴格的外連白名單，阻止未授權的數據外洩路徑。
+
+### 案例 B：Gogs RCE 漏洞 (CVE-2024-XXXX) 與 CISA 補丁令
+*   **技術細節**：此漏洞涉及自託管 Git 服務 Gogs 中的遠端代碼執行 (RCE)。攻擊者可透過特製的 API 請求或 Git 操作，繞過身份驗證並在主機上執行系統命令。
+*   **攻擊推演**：
+    *   **初始訪問**：掃描公開暴露的 Gogs 實例。
+    *   **權限提升**：利用 RCE 獲取 `git` 用戶權限，進而讀取伺服器上的敏感配置文件（如數據庫連線資訊）。
+*   **補救措施**：
+    *   遵循 CISA KEV (Known Exploited Vulnerabilities) 列表，限期完成版本更新。
+    *   將開發工具置於 VPN 或 Zero Trust Network Access (ZTNA) 之後，嚴禁直接暴露於公網。
+
+### 案例 C：Browser-in-Browser (BitB) 釣魚手法升級
+*   **技術原理**：利用 HTML/CSS 偽造出一個完整的瀏覽器視窗（含網址列、鎖頭圖示），誘騙用戶輸入 Facebook 或 Google 憑證。這不僅是傳統釣魚，更是一種高度視覺欺騙。
+*   **對抗技術**：
+    *   **硬體金鑰 (FIDO2/WebAuthn)**：這是目前唯一能有效防禦 BitB 的手段，因為硬體金鑰會綁定真實的來源域名 (Origin)，偽造的視窗無法通過挑戰回應。
+
+---
+
+## 4. 🔮 威脅趨勢預測
+
+1.  **自動化平台將成為新一代「跳板」**：隨著企業大量採用 n8n、Make、Zapier 等低代碼自動化工具，針對這些平台憑證（OAuth Tokens）的自動化獵取將會激增。一旦一個 Token 被竊，駭客即可橫向移動至企業的 Slack、GitHub、甚至 CRM 系統。
+2.  **AI 醫療數據成為勒索高價值目標**：Anthropic 推出醫療版 Claude 雖然加強了安全性，但也標誌著醫療數據正加速進入大模型處理流程。預計未來會出現針對「AI 訓練數據集」或「模型緩存」的專門勒索攻擊。
+3.  **基礎設施的「微型化」攻擊**：從港口到醫療中心，駭客不再僅追求「大規模斷網」，而是透過精準操縱（如 Apex Legends 中的角色劫持技術延伸至工業物聯網），實現低調但致命的營運干擾。
+
+---
+**核閱：** 資安戰情室 (SOC Operations)
+**日期：** 2026/01/13

@@ -130,3 +130,76 @@
 
 **建議行動**: 審查內部所有自託管的開源服務（如 Gogs, n8n），並對管理員帳戶強制執行 MFA，同時強化對員工關於 BitB 類高級釣魚的培訓。
 ---
+
+
+# 📅 2026-01-13 01:50
+這是一份針對資訊安全專業人士（特別是 CISSP 持證者或考生）編製的資安新聞日報。
+
+---
+
+# 🛡️ CISSP 資安日報 (2026/01/XX)
+
+## 1. n8n 供應鏈攻擊：惡意社群節點竊取 OAuth 令牌
+*   **新聞摘要**: 工作流自動化平台 n8n 遭到供應鏈攻擊。攻擊者透過發布惡意的「社群節點（Community Nodes）」，誘使使用者下載。這些節點包含隱藏代碼，會竊取使用者的 OAuth 存取令牌，進而接管連結的雲端服務。
+*   **CISSP 知識點**:
+    *   **Domain 8: 軟體開發安全 (Software Development Security)**：強調第三方函式庫與模組的審核（Third-party component security）。
+    *   **Domain 5: 身份與存取管理 (IAM)**：OAuth 令牌的安全與範圍（Scope）限制。
+*   **建議**: 應實施「程式碼簽署」並限制開發環境僅能從受信任的私有倉庫下載組件。
+
+## 2. 每週綜述：AI 自動化漏洞與電信間諜活動
+*   **新聞摘要**: 本週資安焦點集中在 AI 自動化工具被利用於自動化攻擊、針對電信業者的國家級間諜活動，以及新興的「Prompt Poaching（提示詞竊取）」技術。
+*   **CISSP 知識點**:
+    *   **Domain 1: 安全與風險管理 (Security and Risk Management)**：威脅情報（Threat Intelligence）的收集與分析。
+    *   **Domain 3: 安全架構與工程 (Security Architecture and Engineering)**：針對 AI 模型安全性的防禦（如對抗性機器學習）。
+
+## 3. GoBruteforcer 殭屍網路利用弱憑證攻擊加密貨幣資料庫
+*   **新聞摘要**: 一種名為 GoBruteforcer 的 Golang 編寫殭屍網路正在大規模掃描網路上暴露的 phpMyAdmin、MySQL 與 PostgreSQL，利用弱密碼進行暴力破解，目標是加密貨幣項目的資料庫。
+*   **CISSP 知識點**:
+    *   **Domain 4: 網路安全 (Communication and Network Security)**：限制管理介面（如 Port 3306, 5432）僅限內部或 VPN 存取。
+    *   **Domain 5: 身份與存取管理 (IAM)**：強化密碼策略與實施多因素驗證 (MFA)。
+
+## 4. Anthropic 為醫療保健推出具安全存取功能的 Claude AI
+*   **新聞摘要**: Anthropic 推出專為醫療行業設計的 AI 方案，強調符合 HIPAA 合規性，並能安全地處理受保護健康資訊 (PHI)，同時確保數據不被用於模型訓練。
+*   **CISSP 知識點**:
+    *   **Domain 1: 安全與風險管理 (Security and Risk Management)**：法規遵循 (Compliance - HIPAA) 與隱私保護。
+    *   **Domain 2: 資產安全 (Asset Security)**：數據生命週期管理與敏感資訊處理。
+
+## 5. 研究人員揭露支撐大規模「殺豬盤」詐騙的服務提供商
+*   **新聞摘要**: 安全研究顯示，高度組織化的詐騙集團背後有專門的「基礎設施服務商」提供虛假交易平台軟體、洗錢工具與自動化腳本，將詐騙工業化。
+*   **CISSP 知識點**:
+    *   **Domain 1: 安全與風險管理 (Security and Risk Management)**：社會工程學 (Social Engineering) 的防護與人員警覺性培訓。
+
+## 6. 駭客因入侵鹿特丹與安特衛普港口被判刑七年
+*   **新聞摘要**: 一名駭客因透過網路攻擊入侵歐洲兩大重要港口的物流系統，協助犯罪集團追蹤並提取藏有毒品的貨櫃而被判刑。
+*   **CISSP 知識點**:
+    *   **Domain 1: 安全與風險管理 (Security and Risk Management)**：法律、規章與合規性（法律制裁）。
+    *   **Domain 6: 安全評估與測試 (Security Assessment and Testing)**：關鍵基礎設施（Critical Infrastructure）的滲透測試與漏洞管理。
+
+## 7. Facebook 釣魚者利用「瀏覽器中的瀏覽器 (BiB)」技術
+*   **新聞摘要**: 駭客開發了更先進的釣魚網頁，在現有網頁內模擬一個完整的瀏覽器視窗（包含假 URL 欄），誘使用戶輸入 Facebook 憑證。
+*   **CISSP 知識點**:
+    *   **Domain 5: 身份與存取管理 (IAM)**：防範網路釣魚。
+    *   **Domain 1: 安全與風險管理 (Security and Risk Management)**：使用者安全意識教育。
+
+## 8. CISA 要求聯邦機構修補 Gogs RCE 漏洞
+*   **新聞摘要**: CISA 將 Gogs Git 服務的遠端程式碼執行 (RCE) 漏洞列入「已知被利用漏洞清單 (KEV)」，該漏洞已被攻擊者用於零日攻擊。
+*   **CISSP 知識點**:
+    *   **Domain 7: 安全運維 (Security Operations)**：漏洞與補丁管理 (Vulnerability and Patch Management) 的及時性。
+
+## 9. 「惡意行為者」在直播賽事中劫持 Apex Legends 角色
+*   **新聞摘要**: 在一場電子競技直播中，駭客成功遠端接管了選手的客戶端，展示了應用程式層面的嚴重漏洞。
+*   **CISSP 知識點**:
+    *   **Domain 8: 軟體開發安全 (Software Development Security)**：輸入驗證與記憶體安全漏洞防禦。
+    *   **Domain 7: 安全運維 (Security Operations)**：事件響應 (Incident Response) 流程。
+
+## 10. 夏威夷大學癌症中心遭勒索軟體攻擊
+*   **新聞摘要**: 夏威夷大學的一個研究機構遭到勒索軟體襲擊，導致研究數據可能外洩。這再次提醒醫療科研機構是高價值目標。
+*   **CISSP 知識點**:
+    *   **Domain 7: 安全運維 (Security Operations)**：備援與災難復原 (BCP/DRP) 策略。
+    *   **Domain 1: 安全與風險管理 (Security and Risk Management)**：業務影響分析 (BIA)。
+
+---
+
+### 💡 CISSP 每日金句
+**"Security is a process, not a product."** — 了解供應鏈（如 n8n 案例）與開發生命週期的每一個環節，遠比購買單一防禦工具更重要。
+---

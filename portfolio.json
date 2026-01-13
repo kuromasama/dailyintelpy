@@ -1,36 +1,36 @@
 {
-  "last_updated": "2026-01-13 13:01:56",
+  "last_updated": "2026-01-13 13:32:53",
   "total_value": 742805,
   "holdings": {
     "006208": {
       "name": "富邦台50",
       "shares": 2060,
       "avg_cost": 114.44,
-      "current_price": 160.7
+      "current_price": 160.85
     },
     "2308": {
       "name": "台達電",
       "shares": 18,
       "avg_cost": 388,
-      "current_price": 1035.0
+      "current_price": 1040.0
     },
     "2330": {
       "name": "台積電",
       "shares": 10,
       "avg_cost": 1024.5,
-      "current_price": 1710.0
+      "current_price": 1705.0
     },
     "2383": {
       "name": "台光電",
       "shares": 17,
       "avg_cost": 420.29,
-      "current_price": 1625.0
+      "current_price": 1635.0
     },
     "2454": {
       "name": "聯發科",
       "shares": 134,
       "avg_cost": 1332.24,
-      "current_price": 1485.0
+      "current_price": 1480.0
     },
     "3013": {
       "name": "晟銘電",
@@ -42,7 +42,7 @@
       "name": "欣興",
       "shares": 45,
       "avg_cost": 146.6,
-      "current_price": 254.0
+      "current_price": 254.5
     },
     "6191": {
       "name": "精成科",

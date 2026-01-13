@@ -21,7 +21,7 @@ jobs:
           # 👇 關鍵修正：使用 FIN Token
           TG_BOT_TOKEN_FIN: ${{ secrets.TG_BOT_TOKEN_FIN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: python Daily_Cyber_Fin_v0.0.6.py --mode finance
+        run: python Daily_Cyber_Fin_v0.0.10.py --mode finance
       - name: Commit
         run: |
           git config --global user.name "Action Bot"

@@ -19,7 +19,6 @@ SECURITY_LOG_FILE = "security_log.md"
 FINANCE_LOG_FILE = "finance_log.md"
 
 # ================= 模型配置 =================
-# v0.0.2: 維持使用 3-Flash
 MODEL_NAME = 'models/gemini-3-flash-preview'
 
 # ================= 核心工具 =================
@@ -40,6 +39,7 @@ def load_portfolio():
     return default_data
 
 def save_portfolio(data):
+    # 使用台灣時間
     data["last_updated"] = get_tw_time().strftime("%Y-%m-%d %H:%M:%S")
     with open(PORTFOLIO_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
@@ -51,10 +51,11 @@ def get_stock_code(name_or_code, alias_dict):
 def send_telegram(token, message):
     if not token: print(f"[模擬發送] {message[:50]}..."); return
     
-    # v0.0.2: 強力清洗 Markdown，避免手機版跑版
+    # 清洗 Markdown 符號
     clean_message = message.replace("**", "").replace("##", "").replace("###", "").replace("__", "").replace("`", "")
+    # 處理 Markdown 連結 [text](url) -> text: url
     clean_message = re.sub(r"\[(.*?)\]\((.*?)\)", r"\1: \2", clean_message)
-
+    
     try:
         requests.post(f"https://api.telegram.org/bot{token}/sendMessage", json={
             "chat_id": TG_CHAT_ID, "text": clean_message, "disable_web_page_preview": False 
@@ -70,7 +71,7 @@ def read_history_log(filename):
 
 def get_rss_data(urls, limit=10, hours_limit=24, history_content=""):
     buffer = []; processed = []; 
-    now = get_tw_time()
+    now = get_tw_time() # 基準時間改為台灣時間
     
     if not urls: return "無訂閱來源"
     
@@ -80,23 +81,30 @@ def get_rss_data(urls, limit=10, hours_limit=24, history_content=""):
             for entry in feed.entries:
                 if len(processed) >= limit: break
                 
+                # 去重
                 if entry.title in processed: continue
                 if history_content and (entry.link in history_content or entry.title in history_content):
                     continue 
 
-                date_str = ""
+                date_prefix = ""
+                # 時間過濾與日期提取
                 if hasattr(entry, 'published_parsed') and entry.published_parsed:
-                    pub_time = datetime(*entry.published_parsed[:6])
-                    if (datetime.utcnow() - pub_time).total_seconds() > hours_limit * 3600: continue
-                    # v0.0.2: 格式化日期 MM/DD
-                    tw_pub_time = pub_time + timedelta(hours=8)
-                    date_str = tw_pub_time.strftime("%m/%d")
+                    # feedparser 解析出來的是 UTC 時間 tuple
+                    pub_time_utc = datetime(*entry.published_parsed[:6])
+                    
+                    # 過濾舊新聞 (UTC 對 UTC 比較)
+                    if (datetime.utcnow() - pub_time_utc).total_seconds() > hours_limit * 3600: continue
+                    
+                    # 轉為台灣時間做顯示
+                    pub_time_tw = pub_time_utc + timedelta(hours=8)
+                    date_prefix = f"[{pub_time_tw.strftime('%m/%d')}] "
                 else:
-                    date_str = now.strftime("%m/%d")
+                    # 如果沒時間，就用當下台灣時間
+                    date_prefix = f"[{now.strftime('%m/%d')}] "
                 
                 processed.append(entry.title)
-                # v0.0.2: 將日期塞入資料源
-                buffer.append(f"日期: {date_str}\n標題: {entry.title}\n連結: {entry.link}\n")
+                # 這裡把日期前綴塞進去
+                buffer.append(f"{date_prefix}標題: {entry.title}\n連結: {entry.link}\n")
         except: continue
     return "\n".join(buffer) if buffer else ""
 
@@ -151,8 +159,11 @@ def process_tg_commands(token):
         
         for item in response["result"]:
             if str(item["message"]["chat"]["id"]) != str(TG_CHAT_ID): continue
+            
+            # 訊息時間也是 timestamp (UTC)，轉成台灣時間
             msg_time = datetime.fromtimestamp(item["message"]["date"])
             if datetime.now() - msg_time > timedelta(hours=24): continue
+            
             text = item["message"].get("text", "").strip()
             
             if text.startswith("{"):
@@ -201,17 +212,22 @@ def process_tg_commands(token):
         return logs, pf_data
     except: return [], load_portfolio()
 
-# ================= 執行模式 =================
+# ================= 執行模式 (豐富版 V13.2) =================
 
 def run_security_mode(config):
+    """ 資安 Bot """
     token = TG_BOT_TOKEN_SEC
     print(f"🛡️ [資安 Bot] 啟動... ({MODEL_NAME})")
+    
+    # 計算今日日期 (台灣時間)
     today_str = get_tw_time().strftime("%Y/%m/%d")
-
+    
+    # 7天回溯
     history = read_history_log(SECURITY_LOG_FILE)
     time_limit = 168 if len(history) < 100 else 24
     
     urls = config.get("rss_security", [])
+    # 這裡的 raw 已經包含 [MM/DD] 日期前綴
     raw = get_rss_data(urls, limit=10, hours_limit=time_limit, history_content=history)
     
     if not raw:
@@ -221,34 +237,50 @@ def run_security_mode(config):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(MODEL_NAME)
     
-    # v0.0.2: Prompt 加上 [日期] 要求
+    # 1. 新聞快報 (繁體中文 + 說明 + 日期)
     print(" ↳ 發送新聞快報...")
     news_prompt = f"""
-    你是資安情報官。
+    你是資安情報官。請整理以下情報。
     【內容】{raw}
     【格式要求】
-    1. 繁體中文。
-    2. 每則新聞前加上日期標籤，格式：`[MM/DD]` 標題 (Emoji)。
-    3. 📅 **事件背景** (一句話) + 🔗 **連結**。
-    4. 嚴禁 Markdown (**粗體**)。
+    1. **必須使用繁體中文 (Traditional Chinese)**。
+    2. 每個新聞請列出：
+       - `[MM/DD]` 標題 (Emoji: 🚨, 🛡️)
+       - 📅 **事件背景**：(一句話解釋發生什麼事)
+       - 🔗 **原始連結**：(必須附上)
+    3. 嚴禁使用 Markdown 符號 (如 ** 或 ##)，請用 Emoji 排版。
     """
     send_telegram(token, model.generate_content(news_prompt).text)
     
-    # v0.0.2: Prompt 注入今日日期
+    # 2. CISSP 深度教學 (這是你要求的「不精簡」版本)
     print(" ↳ 發送 CISSP 微課程...")
     class_prompt = f"""
-    你是 CISSP 教練。
+    你是 CISSP 資深教練。請針對今日新聞寫一份「深度技術分析」。
     【新聞】{raw}
-    【要求】
-    1. 繁體中文。
-    2. 請在標題中使用此日期：{today_str}。
-    3. 結構：案例、CISSP 考點、攻擊技術、防禦架構。
-    4. 嚴禁 Markdown 粗體。
+    【格式嚴格要求】
+    1. **全篇必須使用繁體中文**。
+    2. **標題請使用此日期：{today_str}**。
+    3. 內容必須詳盡，**請勿精簡**，保持專業技術深度。
+    4. 結構如下 (請使用 Emoji 當標題，不要用 Markdown)：
+    
+    🎓 **CISSP 實戰教練** ({today_str})
+    
+    📚 **案例事件**：(詳細說明事件背景)
+    
+    🧠 **CISSP 考點 & 名詞解釋**：(解釋專有名詞，如 Zero Trust, CVE, XSS, Buffer Overflow)
+    
+    ⚔️ **攻擊技術解構 (Red Team)**：
+    (深入技術細節：駭客利用了什麼底層機制？Payload 是什麼概念？請詳細解釋)
+    
+    🛡️ **防禦架構設計 (Blue Team)**：
+    (企業級防禦建議：WAF, IPS, 分段, 權限控管，請提出具體策略)
+    
+    (嚴禁 Markdown 粗體符號)
     """
     send_telegram(token, model.generate_content(class_prompt).text)
     
-    # v0.0.2: 存檔標題修正
-    save_log(SECURITY_LOG_FILE, model.generate_content(f"CISSP 日報 ({today_str})\n{raw}").text)
+    # 3. 寫入 Log (Prompt 也要加強，避免存檔內容縮水)
+    save_log(SECURITY_LOG_FILE, model.generate_content(f"請撰寫一份 CISSP 完整日報 (Markdown格式)，標題請包含日期 {today_str}。\n請包含詳細的 Red Team 攻擊分析與 Blue Team 防禦建議。\n{raw}").text)
 
 def run_morning_forecast(pf_data):
     token = TG_BOT_TOKEN_FIN
@@ -264,7 +296,7 @@ def run_morning_forecast(pf_data):
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(MODEL_NAME)
     
-    prompt = f"華爾街操盤手簡報。新聞:{raw_us}\n關注:{', '.join(targets)}\n要求: 繁體中文, 純文字, Emoji 排版, 無Markdown。"
+    prompt = f"華爾街操盤手簡報。新聞:{raw_us}\n關注:{', '.join(targets)}\n任務:美股收盤簡報+台股開盤預測。\n要求: 繁體中文, 純文字, Emoji 排版。"
     send_telegram(token, model.generate_content(prompt).text)
 
 def run_finance_mode(pf_data, mode="finance"):
@@ -279,6 +311,7 @@ def run_finance_mode(pf_data, mode="finance"):
     
     market_open = is_market_open()
     tech_lines = []
+    
     total_market_value = 0
     total_cost = 0
     
@@ -286,6 +319,7 @@ def run_finance_mode(pf_data, mode="finance"):
         for code in {**holdings, **watchlist}:
             is_holding = holdings.get(code, {}).get('shares', 0) > 0
             is_watching = code in watchlist
+            
             if is_holding or is_watching:
                 t = get_stock_technical(code)
                 if t:
@@ -301,6 +335,7 @@ def run_finance_mode(pf_data, mode="finance"):
                         cost_basis = int(shares * avg_cost)
                         unrealized_pl = market_val - cost_basis
                         roi = round((unrealized_pl / cost_basis * 100), 2) if cost_basis > 0 else 0
+                        
                         total_market_value += market_val
                         total_cost += cost_basis
                         detail_str = f"\n   📦 **庫存**: {shares} | 均價: {avg_cost}\n   💰 **損益**: ${unrealized_pl:,} ({roi}%)"
@@ -314,33 +349,39 @@ def run_finance_mode(pf_data, mode="finance"):
     
     tech_str = "\n".join(tech_lines) if tech_lines else "無報價數據"
     urls = config.get("rss_finance_tw", [])
+    # 新聞也會有日期前綴
     raw_news = get_rss_data(urls, limit=5, hours_limit=24)
     
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(MODEL_NAME)
     
+    # 1. 持股戰情牆 (TG)
     if tech_lines:
         clean_tech = tech_str.replace("**", "") 
-        clean_summary = summary_line.replace("**", "")
         status = "🟢" if market_open else "🔴"
+        clean_summary = summary_line.replace("**", "")
         msg = f"📊 **持股戰情牆** ({status})\n\n{clean_summary}\n\n{clean_tech}\n\n📝 **系統**: {' '.join(logs) if logs else '無交易'}"
         send_telegram(token, msg)
     
+    # 2. 新聞分析與教學 (TG)
     print(" ↳ 發送新聞與教學...")
     strategy_prompt = f"""
     你是 CFO 與技術導師。
-    【持股】{tech_str}
-    【新聞】{raw_news}
+    【持股狀態】
+    {tech_str}
+    【新聞】
+    {raw_news}
     【任務】
-    1. 繁體中文。
-    2. 新聞分析與財報。
-    3. K 線教學。
-    4. 嚴禁 Markdown。
+    1. **使用繁體中文**。
+    2. 新聞分析：對持股是利多還是利空？(請引用新聞前的日期)
+    3. K 線教學：挑一支股票，解釋型態 (黃金交叉, 背離, 支撐壓力)。
+    4. **標題請使用此日期：{today_str}**。
+    5. 嚴禁 Markdown。
     """
     send_telegram(token, model.generate_content(strategy_prompt).text)
     
     if mode == "finance":
-        save_log(FINANCE_LOG_FILE, model.generate_content(f"投資日報 ({today_str})\n{tech_str}\n{raw_news}").text)
+        save_log(FINANCE_LOG_FILE, model.generate_content(f"請撰寫一份完整投資日報 (Markdown格式)，標題請包含日期 {today_str}。\n{tech_str}\n{raw_news}").text)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

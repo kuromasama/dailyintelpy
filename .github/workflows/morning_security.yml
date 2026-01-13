@@ -22,7 +22,7 @@ jobs:
           # 👇 關鍵修正：使用 SEC Token
           TG_BOT_TOKEN_SEC: ${{ secrets.TG_BOT_TOKEN_SEC }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: python Daily_Cyber_Fin_v0.0.12.py --mode security
+        run: python Daily_Cyber_Fin_v0.0.13.py --mode security
       - name: Commit
         run: |
           git config --global user.name "Action Bot"

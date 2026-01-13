@@ -2,7 +2,7 @@
 name: 🛡️ Morning Security
 on:
   schedule:
-    - cron: '0 0 * * *' # 台灣 08:00
+    - cron: '15 0 * * *' # 台灣 08:15
     #- cron: '20 4 * * *' # 台灣 12:05 (測試用)
   workflow_dispatch:
 jobs:
@@ -22,7 +22,7 @@ jobs:
           # 👇 關鍵修正：使用 SEC Token
           TG_BOT_TOKEN_SEC: ${{ secrets.TG_BOT_TOKEN_SEC }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: python Daily_Cyber_Fin_v0.0.1.py --mode security
+        run: python Daily_Cyber_Fin_v0.0.2.py --mode security
       - name: Commit
         run: |
           git config --global user.name "Action Bot"

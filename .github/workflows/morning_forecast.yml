@@ -1,7 +1,7 @@
 name: 📈 Morning Forecast
 on:
   schedule:
-   - cron: '30 0 * * *' # 台灣 08:30
+   - cron: '45 0 * * *' # 台灣 08:45
   #- cron: '20 4 * * *' # 台灣 12:05 (測試用)
   workflow_dispatch:
 jobs:
@@ -19,7 +19,7 @@ jobs:
           # 👇 關鍵修正：使用 FIN Token
           TG_BOT_TOKEN_FIN: ${{ secrets.TG_BOT_TOKEN_FIN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: python Daily_Cyber_Fin_v0.0.1.py --mode morning
+        run: python Daily_Cyber_Fin_v0.0.2.py --mode morning
       - name: Commit
         # 雖然這個 Bot 沒存檔，但為了保險起見保持一致邏輯
         run: |

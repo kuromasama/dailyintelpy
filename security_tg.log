@@ -198,3 +198,99 @@
 2. 執行階段保護 (Runtime Protection)：部署針對 Linux 核心行為進行監控的 EDR 工具，偵測異常的系統呼叫 (System Calls) 或未經授權的文件修改。
 3. 最小權限原則 (PoLP)：限制容器的權限，嚴禁以 Root 身分執行非必要的進程，縮小攻擊者進行容器逃逸的可能性。
 ==============================
+
+==============================
+[2026-01-14 12:23:40] SENT:
+報告長官，我是資安情報官。以下為您整理的最新資安與科技情報摘要：
+
+🚨 比利時 AZ Monica 醫院遭受網路攻擊後緊急關閉伺服器
+📅 事件背景：該醫院為防止損害擴大，在偵測到網路異常後主動切斷系統連線。
+🔗 連結：https://www.bleepingcomputer.com/news/security/belgian-hospital-az-monica-shuts-down-servers-after-cyberattack/
+📝 摘要：院方目前正與外部資安專家合作進行復原與鑑識調查。雖然醫療服務受到部分影響，但此舉有效阻止了潛在的資料外洩或勒索軟體擴散。
+
+🛡️ 微軟推送 Windows 更新以更換即將過期的安全啟動證書
+📅 事件背景：由於舊有的安全啟動（Secure Boot）憑證即將到期，微軟發布了新的更新包。
+🔗 連結：https://www.bleepingcomputer.com/news/security/microsoft-rolls-out-new-secure-boot-certificates-for-windows-devices/
+📝 摘要：此次更新將替換 UEFI CA 憑證，確保裝置在引導過程中能持續驗證簽章。使用者需分階段完成更新，以避免未來系統開機時發生驗證失敗。
+
+🩹 微軟發布 Windows 10 KB5073724 延伸安全性更新
+📅 事件背景：針對仍在使用 Windows 10 的特定企業與教育用戶提供後續支援。
+🔗 連結：https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-windows-10-kb5073724-extended-security-update/
+📝 摘要：此更新包含關鍵的安全性修補，旨在降低已停止一般支援版本的系統風險，並建議相關組織儘早安裝。
+
+📦 Windows 11 發布 KB5074109 與 KB5073455 累積更新
+📅 事件背景：微軟發布針對 Windows 11 不同版本的每月例行性累積更新。
+🔗 連結：https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5074109-and-kb5073455-cumulative-updates-released/
+📝 摘要：更新內容涵蓋了多項非安全性的效能修補以及必要的安全性強化，建議使用者透過 Windows Update 進行升級。
+
+⚠️ 微軟 2026 年 1 月例行修補日修復 3 個零日漏洞及 114 個缺陷
+📅 事件背景：微軟在最新的 Patch Tuesday 活動中處理了大量安全風險。
+🔗 連結：https://www.bleepingcomputer.com/news/microsoft/microsoft-january-2026-patch-tuesday-fixes-3-zero-days-114-flaws/
+📝 摘要：本次更新修補了三個已被積極利用的零日漏洞，管理員應優先排定這些高風險缺陷的更新時程，以防範針對性攻擊。
+
+📱 Google 證實 Android 系統軟體錯誤導致音量鍵功能異常
+📅 事件背景：多位 Android 使用者反應裝置的實體音量調整按鍵無法正常運作。
+🔗 連結：https://www.bleepingcomputer.com/news/google/google-confirms-android-bug-causing-volume-key-issues/
+📝 摘要：Google 官方確認此現象為軟體層級的錯誤而非硬體損壞，目前正在開發修復程式，預計將隨未來的安全性更新推送給用戶。
+
+📧 理財平台 Betterment 在加密貨幣詐騙郵件潮後證實發生數據洩漏
+📅 事件背景：大量用戶收到針對性的加密貨幣詐騙郵件後，該公司確認了資料外洩事件。
+🔗 連結：https://www.bleepingcomputer.com/news/security/betterment-confirms-data-breach-after-wave-of-crypto-scam-emails/
+📝 摘要：洩漏的資訊主要為用戶的聯繫方式，攻擊者正利用這些數據進行精準的網路釣魚。官方提醒用戶應提高警覺，切勿點擊來源不明的連結。
+
+🎣 網路釣魚新手法利用 LinkedIn 留言回覆功能進行高度偽裝
+📅 事件背景：駭客利用 LinkedIn 官方的留言回覆提醒機制，向受害者傳送惡意網址。
+🔗 連結：https://www.bleepingcomputer.com/news/security/convincing-linkedin-comment-reply-tactic-used-in-new-phishing/
+📝 摘要：由於通知郵件來自 LinkedIn 官方域名，極具迷惑性。攻擊者藉此誘導使用者登入假頁面以竊取憑據，或引導下載惡意檔案。
+
+🔓 零售巨頭 Target 員工證實外洩的源代碼確實為真
+📅 事件背景：一份宣稱為 Target 公司的源代碼在網路上流傳，引起資安界高度關注。
+🔗 連結：https://www.bleepingcomputer.com/news/security/target-employees-confirm-leaked-source-code-is-authentic/
+📝 摘要：內部員工已確認外洩代碼的真實性。雖然目前尚不清楚資料來源，但源代碼外洩可能讓攻擊者更容易發現系統漏洞並發動精準攻擊。
+
+🏢 Meta 傳出裁撤 Reality Labs 部門 10% 員工，影響 VR 與 Horizon 業務
+📅 事件背景：Meta 持續調整其元宇宙事業群的人力結構，涉及約一成的人員裁減。
+🔗 連結：https://www.ithome.com.tw/news/173336
+📝 摘要：此次裁員主要影響虛擬實境硬體與 Horizon 平台開發團隊，反映出 Meta 正在重新評估其在元宇宙領域的投資報酬與發展重心。
+==============================
+
+==============================
+[2026-01-14 12:24:10] SENT:
+🎓 CISSP 實戰：Microsoft January 2026 Patch Tuesday fixes 3 zero-days, 114 flaws
+
+📚 案例故事：想像你是某家跨國銀行的資安長，在一個平靜的週二夜晚，你的威脅情資儀表板突然紅燈狂閃。微軟剛發布了超過一百個漏洞補丁，其中還有三個已經被駭客在外面橫行使用的零日漏洞。這就像是你家社區突然發現有一百扇窗戶的鎖失效了，而小偷已經帶著萬用鑰匙在門外徘徊。你必須在天亮前叫醒所有住戶換鎖，否則後果不堪設想，因為駭客比你更早拿到了這張地圖。
+
+🧠 核心名詞解釋：
+1. 零日漏洞 (Zero-day Vulnerability)：這就像是建商蓋房子時，不小心在後院留下一個連自己都不知道的隱藏地洞。駭客發現了這個洞並鑽進去，而身為屋主的你，在看到新聞之前完全不知道家裡已經不安全了。
+2. 補丁管理 (Patch Management)：這就像是城市的防疫疫苗接種計畫。當新的病毒變異株出現時，政府必須迅速分發疫苗（補丁），確保每個市民（伺服器）都能產生抗體。如果有人漏掉沒打，那他就會成為整個社區的防疫破口。
+
+⚔️ 紅隊技術解構：
+1. 利用披露後的時間差進行 N-day 攻擊，針對尚未更新補丁的企業進行大規模自動化掃描。
+2. 漏洞串聯技術，將看似輕微的資訊洩漏漏洞，與權限提升漏洞結合，達成遠端代碼執行 (RCE)。
+3. 針對核心組件（如 Windows Kernel）進行記憶體損壞攻擊，藉此繞過沙箱保護並獲取系統最高權限。
+
+🛡️ 藍隊防禦策略：
+1. 建立風險導向的修補優先順序，優先處理已遭野外利用 (Exploited in the wild) 的漏洞，而非僅參考 CVSS 分數。
+2. 在正式部署前，於沙盒測試環境進行回歸測試，防止補丁造成業務系統崩潰或藍屏。
+3. 若因業務因素無法立即修補，應啟動補償性控制措施，例如在網路邊界封鎖特定通訊協定或暫時停用受影響的服務。
+
+-------------------------
+
+🎓 CISSP 實戰：New Windows updates replace expiring Secure Boot certificates
+
+📚 案例故事：想像你是一座高科技堡壘的指揮官，你發給每位士兵一枚特製的通行權杖，士兵進門時必須出示權杖證明身分。突然間你發現，這些權杖的有效期限快到了，過期後就會失效。如果不趕快發放新權杖，連你最忠誠的將軍都會被關在門外，導致整座堡壘陷入癱瘓。但更危險的是，如果你更換權杖的過程不夠嚴謹，駭客可能會拿著過期的舊權杖，趁亂潛伏進你的堡壘。
+
+🧠 核心名詞解釋：
+1. 安全啟動 (Secure Boot)：這就像是電腦開機時的專屬警衛。它在作業系統還沒跑起來之前，先檢查這部電腦的引擎有沒有被動過手腳。只有帶著原廠保證書的軟體，警衛才准許它發動。
+2. 公鑰基礎設施 (PKI)：這就像是數位世界的印章鑑定局。它確保你看到的官方簽名真的是由官方蓋的，而不是路邊攤仿造的。透過這套系統，電腦才能確認新的安全證書是真的來自微軟。
+
+⚔️ 紅隊技術解構：
+1. 降級攻擊 (Downgrade Attack)，誘導系統使用舊版的引導程式，因為舊版證書雖然有瑕疵，但如果還沒被列入黑名單，駭客就能藉此入侵。
+2. 針對韌體層級植入 Bootkit，在作業系統的安全防禦機制啟動之前，就先取得系統的最高控制權。
+3. 利用證書替換過程中的邏輯錯誤，繞過受信任執行環境 (TEE) 的驗證機制，修改啟動配置。
+
+🛡️ 藍隊防禦策略：
+1. 監控並及時更新 UEFI 撤銷列表 (DBX)，確保已知的惡意或脆弱引導程式無法再次在組織內的電腦上執行。
+2. 啟用硬體根信任 (Root of Trust)，結合 TPM 2.0 晶片確保存儲在硬體中的密鑰與證書不被非法篡改。
+3. 採取分階段更新策略，在更新韌體證書前務必備份系統關鍵配置，以應對更新失敗導致的硬體無法啟動風險。
+==============================

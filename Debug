@@ -1,0 +1,32 @@
+﻿2026-01-14T01:20:35.3464564Z ##[group]Run git config --global user.name "Action Bot"
+git config --global user.name "Action Bot"
+git config --global user.email "bot@github.com"
+
+# 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
+# 這樣才能包含 portfolio.json 和 *_tg.log
+git add .
+
+# 提交 (如果沒變更就跳過)
+git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
+
+# 拉取雲端更新 (Rebase)
+git pull --rebase origin main
+
+# 推送
+git push
+shell: /usr/bin/bash -e {0}
+env:
+  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
+  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
+  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
+[main b7f8c9c] 🤖 Auto Update: Logs, Portfolio & TG Records
+ 1 file changed, 66 insertions(+)
+From https://github.com/kuromasama/dailyintelpy
+ * branch            main       -> FETCH_HEAD
+Current branch main is up to date.
+remote: Permission to kuromasama/dailyintelpy.git denied to github-actions[bot].
+fatal: unable to access 'https://github.com/kuromasama/dailyintelpy/': The requested URL returned error: 403
+Process completed with exit code 128.

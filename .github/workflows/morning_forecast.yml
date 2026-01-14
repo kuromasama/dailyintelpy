@@ -33,8 +33,8 @@ jobs:
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
           
-          git add .
+          git add portfolio.json *.log *.md
           git commit -m "📈 Forecast: Auto Update Logs" || echo "No changes to commit"
           
-          git pull --rebase origin HEAD
+          git pull origin HEAD --no-rebase
           git push

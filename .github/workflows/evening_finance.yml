@@ -36,13 +36,13 @@ jobs:
           git config --global user.email "bot@github.com"
           
           # 2. 加入所有產生的檔案 (包含 Log, JSON)
-          git add .
+          git add portfolio.json *.log *.md
           
           # 3. 提交 (若無變更則略過，避免報錯)
           git commit -m "💰 Finance: Auto Update Logs & Portfolio" || echo "No changes to commit"
           
           # 4. 拉取最新變更 (使用 Rebase 防止分叉)
-          git pull --rebase origin HEAD
+          git pull origin HEAD --no-rebase
           
           # 5. 推送
           git push

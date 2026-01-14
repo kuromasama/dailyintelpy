@@ -22,14 +22,20 @@ jobs:
           TG_BOT_TOKEN_FIN: ${{ secrets.TG_BOT_TOKEN_FIN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: python Daily_Cyber_Fin_v0.0.13.py --mode finance
-      - name: Commit
+      - name: Commit and Push
         run: |
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
-          # 👇 修改順序：先 Add/Commit
-          git add finance_log.md portfolio.json || true
-          git commit -m "💰 Portfolio Update" || echo "No changes"
-          # 👇 再 Pull
+          
+          # 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
+          # 這樣才能包含 portfolio.json 和 *_tg.log
+          git add .
+          
+          # 提交 (如果沒變更就跳過)
+          git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
+          
+          # 拉取雲端更新 (Rebase)
           git pull --rebase origin main
-          # 👇 最後 Push
+          
+          # 推送
           git push

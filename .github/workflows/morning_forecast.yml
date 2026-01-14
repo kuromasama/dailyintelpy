@@ -1,41 +1,40 @@
 name: 📈 Morning Forecast
 on:
   schedule:
-   - cron: '43 0 * * *' # 台灣 08:43
-  #- cron: '20 4 * * *' # 台灣 12:05 (測試用)
+    - cron: '43 0 * * *' # 台灣 08:43
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   run_job:
     runs-on: ubuntu-latest
+    # 👇 加強權限宣告
+    permissions:
+      contents: write
+      
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with: { python-version: '3.10' }
-      # 👇 關鍵修正
+        
       - run: pip install requests feedparser google-generativeai yfinance
-      - name: Run
+      
+      - name: Run Forecast Bot
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # 👇 關鍵修正：使用 FIN Token
           TG_BOT_TOKEN_FIN: ${{ secrets.TG_BOT_TOKEN_FIN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: python Daily_Cyber_Fin_v0.0.13.py --mode morning
+        
       - name: Commit and Push
         run: |
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
           
-          # 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
-          # 這樣才能包含 portfolio.json 和 *_tg.log
           git add .
+          git commit -m "📈 Forecast: Auto Update Logs" || echo "No changes to commit"
           
-          # 提交 (如果沒變更就跳過)
-          git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
-          
-          # 拉取雲端更新 (Rebase)
           git pull --rebase origin main
-          
-          # 推送
           git push

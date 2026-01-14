@@ -360,6 +360,7 @@ def run_finance_mode(pf_data, mode="finance"):
     market_open = is_market_open()
     tech_lines = []
 
+    # ✅ 【修正 1】變數初始化移到最外層 (防止 NameError)
     total_market_value = 0
     total_cost = 0
     
@@ -383,6 +384,11 @@ def run_finance_mode(pf_data, mode="finance"):
                         cost_basis = int(shares * avg_cost)
                         unrealized_pl = market_val - cost_basis
                         roi = round((unrealized_pl / cost_basis * 100), 2) if cost_basis > 0 else 0
+                        
+                        # ✅ 【修正 2】這裡必須累加，不然總資產會永遠是 0
+                        total_market_value += market_val
+                        total_cost += cost_basis
+                        
                         detail_str = f"\n   📦 **庫存**: {shares} | 均價: {avg_cost}\n   💰 **損益**: ${unrealized_pl:,} ({roi}%)"
                     
                     tech_lines.append(f"🔹 **{name} ({code})**\n   📈 現價: {price} ({t['pct']}%){detail_str}\n   📊 {t['trend']}")

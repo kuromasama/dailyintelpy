@@ -26,7 +26,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TG_BOT_TOKEN_FIN: ${{ secrets.TG_BOT_TOKEN_FIN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: python Daily_Cyber_Fin_v0.0.13.py --mode morning
+        run: python Daily_Cyber_Fin_v0.0.14.py --mode morning
         
       - name: Commit and Push
         run: |

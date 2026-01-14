@@ -1,19 +1,5 @@
-2026-01-14T04:34:15.6116661Z ##[group]Run git config --global user.name "Action Bot"
-git config --global user.name "Action Bot"
-git config --global user.email "bot@github.com"
-
-# 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
-# 這樣才能包含 portfolio.json 和 *_tg.log
-git add .
-
-# 提交 (如果沒變更就跳過)
-git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
-
-# 拉取雲端更新 (Rebase)
-git pull --rebase origin main
-
-# 推送
-git push
+﻿2026-01-14T04:58:04.1545162Z ##[group]Run python Daily_Cyber_Fin_v0.0.13.py --mode finance
+python Daily_Cyber_Fin_v0.0.13.py --mode finance
 shell: /usr/bin/bash -e {0}
 env:
   pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
@@ -22,125 +8,28 @@ env:
   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
-[fix/finance-and-permission fd62f3f] 🤖 Auto Update: Logs, Portfolio & TG Records
- 2 files changed, 80 insertions(+)
-From https://github.com/kuromasama/dailyintelpy
- * branch            main       -> FETCH_HEAD
- * [new branch]      main       -> origin/main
-Auto-merging .github/workflows/evening_finance.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/evening_finance.yml
-Auto-merging .github/workflows/morning_forecast.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/morning_forecast.yml
-Auto-merging .github/workflows/morning_security.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/morning_security.yml
-Auto-merging security_log.md
-CONFLICT (add/add): Merge conflict in security_log.md
-Auto-merging security_tg.log
-CONFLICT (add/add): Merge conflict in security_tg.log
-Rebasing (1/2)
-error: could not apply 452db34... Fix: Init finance variables globally & Add Write permissions to YAML
-hint: Resolve all conflicts manually, mark them as resolved with
-hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
-hint: You can instead skip this commit: run "git rebase --skip".
-hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
-hint: Disable this message with "git config set advice.mergeConflict false"
-Could not apply 452db34... # Fix: Init finance variables globally & Add Write permissions to YAML
-Process completed with exit code 1.
+  GEMINI_API_KEY: ***
+  TG_BOT_TOKEN_FIN: ***
+  TG_CHAT_ID: ***
+/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/google/api_core/_python_version_support.py:275: FutureWarning: You are using a Python version (3.10.19) which Google will stop supporting in new releases of google.api_core once it reaches its end of life (2026-10-04). Please upgrade to the latest Python version, or at least Python 3.11, to continue receiving updates for google.api_core past that date.
+  warnings.warn(message, FutureWarning)
+/home/runner/work/dailyintelpy/dailyintelpy/Daily_Cyber_Fin_v0.0.13.py:2: FutureWarning: 
 
-2026-01-14T04:34:03.9315992Z ##[group]Run git config --global user.name "Action Bot"
-git config --global user.name "Action Bot"
-git config --global user.email "bot@github.com"
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
 
-# 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
-# 這樣才能包含 portfolio.json 和 *_tg.log
-git add .
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
 
-# 提交 (如果沒變更就跳過)
-git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
-
-# 拉取雲端更新 (Rebase)
-git pull --rebase origin main
-
-# 推送
-git push
-shell: /usr/bin/bash -e {0}
-env:
-  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
-  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
-  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
-[fix/finance-and-permission dc6113a] 🤖 Auto Update: Logs, Portfolio & TG Records
- 1 file changed, 57 insertions(+)
-From https://github.com/kuromasama/dailyintelpy
- * branch            main       -> FETCH_HEAD
- * [new branch]      main       -> origin/main
-Auto-merging .github/workflows/evening_finance.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/evening_finance.yml
-Auto-merging .github/workflows/morning_forecast.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/morning_forecast.yml
-Auto-merging .github/workflows/morning_security.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/morning_security.yml
-Auto-merging security_log.md
-CONFLICT (add/add): Merge conflict in security_log.md
-Auto-merging security_tg.log
-CONFLICT (add/add): Merge conflict in security_tg.log
-Rebasing (1/2)
-error: could not apply 452db34... Fix: Init finance variables globally & Add Write permissions to YAML
-hint: Resolve all conflicts manually, mark them as resolved with
-hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
-hint: You can instead skip this commit: run "git rebase --skip".
-hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
-hint: Disable this message with "git config set advice.mergeConflict false"
-Could not apply 452db34... # Fix: Init finance variables globally & Add Write permissions to YAML
-Process completed with exit code 1.
-
-2026-01-14T04:34:03.9315992Z ##[group]Run git config --global user.name "Action Bot"
-git config --global user.name "Action Bot"
-git config --global user.email "bot@github.com"
-
-# 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
-# 這樣才能包含 portfolio.json 和 *_tg.log
-git add .
-
-# 提交 (如果沒變更就跳過)
-git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
-
-# 拉取雲端更新 (Rebase)
-git pull --rebase origin main
-
-# 推送
-git push
-shell: /usr/bin/bash -e {0}
-env:
-  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
-  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
-  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
-  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
-[fix/finance-and-permission dc6113a] 🤖 Auto Update: Logs, Portfolio & TG Records
- 1 file changed, 57 insertions(+)
-From https://github.com/kuromasama/dailyintelpy
- * branch            main       -> FETCH_HEAD
- * [new branch]      main       -> origin/main
-Auto-merging .github/workflows/evening_finance.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/evening_finance.yml
-Auto-merging .github/workflows/morning_forecast.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/morning_forecast.yml
-Auto-merging .github/workflows/morning_security.yml
-CONFLICT (add/add): Merge conflict in .github/workflows/morning_security.yml
-Auto-merging security_log.md
-CONFLICT (add/add): Merge conflict in security_log.md
-Auto-merging security_tg.log
-CONFLICT (add/add): Merge conflict in security_tg.log
-Rebasing (1/2)
-error: could not apply 452db34... Fix: Init finance variables globally & Add Write permissions to YAML
-hint: Resolve all conflicts manually, mark them as resolved with
-hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
-hint: You can instead skip this commit: run "git rebase --skip".
-hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
-hint: Disable this message with "git config set advice.mergeConflict false"
-Could not apply 452db34... # Fix: Init finance variables globally & Add Write permissions to YAML
+  import google.generativeai as genai
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: 6274.TW"}}}
+$6274.TW: possibly delisted; no price data found  (period=3mo) (Yahoo error = "No data found, symbol may be delisted")
+Traceback (most recent call last):
+  File "/home/runner/work/dailyintelpy/dailyintelpy/Daily_Cyber_Fin_v0.0.13.py", line 471, in <module>
+💰 [財經 Bot] 啟動...
+    run_finance_mode(pf_data, "finance")
+  File "/home/runner/work/dailyintelpy/dailyintelpy/Daily_Cyber_Fin_v0.0.13.py", line 388, in run_finance_mode
+    total_pl = total_market_value - total_cost
+NameError: name 'total_market_value' is not defined
+📥 讀取指令...
 Process completed with exit code 1.

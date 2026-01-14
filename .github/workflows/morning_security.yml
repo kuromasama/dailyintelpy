@@ -36,5 +36,5 @@ jobs:
           git add .
           git commit -m "🛡️ Security: Auto Update Logs" || echo "No changes to commit"
           
-          git pull --rebase origin main
+          git pull --rebase origin HEAD
           git push

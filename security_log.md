@@ -385,3 +385,107 @@
 *   [Endesa Data Breach Disclosure](https://www.bleepingcomputer.com/news/security/spanish-energy-giant-endesa-discloses-data-breach-affecting-customers/)
 *   [Microsoft retiring Lens scanner app](https://www.bleepingcomputer.com/news/microsoft/microsoft-is-retiring-the-lens-scanner-app-for-ios-android/)
 *   [Microsoft 365 access reviews for data leak prevention](https://www.bleepingcomputer.com/news/security/prevent-cloud-data-leaks-with-microsoft-365-access-reviews/)
+
+
+# 🛡️ 資安戰情白皮書 (2026/01/14)
+
+本文件旨在為企業決策者、資安架構師及技術團隊提供當前全球威脅態勢的深度分析。透過彙整近期重大的資安事件，我們將解析攻擊者的技術路徑（TTPs），並提供相對應的防禦緩解策略。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+進入 2026 年，資安威脅態勢呈現出「**高自動化**」與「**高針對性**」的雙重特徵。根據最新情資，我們觀察到三個關鍵轉折點：
+1.  **AI 平台的原生漏洞**：攻擊者已不滿足於利用 AI 生成釣魚信件，而是直接瞄準 AI 基礎設施（如 ServiceNow 的 AI 模組）與 Agentic AI 框架。
+2.  **雲原生 Linux 威脅的演進**：如 VoidLink 等新型惡意軟體框架專為容器化環境與雲端伺服器設計，具備極強的隱蔽性與跨平台能力。
+3.  **供應鏈與瀏覽器擴充功能之隱憂**：針對加密貨幣交易者與電商平台的攻擊，正從傳統的後端滲透轉向前端 Web Skimming 與惡意擴充功能。
+
+**戰略建議**：企業應加速部署「身份中心化」的安全架構，針對 AI 模型存取實施嚴格的影子 API (Shadow API) 監控，並強化 Linux 伺服器的執行時保護 (Runtime Protection)。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中/英對照) | 威脅類別 | 關鍵影響 |
+| :--- | :--- | :--- |
+| **長期運行的 Web Skimming 攻擊竊取線上結帳頁面信用卡資訊** (Long-Running Web Skimming Campaign Steals Credit Cards From Online Checkout Pages) | 電商/供應鏈攻擊 | 金融資料外洩 |
+| **惡意 Chrome 擴充功能偽裝成交易工具竊取 MEXC API 金鑰** (Malicious Chrome Extension Steals MEXC API Keys by Masquerading as Trading Tool) | 社會工程/瀏覽器安全 | 加密貨幣資產損失 |
+| **[網路研討會] 保護代理式 AI：從 MCPs 到影子 API 金鑰蔓延** (Securing Agentic AI: From MCPs and Tool Access to Shadow API Key Sprawl) | AI 基礎設施安全 | 權限提升/資料竄改 |
+| **新型先進 Linux VoidLink 惡意軟體針對雲端與容器環境** (New Advanced Linux VoidLink Malware Targets Cloud and Container Environments) | 雲端原生/Linux 威脅 | 伺服器控制/持久化 |
+| **我們應從 2025 年攻擊者如何利用 AI 學到什麼？** (What Should We Learn From How Attackers Leveraged AI in 2025?) | 戰略回顧 | 未來防禦指引 |
+| **ServiceNow 修補關鍵 AI 平台漏洞，防止未授權身份冒充** (ServiceNow Patches Critical AI Platform Flaw Allowing Unauthenticated User Impersonation) | 軟體供應鏈/AI 漏洞 | 系統存取權限控制失效 |
+| **新型惡意軟體攻擊透過多階段 Windows 攻擊傳遞 Remcos RAT** (New Malware Campaign Delivers Remcos RAT Through Multi-Stage Windows Attack) | 遠端控制木馬 (RAT) | 終端裝置完全受控 |
+| **烏克蘭軍隊成為新型慈善主題惡意軟體攻擊目標** (Ukraine's army targeted in new charity-themed malware campaign) | 地緣政治/網釣攻擊 | 軍事情報洩漏 |
+| **中央緬因醫療保健中心遭駭，外洩超過 145,000 人資料** (Central Maine Healthcare breach exposed data of over 145,000 people) | 醫療保健/勒索威脅 | 敏感個資 (PHI) 外洩 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Web Skimming (Magecart 變體)
+*   **🔍 技術原理**：攻擊者透過滲透電商平台的第三方腳本供應商或直接利用電商框架漏洞，將惡意的 JavaScript 程式碼注入到結帳頁面。這些腳本會攔截 `onSubmit` 事件，捕獲信用卡卡號、CVV 與有效期。
+*   **⚔️ 攻擊向量**：利用過時的 Magento/Shopify 插件漏洞，或透過 XSS (跨站腳本攻擊) 注入。
+*   **🛡️ 防禦緩解**：實施內容安全策略 (CSP) 以限制外部腳本加載；使用 Subresource Integrity (SRI) 驗證腳本完整性；監控網頁 DOM 結構的異常變動。
+*   **🧠 名詞定義**：**Web Skimming** 指在瀏覽器端數位化地竊取支付資訊，類似於實體 ATM 讀卡機竊取。
+
+### 3.2 惡意 Chrome 擴充功能與 MEXC API 竊取
+*   **🔍 技術原理**：惡意擴充功能透過 Chrome API (如 `chrome.tabs`, `chrome.storage`) 監控用戶在交易所頁面的活動。當偵測到用戶生成或使用 API Key 時，將資料回傳至 C2 伺服器。
+*   **⚔️ 攻擊向量**：偽裝成「加速交易器」或「自動刷單工具」誘導用戶下載，並要求過高權限。
+*   **🛡️ 防禦緩解**：企業端應強制執行瀏覽器管理政策，僅允許白名單內的擴充功能；用戶端應定期稽核 API Key 的權限範圍 (僅限讀取，禁止提幣)。
+*   **🧠 名詞定義**：**Side-loading** 是指繞過官方商店安裝未經驗證的軟體或擴充功能。
+
+### 3.3 Agentic AI 與 MCP 安全風險
+*   **🔍 技術原理**：隨著代理式 AI (Agentic AI) 興起，模型透過 Model Context Protocol (MCP) 與外部資料庫或工具對接。若 MCP 設定不當，攻擊者可透過 Prompt Injection 誘導 AI 使用受害者的 API Key 進行非法操作。
+*   **⚔️ 攻擊向量**：影子 API (Shadow API) 蔓延，意即開發者為方便測試而生成的 API Key 未被納入管理。
+*   **🛡️ 防禦緩解**：實施「最低特權原則」於 AI 代理人權限；建立 API 監控閘道，過濾異常的 MCP 請求。
+*   **🧠 名詞定義**：**MCP (Model Context Protocol)** 是 Anthropic 提出的標準，用於讓 AI 模型與多樣化資料源進行安全交互。
+
+### 3.4 VoidLink Linux 惡意軟體框架
+*   **🔍 技術原理**：VoidLink 是一個高度模組化的 C/C++ 框架，針對 Linux 內核進行最佳化。它能識別是否運行在 Docker 或 Kubernetes 環境中，並嘗試透過漏洞進行容器逃逸。
+*   **⚔️ 攻擊向量**：SSH 暴力破解、暴露的 Docker API、或已知的 Linux 內核漏洞 (CVEs)。
+*   **🛡️ 防禦緩解**：部署 eBPF 監測技術 (如 Tetragon) 以即時追蹤系統調用；強化容器隔離與掃描基礎鏡像漏洞。
+*   **🧠 名詞定義**：**Container Escape** 指攻擊者從受限的容器環境獲得宿主機 (Host) 權限的過程。
+
+### 3.5 ServiceNow AI 平台身分冒充漏洞
+*   **🔍 技術原理**：該漏洞存在於 ServiceNow 的 AI 管理模組中，導因於身份驗證邏輯缺失，允許遠端未授權攻擊者構造特定的 HTTP 請求，偽裝成系統管理員。
+*   **⚔️ 攻擊向量**：直接訪問存在漏洞的 API 端點，繞過 MFA 檢查。
+*   **🛡️ 防禦緩解**：立即套用官方發布的 Hotfix；盤查系統日誌中是否有來自異常 IP 的管理員登入活動。
+*   **🧠 名詞定義**：**Unauthenticated User Impersonation** 指在不提供任何有效憑證的情況下，冒充特定合法用戶的身分。
+
+### 3.6 Remcos RAT 多階段攻擊
+*   **🔍 技術原理**：攻擊通常始於包含惡意 ISO 或 VHD 檔案的郵件。透過 DLL Side-loading 載入第一階段 Loader，最終在記憶體中解密並運行 Remcos RAT 以規避磁碟掃描。
+*   **⚔️ 攻擊向量**：魚叉式網路釣魚 (Spear Phishing)。
+*   **🛡️ 防禦緩解**：停用自動掛載 ISO/VHD 檔案的功能；使用 EDR (端點偵測與回應) 監控 Powershell 或 Cmd.exe 的異常子行程。
+
+### 3.7 烏克蘭慈善主題網釣
+*   **🔍 技術原理**：利用地緣政治緊張局勢，攻擊者偽裝成紅十字會或其他慈善組織，誘使軍事人員下載內嵌有資訊竊取程式 (Infostealer) 的惡意附件。
+*   **⚔️ 攻擊向量**：心理操縱 (Psychological Manipulation)。
+*   **🛡️ 防禦緩解**：加強員工對時事敏感度的安全意識培訓；部署電子郵件安全閘道 (SEG) 以偵測異常發件網域。
+
+### 3.8 醫療保健數據洩漏 (Central Maine Healthcare)
+*   **🔍 技術原理**：初步分析顯示攻擊者可能透過被盜用的憑證進入醫療內網，隨後在數週內緩慢地將包含患者電子病歷 (EHR) 的資料外洩。
+*   **⚔️ 攻擊向量**：憑證填充 (Credential Stuffing) 或針對 VPN 的攻擊。
+*   **🛡️ 防禦緩解**：實施全方位的多因素驗證 (MFA)；對敏感資料夾進行檔案存取監控 (FIM)。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 蠕蟲 (AI Worms) 的出現**：預計 2026 年末將出現能夠在 Agentic AI 系統間自我複製的惡意程式碼，利用 AI 之間的通訊協議自動傳播。
+2.  **深度偽裝即服務 (Deepfake-as-a-Service)**：社交工程將進化到即時視訊/音訊偽裝，企業必須重新定義遠端身份核實機制。
+3.  **雲端韌體攻擊**：隨著雲端原生的成熟，攻擊者將更深入底層，針對雲端服務商的虛擬化韌體進行持久化攻擊。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [Web Skimming Campaign - The Hacker News](https://thehackernews.com/2026/01/long-running-web-skimming-campaign.html)
+- [Malicious Chrome Extension - The Hacker News](https://thehackernews.com/2026/01/malicious-chrome-extension-steals-mexc.html)
+- [Securing Agentic AI Webinar - The Hacker News](https://thehackernews.com/2026/01/webinar-t-from-mcps-and-tool-access-to.html)
+- [Linux VoidLink Malware - The Hacker News](https://thehackernews.com/2026/01/new-advanced-linux-voidlink-malware.html)
+- [AI Attacks Lessons from 2025 - The Hacker News](https://thehackernews.com/2026/01/what-should-we-learn-from-how-attackers.html)
+- [ServiceNow AI Flaw - The Hacker News](https://thehackernews.com/2026/01/servicenow-patches-critical-ai-platform.html)
+- [Remcos RAT Multi-Stage Attack - The Hacker News](https://thehackernews.com/2026/01/new-malware-campaign-delivers-remcos.html)
+- [Ukraine Charity Phishing - BleepingComputer](https://www.bleepingcomputer.com/news/security/ukraines-army-targeted-in-new-charity-themed-malware-campaign/)
+- [VoidLink Malware Framework - BleepingComputer](https://www.bleepingcomputer.com/news/security/new-voidlink-malware-framework-targets-linux-cloud-servers/)
+- [Central Maine Healthcare Breach - BleepingComputer](https://www.bleepingcomputer.com/news/security/central-maine-healthcare-breach-exposed-data-of-over-145-000-people/)

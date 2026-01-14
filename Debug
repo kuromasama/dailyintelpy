@@ -30,3 +30,39 @@ Current branch main is up to date.
 remote: Permission to kuromasama/dailyintelpy.git denied to github-actions[bot].
 fatal: unable to access 'https://github.com/kuromasama/dailyintelpy/': The requested URL returned error: 403
 Process completed with exit code 128.
+
+﻿2026-01-14T01:20:21.6002063Z ##[group]Run python Daily_Cyber_Fin_v0.0.13.py --mode finance
+python Daily_Cyber_Fin_v0.0.13.py --mode finance
+shell: /usr/bin/bash -e {0}
+env:
+  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
+  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
+  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
+  GEMINI_API_KEY: ***
+  TG_BOT_TOKEN_FIN: ***
+  TG_CHAT_ID: ***
+/opt/hostedtoolcache/Python/3.10.19/x64/lib/python3.10/site-packages/google/api_core/_python_version_support.py:275: FutureWarning: You are using a Python version (3.10.19) which Google will stop supporting in new releases of google.api_core once it reaches its end of life (2026-10-04). Please upgrade to the latest Python version, or at least Python 3.11, to continue receiving updates for google.api_core past that date.
+  warnings.warn(message, FutureWarning)
+/home/runner/work/dailyintelpy/dailyintelpy/Daily_Cyber_Fin_v0.0.13.py:2: FutureWarning: 
+
+All support for the `google.generativeai` package has ended. It will no longer be receiving 
+updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+See README for more details:
+
+https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+  import google.generativeai as genai
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: 6274.TW"}}}
+$6274.TW: possibly delisted; no price data found  (period=3mo) (Yahoo error = "No data found, symbol may be delisted")
+Traceback (most recent call last):
+  File "/home/runner/work/dailyintelpy/dailyintelpy/Daily_Cyber_Fin_v0.0.13.py", line 471, in <module>
+💰 [財經 Bot] 啟動...
+    run_finance_mode(pf_data, "finance")
+  File "/home/runner/work/dailyintelpy/dailyintelpy/Daily_Cyber_Fin_v0.0.13.py", line 388, in run_finance_mode
+    total_pl = total_market_value - total_cost
+NameError: name 'total_market_value' is not defined
+📥 讀取指令...
+Process completed with exit code 1.

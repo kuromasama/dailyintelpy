@@ -1,0 +1,45 @@
+﻿2026-01-14T09:04:26.4963345Z ##[group]Run # 1. 設定身分
+# 1. 設定身分
+git config --global user.name "Action Bot"
+git config --global user.email "bot@github.com"
+
+# 2. 加入所有產生的檔案 (包含 Log, JSON)
+git add .
+
+# 3. 提交 (若無變更則略過，避免報錯)
+git commit -m "💰 Finance: Auto Update Logs & Portfolio" || echo "No changes to commit"
+
+# 4. 拉取最新變更 (使用 Rebase 防止分叉)
+git pull --rebase origin HEAD
+
+# 5. 推送
+git push
+shell: /usr/bin/bash -e {0}
+env:
+  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
+  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
+  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
+[fix/finance-and-permission df69a7f] 💰 Finance: Auto Update Logs & Portfolio
+ 3 files changed, 188 insertions(+), 8 deletions(-)
+From https://github.com/kuromasama/dailyintelpy
+ * branch            HEAD       -> FETCH_HEAD
+Auto-merging .github/workflows/evening_finance.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/evening_finance.yml
+Auto-merging .github/workflows/morning_forecast.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_forecast.yml
+Auto-merging .github/workflows/morning_security.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_security.yml
+Auto-merging Daily_Cyber_Fin_v0.0.13.py
+CONFLICT (add/add): Merge conflict in Daily_Cyber_Fin_v0.0.13.py
+Rebasing (1/2)
+error: could not apply b291646... Fix: Change git pull target from 'main' to 'HEAD' to allow branch testing
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply b291646... # Fix: Change git pull target from 'main' to 'HEAD' to allow branch testing
+Process completed with exit code 1.

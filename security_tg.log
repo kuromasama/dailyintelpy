@@ -1,0 +1,60 @@
+
+==============================
+[2026-01-14 18:22:20] SENT:
+你好，我是資安情報官。以下是為您整理的最新資安情報摘要：
+
+🔥 🚨 Node.js 嚴重漏洞：async_hooks 堆疊溢位導致伺服器當機
+📅 事件背景：Node.js 被發現存在一個與核心模組 async_hooks 相關的關鍵漏洞。
+🔗 https://thehackernews.com/2026/01/critical-nodejs-vulnerability-can-cause.html
+📝 摘要：攻擊者可藉由觸發特定的堆疊溢位，導致伺服器端發生崩潰，進而造成嚴重的拒絕服務（DoS）攻擊，影響系統可用性。
+
+🔥 🛡️ PLUGGYAPE 惡意軟體利用 Signal 與 WhatsApp 攻擊烏克蘭國防軍
+📅 事件背景：烏克蘭軍事人員成為新型惡意軟體 PLUGGYAPE 的主要針對目標。
+🔗 https://thehackernews.com/2026/01/pluggyape-malware-uses-signal-and.html
+📝 摘要：該威脅透過主流加密通訊軟體進行滲透，旨在竊取敏感的軍事數據並監控受害者的通訊紀錄。
+
+🔥 ⚠️ 長期網頁側錄攻擊持續從線上結帳頁面竊取信用卡資訊
+📅 事件背景：一場長期運作的 Magecart 類型攻擊正威脅全球多家電商網站的交易安全。
+🔗 https://thehackernews.com/2026/01/long-running-web-skimming-campaign.html
+📝 摘要：駭客在結帳頁面植入惡意腳本，即時攔截消費者的信用卡資料並傳送至攻擊者伺服器。
+
+🔥 🕵️ 惡意 Chrome 擴充功能偽裝成交易工具竊取 MEXC API 金鑰
+📅 事件背景：針對加密貨幣交易者的惡意瀏覽器擴充功能出現在市場中，對資產安全構成威脅。
+🔗 https://thehackernews.com/2026/01/malicious-chrome-extension-steals-mexc.html
+📝 摘要：該程式偽裝成合法的交易輔助工具，實際目的是攔截 MEXC 交易所的 API 金鑰以實現非法資金轉移。
+
+🔥 🎓 線上研討會：保護代理式 AI 避免 MCP 與工具存取導致的 API 金鑰擴散
+📅 事件背景：隨著代理式 AI（Agentic AI）普及，企業面臨新型態的影子 API 管理風險。
+🔗 https://thehackernews.com/2026/01/webinar-t-from-mcps-and-tool-access-to.html
+📝 摘要：本研討會將探討如何有效管理 AI 代理人的權限，並防止敏感的 API 金鑰在自動化流程中遭到濫用。
+
+🔥 ☁️ 新型 Linux 進階惡意軟體 VoidLink 鎖定雲端與容器環境
+📅 事件背景：研究人員發現專門針對現代基礎設施設計的 Linux 惡意軟體 VoidLink。
+🔗 https://thehackernews.com/2026/01/new-advanced-linux-voidlink-malware.html
+📝 摘要：該威脅具備高度隱蔽性，專注於攻擊雲端伺服器與容器化環境，能實現持久化感染與跨系統擴張。
+
+🔥 🧠 我們應如何看待 2025 年攻擊者利用 AI 的手法與教訓？
+📅 事件背景：資安專家對 2025 年間 AI 被武器化的趨勢進行深度回顧與分析。
+🔗 https://thehackernews.com/2026/01/what-should-we-learn-from-how-attackers.html
+📝 摘要：報告指出駭客利用生成式 AI 顯著提升了社交工程的精準度與惡意程式的開發效率，企業必須更新防禦策略。
+
+🔥 🛠️ ServiceNow 修復 AI 平台嚴重漏洞，防止未經授權的身分冒用
+📅 事件背景：ServiceNow 緊急發布安全更新，修復其 AI 平台中可能導致權限提升的重大瑕疵。
+🔗 https://thehackernews.com/2026/01/servicenow-patches-critical-ai-platform.html
+📝 摘要：該漏洞允許未經驗證的攻擊者偽裝成其他合法使用者，進而獲取組織內部的管理權限或讀取機密資料。
+
+🔥 👾 新型惡意活動透過多階段 Windows 攻擊管道散播 Remcos RAT
+📅 事件背景：一場鎖定 Windows 平台的複雜攻擊正積極散佈遠端存取木馬 Remcos。
+🔗 https://thehackernews.com/2026/01/new-malware-campaign-delivers-remcos.html
+📝 摘要：攻擊者利用多層次的載入器規避傳統安控軟體的偵測，最終在受害者機器上執行遠端監控與數據竊取。
+
+🔥 🚩 CISA 警告 Gogs 漏洞已遭積極利用，恐導致遠端程式碼執行
+📅 事件背景：美國 CISA 將 Gogs Git 服務的一個關鍵漏洞加入其已知遭積極利用的漏洞清單。
+🔗 https://thehackernews.com/2026/01/cisa-warns-of-active-exploitation-of.html
+📝 摘要：該漏洞可能導致未授權的程式碼執行，官方強烈建議企業立即檢查並更新所有受影響的服務實體。
+==============================
+
+==============================
+[2026-01-14 18:24:28] SENT:
+⚠️ 內容生成失敗 (已達重試上限)。
+==============================

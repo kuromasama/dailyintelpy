@@ -42,7 +42,7 @@ jobs:
           git commit -m "💰 Finance: Auto Update Logs & Portfolio" || echo "No changes to commit"
           
           # 4. 拉取最新變更 (使用 Rebase 防止分叉)
-          git pull origin HEAD --no-rebase
+          git pull --rebase -X theirs origin HEAD
           
           # 5. 推送
           git push

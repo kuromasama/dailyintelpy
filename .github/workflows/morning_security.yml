@@ -36,5 +36,5 @@ jobs:
           git add portfolio.json *.log *.md
           git commit -m "🛡️ Security: Auto Update Logs" || echo "No changes to commit"
           
-          git pull origin HEAD --no-rebase
+          git pull --rebase -X theirs origin HEAD
           git push

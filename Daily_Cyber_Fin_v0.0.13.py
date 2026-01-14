@@ -359,6 +359,9 @@ def run_finance_mode(pf_data, mode="finance"):
     
     market_open = is_market_open()
     tech_lines = []
+
+    total_market_value = 0
+    total_cost = 0
     
     if market_open:
         for code in {**holdings, **watchlist}:

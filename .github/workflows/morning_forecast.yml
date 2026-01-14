@@ -4,6 +4,8 @@ on:
    - cron: '43 0 * * *' # 台灣 08:43
   #- cron: '20 4 * * *' # 台灣 12:05 (測試用)
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   run_job:
     runs-on: ubuntu-latest

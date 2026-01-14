@@ -20,10 +20,20 @@ jobs:
           TG_BOT_TOKEN_FIN: ${{ secrets.TG_BOT_TOKEN_FIN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: python Daily_Cyber_Fin_v0.0.13.py --mode morning
-      - name: Commit
-        # 雖然這個 Bot 沒存檔，但為了保險起見保持一致邏輯
+      - name: Commit and Push
         run: |
           git config --global user.name "Action Bot"
           git config --global user.email "bot@github.com"
+          
+          # 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
+          # 這樣才能包含 portfolio.json 和 *_tg.log
+          git add .
+          
+          # 提交 (如果沒變更就跳過)
+          git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
+          
+          # 拉取雲端更新 (Rebase)
           git pull --rebase origin main
-          # 這裡通常不需要 push，除非有改檔，保持這樣即可
+          
+          # 推送
+          git push

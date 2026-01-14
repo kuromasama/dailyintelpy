@@ -1,0 +1,146 @@
+2026-01-14T04:34:15.6116661Z ##[group]Run git config --global user.name "Action Bot"
+git config --global user.name "Action Bot"
+git config --global user.email "bot@github.com"
+
+# 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
+# 這樣才能包含 portfolio.json 和 *_tg.log
+git add .
+
+# 提交 (如果沒變更就跳過)
+git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
+
+# 拉取雲端更新 (Rebase)
+git pull --rebase origin main
+
+# 推送
+git push
+shell: /usr/bin/bash -e {0}
+env:
+  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
+  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
+  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
+[fix/finance-and-permission fd62f3f] 🤖 Auto Update: Logs, Portfolio & TG Records
+ 2 files changed, 80 insertions(+)
+From https://github.com/kuromasama/dailyintelpy
+ * branch            main       -> FETCH_HEAD
+ * [new branch]      main       -> origin/main
+Auto-merging .github/workflows/evening_finance.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/evening_finance.yml
+Auto-merging .github/workflows/morning_forecast.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_forecast.yml
+Auto-merging .github/workflows/morning_security.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_security.yml
+Auto-merging security_log.md
+CONFLICT (add/add): Merge conflict in security_log.md
+Auto-merging security_tg.log
+CONFLICT (add/add): Merge conflict in security_tg.log
+Rebasing (1/2)
+error: could not apply 452db34... Fix: Init finance variables globally & Add Write permissions to YAML
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply 452db34... # Fix: Init finance variables globally & Add Write permissions to YAML
+Process completed with exit code 1.
+
+2026-01-14T04:34:03.9315992Z ##[group]Run git config --global user.name "Action Bot"
+git config --global user.name "Action Bot"
+git config --global user.email "bot@github.com"
+
+# 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
+# 這樣才能包含 portfolio.json 和 *_tg.log
+git add .
+
+# 提交 (如果沒變更就跳過)
+git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
+
+# 拉取雲端更新 (Rebase)
+git pull --rebase origin main
+
+# 推送
+git push
+shell: /usr/bin/bash -e {0}
+env:
+  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
+  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
+  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
+[fix/finance-and-permission dc6113a] 🤖 Auto Update: Logs, Portfolio & TG Records
+ 1 file changed, 57 insertions(+)
+From https://github.com/kuromasama/dailyintelpy
+ * branch            main       -> FETCH_HEAD
+ * [new branch]      main       -> origin/main
+Auto-merging .github/workflows/evening_finance.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/evening_finance.yml
+Auto-merging .github/workflows/morning_forecast.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_forecast.yml
+Auto-merging .github/workflows/morning_security.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_security.yml
+Auto-merging security_log.md
+CONFLICT (add/add): Merge conflict in security_log.md
+Auto-merging security_tg.log
+CONFLICT (add/add): Merge conflict in security_tg.log
+Rebasing (1/2)
+error: could not apply 452db34... Fix: Init finance variables globally & Add Write permissions to YAML
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply 452db34... # Fix: Init finance variables globally & Add Write permissions to YAML
+Process completed with exit code 1.
+
+2026-01-14T04:34:03.9315992Z ##[group]Run git config --global user.name "Action Bot"
+git config --global user.name "Action Bot"
+git config --global user.email "bot@github.com"
+
+# 👇 關鍵修改：把 "." (所有檔案) 都加入，不只是 log.md
+# 這樣才能包含 portfolio.json 和 *_tg.log
+git add .
+
+# 提交 (如果沒變更就跳過)
+git commit -m "🤖 Auto Update: Logs, Portfolio & TG Records" || echo "No changes"
+
+# 拉取雲端更新 (Rebase)
+git pull --rebase origin main
+
+# 推送
+git push
+shell: /usr/bin/bash -e {0}
+env:
+  pythonLocation: /opt/hostedtoolcache/Python/3.10.19/x64
+  PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib/pkgconfig
+  Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.10.19/x64
+  LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.10.19/x64/lib
+[fix/finance-and-permission dc6113a] 🤖 Auto Update: Logs, Portfolio & TG Records
+ 1 file changed, 57 insertions(+)
+From https://github.com/kuromasama/dailyintelpy
+ * branch            main       -> FETCH_HEAD
+ * [new branch]      main       -> origin/main
+Auto-merging .github/workflows/evening_finance.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/evening_finance.yml
+Auto-merging .github/workflows/morning_forecast.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_forecast.yml
+Auto-merging .github/workflows/morning_security.yml
+CONFLICT (add/add): Merge conflict in .github/workflows/morning_security.yml
+Auto-merging security_log.md
+CONFLICT (add/add): Merge conflict in security_log.md
+Auto-merging security_tg.log
+CONFLICT (add/add): Merge conflict in security_tg.log
+Rebasing (1/2)
+error: could not apply 452db34... Fix: Init finance variables globally & Add Write permissions to YAML
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply 452db34... # Fix: Init finance variables globally & Add Write permissions to YAML
+Process completed with exit code 1.

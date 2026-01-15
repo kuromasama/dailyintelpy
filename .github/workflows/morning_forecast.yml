@@ -1,7 +1,7 @@
 name: 📈 Morning Forecast
 on:
   schedule:
-    - cron: '43 23* * *' # 台灣 07:43
+    - cron: '43 23 * * *' # 台灣 07:43
   workflow_dispatch:
 
 permissions:

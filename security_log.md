@@ -1,3 +1,121 @@
+# 🛡️ 資安戰情白皮書 (2026/01/16)
+
+此文件專為 **AI 知識庫 (NotebookLM)** 訓練設計，旨在提供高度結構化、技術導向且具備前瞻性的資安情報。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年初的威脅態勢顯示，資安攻防戰場已全面轉移至 **「工作流安全 (Workflow Security)」** 與 **「供應鏈完整性 (Supply Chain Integrity)」**。
+
+*   **戰略轉移**：傳統的「模型安全 (Model Security)」已不足以應對當前威脅。企業必須將重點放在 AI 代理 (AI Agents) 與數據工作流的銜接點。
+*   **雲端配置失當依舊是致命傷**：如 AWS CodeBuild 的案例，微小的配置錯誤即可導致整個 GitHub 儲存庫暴露，這顯示了 CI/CD 管道自動化審查的迫切性。
+*   **邊緣設備與關鍵基礎設施**：電信巨頭（如 Verizon）的軟體問題導致全國性癱瘓，以及 Palo Alto 防火牆的 DoS 漏洞，提醒我們基礎網路層的韌性 (Resilience) 依然脆弱。
+*   **建議方向**：CISO 應推動 **「零信任工作流 (Zero Trust Workflows)」**，並捨棄過時的 SOC 指標（如單純追求縮短 MTTR 而忽視根因分析），轉向自動化響應與 AI 驅動的預測性防禦。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 標題 (中英對照) | 威脅等級 | 關鍵詞 |
+| :--- | :--- | :--- | :--- |
+| 01 | AWS CodeBuild 配置錯誤暴露 GitHub 儲存庫 (AWS CodeBuild Misconfiguration Exposed GitHub Repos) | 🔴 高 | 供應鏈攻擊, CI/CD, IAM |
+| 02 | WordPress Modular DS 外掛嚴重漏洞遭積極利用 (Critical WordPress Modular DS Plugin Flaw Actively Exploited) | 🔴 高 | 權限提升, 外掛安全, 殭屍網路 |
+| 03 | Microsoft Copilot 單擊數據外洩「重新提示」攻擊 (Reprompt Attack on Microsoft Copilot) | 🟠 中高 | AI 提示注入, 數據外洩, LLM 安全 |
+| 04 | ThreatsDay 快報：AI 語音複製、Wi-Fi 殺死開關與 PLC 漏洞 (AI Voice Cloning, Wi-Fi Kill Switch, PLC Vulns) | 🟠 中 | 多樣化攻擊, 語音詐騙, 工控安全 |
+| 05 | 模型安全是錯誤框架：真正的風險在於工作流安全 (Model Security Is the Wrong Frame – The Real Risk Is Workflow Security) | 💡 戰略 | 架構設計, AI 管道, 風險管理 |
+| 06 | 2026 年摧毀 SOC MTTR 的 4 個過時習慣 (4 Outdated Habits Destroying Your SOC's MTTR in 2026) | 💡 管理 | SOC 優化, 響應效率, 自動化 |
+| 07 | 微軟法律行動摧毀 RedVDS 網路犯罪基礎設施 (Microsoft Legal Action Disrupts RedVDS Infrastructure) | 🔵 防禦成功 | 法律追緝, 欺詐打擊, 基礎設施瓦解 |
+| 08 | Palo Alto 修復 GlobalProtect 無需登錄即可崩潰的 DoS 漏洞 (Palo Alto Fixes GlobalProtect DoS Flaw) | 🟠 中高 | 防火牆, 拒絕服務攻擊, Pre-auth |
+| 09 | Verizon 將全國性斷網歸咎於「軟體問題」(Verizon blames nationwide outage on a "software issue") | 🟡 中 | 系統韌性, 軟體故障, 關鍵基礎設施 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 01. AWS CodeBuild 供應鏈暴露
+*   **🔍 技術原理**：研究人員發現 AWS CodeBuild 在處理 GitHub 連結時，若未正確配置 IAM 角色或使用了過度寬鬆的 OAuth 權限，攻擊者可透過掃描特定配置模式，獲取暫時性的憑證或存取受保護的原始碼儲存庫。
+*   **⚔️ 攻擊向量**：攻擊者利用掃描工具尋找公開的 CodeBuild 專案元數據，發現其關聯的 GitHub Token 權限過大，進而橫向移動至企業內部儲存庫。
+*   **🛡️ 防禦緩解**：實施最小權限原則 (PoLP) 給予 IAM 角色；使用 AWS Secrets Manager 管理 GitHub Token，而非直接寫在環境變數中；啟用 CodeBuild 的 VPC 隔離模式。
+*   **🧠 名詞定義**：**CI/CD Pipeline** (持續整合/持續部署管道)，是軟體開發的自動化流程，常成為供應鏈攻擊的核心目標。
+
+### 02. WordPress Modular DS 權限提升漏洞
+*   **🔍 技術原理**：該插件在處理用戶請求時未能正確驗證身份權限 (Authentication Bypass)，允許未經授權的遠端攻擊者透過發送特定的惡意 HTTP 請求，將自己的帳號權限提升至管理員 (Admin)。
+*   **⚔️ 攻擊向量**：利用大規模掃描器尋找安裝此插件的網站，注入管理員帳號後，進一步上傳 WebShell 以控制伺服器。
+*   **🛡️ 防禦緩解**：立即更新至最新版本；停用不必要的插件；安裝 WAF (Web Application Firewall) 阻斷可疑的 PHP 請求。
+*   **🧠 名詞定義**：**Privilege Escalation** (權限提升)，攻擊者從低權限用戶轉變為系統管理員的過程。
+
+### 03. Microsoft Copilot "Reprompt" 攻擊
+*   **🔍 技術原理**：這是一種新型的間接提示注入 (Indirect Prompt Injection)。攻擊者在文件中埋入隱形指令，當 Copilot 讀取該文件時，指令會強迫 Copilot 向用戶發出偽造的登入或確認請求（即 Reprompt），誘導用戶點擊。
+*   **⚔️ 攻擊向量**：用戶打開一份看似正常的電子郵件或 Word 文件，Copilot 摘要時觸發隱藏指令，彈出「Session 過期，請點擊此處重新登入」的連結，該連結會將 OAuth Token 傳送至攻擊者伺服器。
+*   **🛡️ 防禦緩解**：強化 LLM 對指令與數據的隔離 (Instruction-Data Segregation)；限制 Copilot 存取外部不明連結的能力。
+*   **🧠 名詞定義**：**Indirect Prompt Injection**，透過外部數據源（如網頁、文件）操縱 AI 輸出的攻擊方式。
+
+### 04. AI 語音複製與工控 (PLC) 漏洞 (ThreatsDay)
+*   **🔍 技術原理**：AI 語音複製技術現已能透過 3 秒樣本達成 95% 相似度。PLC (可程式邏輯控制器) 漏洞則涉及通訊協定缺陷，允許未授權指令執行。
+*   **⚔️ 攻擊向量**：針對財務人員進行語音社交工程；針對工廠設施利用 Wi-Fi Kill Switch 中斷感應器回報。
+*   **🛡️ 防禦緩解**：實施多因素認證 (MFA) 且包含實體金鑰；對工控網路實施實體隔離 (Air-gap)。
+*   **🧠 名詞定義**：**PLC (Programmable Logic Controller)**，用於工業自動化控制的核心設備。
+
+### 05. 工作流安全 (Workflow Security) 重新定義
+*   **🔍 技術原理**：資安界開始認識到，AI 模型的權重 (Weights) 本身難以被「駭」，但模型串接的 RAG 資料庫、API 呼叫與自動化 Agent 流程卻充滿漏洞。
+*   **⚔️ 攻擊向量**：毒化 RAG (檢索增強生成) 的資料源，導致 AI 給出錯誤的安全建議或執行惡意腳本。
+*   **🛡️ 防禦緩解**：對 AI 的所有輸入輸出進行審查 (Guardrails)；在 API 調用層級實施細粒度的訪問控制。
+*   **🧠 名詞定義**：**RAG (Retrieval-Augmented Generation)**，讓 AI 在回答前先從外部數據庫搜尋資訊的技術。
+
+### 06. SOC MTTR 的過時習慣
+*   **🔍 技術原理**：許多 SOC 仍專注於減少「平均響應時間 (MTTR)」，導致一線分析員為了結案而忽視深度溯源 (Root Cause Analysis)，反而留下了後門。
+*   **⚔️ 攻擊向量**：攻擊者利用「快閃式」攻擊誘發大量警報，使 SOC 忙於處置表層威脅而忽略其背後的隱蔽數據竊取。
+*   **🛡️ 防禦緩解**：引入 AI 自動化分流；將績效指標從「速度」轉向「威脅涵蓋範圍」與「阻斷成效」。
+*   **🧠 名詞定義**：**MTTR (Mean Time To Respond)**，衡量資安團隊從發現威脅到處置完成的平均時間。
+
+### 07. RedVDS 基礎設施瓦解案
+*   **🔍 技術原理**：RedVDS 是一個專門為網路犯罪提供彈性伺服器、防彈主機 (Bulletproof Hosting) 的服務商。微軟透過法律途徑獲取法院命令，接管其域名與 IP 指向。
+*   **⚔️ 攻擊向量**：該基礎設施被用於託管釣魚網站、分發惡意軟體及操作詐騙機器人。
+*   **🛡️ 防禦緩解**：公私部門協作 (Public-Private Partnership)；利用法律武器從根源摧毀經濟激勵。
+*   **🧠 名詞定義**：**Bulletproof Hosting**，無視投訴且拒絕配合執法的代管服務，常被駭客利用。
+
+### 08. Palo Alto GlobalProtect DoS 漏洞
+*   **🔍 技術原理**：在 GlobalProtect 的身分驗證前階段 (Pre-authentication)，處理特定畸形封包的程式邏輯存在溢出或死循環錯誤。
+*   **⚔️ 攻擊向量**：攻擊者無需任何帳號密碼，只需向 VPN 閘道發送大量特製封包，即可造成防火牆服務崩潰，導致全公司網路中斷。
+*   **🛡️ 防禦緩解**：立即應用 Palo Alto 釋出的官方補丁；限制管理介面僅對內部 IP 開放。
+*   **🧠 名詞定義**：**DoS (Denial of Service)**，旨在使目標系統無法提供正常服務的攻擊。
+
+### 09. Verizon 全國性斷網事件
+*   **🔍 技術原理**：並非外部駭客攻擊，而是由於內部軟體更新過程中，路由配置或核心交換邏輯出現錯誤，導致信令網 (Signaling Network) 過載。
+*   **⚔️ 攻擊向量**：此為「內部錯誤」導致的自我損害，反映了 DevOps 流程中缺乏足夠的負載測試與金絲雀發布 (Canary Deployment)。
+*   **🛡️ 防禦緩解**：加強 CI/CD 中的自動化測試；建立快速回滾 (Rollback) 機制。
+*   **🧠 名詞定義**：**Outage**，系統因故無法運作的停機時間。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 代理的連鎖反應攻擊**：未來將出現針對多個 AI Agent 協作流的「邏輯炸彈」，攻擊一個 Agent 可能導致整個企業決策鏈崩潰。
+2.  **供應鏈攻擊深度化**：駭客將不再只修改代碼，而是修改構建環境（Build Environment）本身，讓編譯出來的軟體自帶後門但原始碼查無異樣。
+3.  **語音與影像欺詐規模化**：隨著 Deepfake 技術民主化，針對高層主管的「虛擬綁架」或「虛擬匯款要求」將成為 2026 年企業保險的主要理賠項。
+4.  **監管合規自動化**：隨著威脅增加，各國將強制要求 AI 系統具備「數位黑盒子」，用於攻擊後的取證分析。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [AWS CodeBuild Misconfiguration - The Hacker News](https://thehackernews.com/2026/01/aws-codebuild-misconfiguration-exposed.html)
+*   [WordPress Modular DS Plugin Flaw - The Hacker News](https://thehackernews.com/2026/01/critical-wordpress-modular-ds-plugin.html)
+*   [Microsoft Copilot Reprompt Attack - The Hacker News](https://thehackernews.com/2026/01/researchers-reveal-reprompt-attack.html)
+*   [ThreatsDay Bulletin - The Hacker News](https://thehackernews.com/2026/01/threatsday-bulletin-ai-voice-cloning.html)
+*   [Workflow Security vs. Model Security - The Hacker News](https://thehackernews.com/2026/01/model-security-is-wrong-frame-real-risk.html)
+*   [4 Outdated SOC Habits - The Hacker News](https://thehackernews.com/2026/01/4-outdated-habits-destroying-your-socs.html)
+*   [RedVDS Infrastructure Disruption - The Hacker News](https://thehackernews.com/2026/01/microsoft-legal-action-disrupts-redvds.html)
+*   [Palo Alto GlobalProtect Fixes - The Hacker News](https://thehackernews.com/2026/01/palo-alto-fixes-globalprotect-dos-flaw.html)
+*   [Modular DS WordPress Hack - BleepingComputer](https://www.bleepingcomputer.com/news/security/hackers-exploit-modular-ds-wordpress-plugin-flaw-for-admin-access/)
+*   [Verizon Nationwide Outage - BleepingComputer](https://www.bleepingcomputer.com/news/mobile/verizon-blames-nationwide-outage-on-a-software-issue/)
+
+---
+*文件編製單位：資安戰情研究小組 (CSIRT-2026)*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/01/14)
 
 這是一份針對當前全球資安威脅的深度分析報告，旨在提供給資安決策者（CISO）、系統架構師及技術人員作為防禦策略與 AI 知識庫訓練之用。

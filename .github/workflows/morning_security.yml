@@ -1,7 +1,7 @@
 name: 🛡️ Morning Security
 on:
   schedule:
-    - cron: '37 0 * * *' # 台灣 08:37
+    - cron: '07 21 * * *' # 台灣 05:07
   workflow_dispatch:
 
 permissions:

@@ -115,7 +115,11 @@
       "https://feeds.feedburner.com/TheHackersNews",
       "https://www.bleepingcomputer.com/feed/",
       "https://www.ithome.com.tw/rss",
-      "https://www.cisa.gov/uscert/ncas/alerts.xml"
+      "https://www.cisa.gov/uscert/ncas/alerts.xml",
+      "https://www.twcert.org.tw/tw/rss-cp-104-1.xml",
+      "https://googleprojectzero.blogspot.com/feeds/posts/default",
+      "https://redcanary.com/feed/",
+      "https://www.mandiant.com/resources/blog/rss.xml"
     ],
     "rss_finance_tw": [
       "https://news.google.com/rss/search?q=台股+when:1d&hl=zh-TW&gl=TW&ceid=TW:zh-Hant",

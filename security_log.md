@@ -1,3 +1,92 @@
+# 🛡️ 資安戰情白皮書 (2026/01/19)
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+作為首席資訊安全官（CISO）或資安架構師，當前觀測到的 2026 年初資安態勢呈現出顯著的「雙向極化」趨勢：
+
+1.  **基礎設施的穩定性回歸**：Microsoft 發布的帶外（OOB）更新顯示，即使在雲端優先的時代，底層作業系統與雲端桌面（Cloud PC）的兼容性與穩定性依然是業務持續性（BCP）的命脈。
+2.  **供應鏈與開發環境的高風險**：AWS 儲存庫的設定疏漏提醒我們，資安防禦必須深入 CI/CD 流水線的每一個環節，公開原始碼的治理已非選配。
+3.  **雲端主權由「物理層」轉向「治理層」**：IBM 的 Sovereign Core 標誌著企業不再僅滿足於資料落地（Data Residency），而是追求在運作期間（Runtime）的完整主控與稽核，這將是未來金融與政府單位的合規標配。
+4.  **瀏覽器 AI 化的安全邊界模糊**：Google Chrome 導入 Gemini 並開放關閉在地端 AI 偵測，顯示出隱私保護與智慧防禦之間的拉鋸。
+
+**戰略建議**：企業應立即審視雲端 CI/CD 設定，並針對 AI 瀏覽器擴充功能的導入制定專屬的隱私與資料外洩防護（DLP）方針。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 專案 | 標題 (中/英) | 來源 / 關鍵字 |
+| :--- | :--- | :--- |
+| 01 | **Microsoft 發布帶外更新修正關機與 Cloud PC 錯誤** <br> Microsoft releases OOB Windows updates to fix shutdown, Cloud PC bugs | 穩定性 / 帶外更新 (OOB) |
+| 02 | **CIRO 證實資料外洩，影響 75 萬名加拿大投資者** <br> CIRO confirms data breach exposed info on 750,000 Canadian investors | 資料外洩 / 金融合規 |
+| 03 | **Google Chrome 測試 Gemini 驅動之 AI 「技能」** <br> Google Chrome tests Gemini-powered AI "Skills" | 瀏覽器安全 / 生成式 AI |
+| 04 | **Google Chrome 現允許關閉用於詐騙偵測的地端 AI 模型** <br> Google Chrome now lets you turn off on-device AI model powering scam detection | 隱私權 / 地端 AI (On-device) |
+| 05 | **雲端主權不只資料落地，IBM 推 Sovereign Core 強調運作期間治理** <br> IBM Sovereign Core: Beyond Data Residency to Runtime Governance | 雲端主權 / 邊界稽核 |
+| 06 | **四個 AWS 維護的公開儲存庫因設定疏漏，一度可能遭接管** <br> Four AWS-maintained public repositories once at risk of takeover | 供應鏈安全 / GitHub Actions |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 01. Microsoft OOB 更新技術剖析
+*   **🔍 技術原理**：微軟本次發布的是「帶外更新」（Out-of-Band），這是不在每個月固定補丁星期二（Patch Tuesday）發布的緊急更新。主要針對 Windows 10/11 核心組件在處理特定關機指令序列時的崩潰邏輯，以及 Cloud PC (Windows 365) 連線協定中的競爭條件（Race Condition）進行修復。
+*   **⚔️ 攻擊向量**：雖然主要為 Bug 修復，但若不更新，攻擊者或惡意腳本可利用 Cloud PC 的連線漏洞進行拒絕服務攻擊（DoS），導致遠端桌面服務掛掉，迫使企業營運中斷。
+*   **🛡️ 防禦緩解**：系統管理員應優先於測試環境部署 KB 系列更新，確認不會影響 LOB（營運單位）應用程式後，立即對所有 Cloud PC 端點進行強制推播。
+*   **🧠 名詞定義**：**OOB (Out-of-Band)** 指非例行性、針對特定嚴重問題緊急釋出的軟體補丁。
+
+### 02. CIRO 加拿大投資者資料外洩案
+*   **🔍 技術原理**：這是一宗涉及大量 PII（個人識別資訊）的歷史資料外洩。根據調查，攻擊者可能利用了 CIRO 內部系統或第三方合作夥伴的安全漏洞，非法存取了包含姓名、帳號資訊及交易紀錄的資料庫。
+*   **⚔️ 攻擊向量**：常見管道包括未經授權的 API 存取、弱登入憑證或 SQL 注入。外洩資料後續會被用於精準型網路釣魚（Spear Phishing）或身份竊取。
+*   **🛡️ 防禦緩解**：實施靜態資料加密（Encryption at Rest）與動態資料遮蔽（Data Masking）。金融機構應導入「零信任」存取控制，確保即使內部系統被入侵，單一憑證也無法導出 75 萬筆資料。
+*   **🧠 名詞定義**：**PII (Personally Identifiable Information)** 任何可以直接或間接識別個人身份的數據。
+
+### 03. Google Chrome Gemini AI 「技能」演進
+*   **🔍 技術原理**：Google 將 Gemini 多模態模型整合至瀏覽器側欄。透過 AI 「Skills」，瀏覽器能理解網頁 DOM 結構，執行如「摘要」、「數據提取」或「自動填表」等複雜操作。
+*   **⚔️ 攻擊向量**：**提示注入攻擊（Prompt Injection）**。惡意網頁可能在隱藏文字中嵌入指令，當用戶點擊 AI 摘要時，指令誘使 AI 將用戶的瀏覽紀錄或 Cookie 傳送到攻擊者伺服器。
+*   **🛡️ 防禦緩解**：限制 AI 技能對敏感資訊（如密碼欄位）的存取權限，並對 AI 產出的指令進行沙箱化處理。
+*   **🧠 名詞定義**：**Multimodal AI** 能夠同時處理文字、圖像、程式碼等多種輸入形式的 AI 模型。
+
+### 04. Chrome 地端 AI 詐騙偵測開關
+*   **🔍 技術原理**：Chrome 內建了一個輕量化的地端機器學習模型（如 TensorFlow Lite），在資料不回傳雲端的前提下，即時分析網頁特徵以識別詐騙。
+*   **⚔️ 攻擊向量**：若使用者關閉此功能，其防禦門檻將退回傳統的黑名單（Safe Browsing API）模式。攻擊者可利用「零日詐騙網址」（Zero-day URLs），在黑名單更新前完成收割。
+*   **🛡️ 防禦緩解**：建議企業透過 GPO（群組原則）強制開啟此功能，並在邊界防火牆強化針對新註冊網域（NRD）的阻擋規則。
+*   **🧠 名詞定義**：**On-device AI** 在使用者本地設備執行運算而非雲端，旨在提升效能與隱私。
+
+### 05. IBM Sovereign Core 雲端主權架構
+*   **🔍 技術原理**：IBM 提出的架構核心在於「機密運算」（Confidential Computing）。它不僅確保資料在儲存時加密，更利用硬體層級的 TEE（可信執行環境）確保資料在處理過程中（Data-in-use）對雲端服務供應商也是不可見的。
+*   **⚔️ 攻擊向量**：傳統雲端環境中，具備高權限的雲端管理員（Provider Admin）理論上可存取用戶記憶體快照。Sovereign Core 旨在封鎖此類特權路徑。
+*   **🛡️ 防禦緩解**：採用硬體信任根（Root of Trust）與數位主權稽核日誌，確保所有運作期間的變動皆可溯源。
+*   **🧠 名詞定義**：**Confidential Computing** 一種保護使用中數據的技術，通常透過硬體隔離的 enclave 實現。
+
+### 06. AWS 公開儲存庫建置疏漏
+*   **🔍 技術原理**：開發者在 GitHub 儲存庫中設定了不當的 Build Triggers。例如，當外部人員對 Repo 發起 Fork 並提交 Pull Request 時，自動執行的腳本可能具有寫入權限，或會洩漏存放在 Action Secrets 中的 AWS Access Keys。
+*   **⚔️ 攻擊向量**：**供應鏈接管（Supply Chain Takeover）**。攻擊者提交惡意程式碼觸發建置，獲取環境變數後，進而滲透 AWS 生產環境或向公開軟體包植入後門。
+*   **🛡️ 防禦緩解**：嚴格限制 CI/CD 工具的權限範圍（Least Privilege）。在 GitHub Actions 中，針對來自 Fork 的 PR 應預設禁用 Secrets 存取。
+*   **🧠 名詞定義**：**CI/CD Pipeline** 持續整合與持續部署，是自動化軟體交付的核心流程。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 賦能的「寄生式」瀏覽器攻擊**：隨著 Chrome 將 AI 技能化，未來會出現專門針對瀏覽器內建 AI 的 Payload。攻擊者不再攻擊作業系統，而是透過竄改網頁元數據（Metadata）來操縱 AI 的判斷，達成自動化的資料竊取。
+2.  **主權雲端成為監管標配**：各國對於資料主權的要求將從「儲存地點」演進為「運算控制權」。IBM 的解決方案預示了未來大型企業將必須證明其雲端環境具備「抗供應商監控」的能力。
+3.  **基礎設施補丁的自動化競爭**：Microsoft 的 OOB 更新頻率增加，顯示軟體複雜度已超越人力維護極限。未來企業若不具備「自動化補丁管理與回滾」機制，將無法應對 24 小時內出現的緊急零日威脅。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Microsoft OOB Windows Updates - BleepingComputer](https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-oob-windows-updates-to-fix-shutdown-cloud-pc-bugs/)
+*   [CIRO Data Breach Report - BleepingComputer](https://www.bleepingcomputer.com/news/security/ciro-data-breach-last-year-exposed-info-on-750-000-canadian-investors/)
+*   [Google Chrome Gemini AI Skills - BleepingComputer](https://www.bleepingcomputer.com/news/artificial-intelligence/google-chrome-tests-gemini-powered-ai-skills/)
+*   [Chrome On-device AI Scam Detection - BleepingComputer](https://www.bleepingcomputer.com/news/artificial-intelligence/google-chrome-now-lets-you-turn-off-on-device-ai-model-powering-scam-detection/)
+*   [IBM Sovereign Core 雲端主權分析 - iThome](https://www.ithome.com.tw/news/173422)
+*   [AWS 公開儲存庫安全風險 - iThome](https://www.ithome.com.tw/news/173418)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/01/18)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在深入分析當前全球資安威脅態勢，提供企業級決策支援與技術攻防細節。

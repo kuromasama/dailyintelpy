@@ -1,3 +1,109 @@
+# 🛡️ 資安戰情白皮書 (2026/01/26)
+
+本報告專為 AI 知識庫（NotebookLM）設計，旨在提供高度結構化、具技術深度的資安情報，供 CISO、架構師及資安研究員進行風險評估與決策參考。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+當前全球資安態勢呈現「供應鏈脆弱性」與「地緣政治對抗」雙重升溫的趨勢。本週觀測到的核心風險點在於：
+1.  **端點防禦升級**：密碼管理龍頭 1Password 強化了身分驗證層的預防機制，顯示「身分識別」已成為對抗網路釣魚的最前線。
+2.  **軟體供應鏈穩定性危機**：微軟 1 月更新引發的系統崩潰與 Outlook 凍結，暴露出企業在部署「關鍵補丁」時面臨的可用性風險與修補平衡難題。
+3.  **國家級毀滅性攻擊**：Sandworm 對波蘭能源系統的 Wiper 攻擊未遂，預示著針對關鍵基礎設施（CNI）的破壞性攻擊頻率將在 2026 年持續攀升。
+4.  **雲端算力轉型**：AWS 推出極大規模記憶體實例，提醒架構師在追求高效能的同時，必須重新審視大數據環境下的資料加密與記憶體隔離技術（Memory Isolation）。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中) | Original Title (Eng) | 分類 |
+| :--- | :--- | :--- |
+| **1Password 為疑似釣魚網站增加彈出式警告** | 1Password adds pop-up warnings for suspected phishing sites | 身份安全 / 社交工程 |
+| **微軟調查 Windows 11 在 1 月更新後的開機故障問題** | Microsoft investigates Windows 11 boot failures after January updates | 系統穩定性 / 補丁管理 |
+| **微軟發布緊急 OOB 更新以修復 Outlook 凍結問題** | Microsoft releases emergency OOB update to fix Outlook freezes | 應用程式安全 / 業務連續性 |
+| **Sandworm 駭客組織與波蘭能源系統 Wiper 攻擊未遂事件有關** | Sandworm hackers linked to failed wiper attack on Poland’s energy systems | 國家級威脅 / 關鍵基礎設施 |
+| **AWS 擴增記憶體最佳化執行個體（Xeon 6 / 6TB RAM）** | AWS expands memory-optimized instances with Xeon 6 and 6TB RAM | 雲端架構 / 硬體安全 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ 案例一：1Password 智慧型釣魚主動防禦
+*   **🔍 技術原理**：1Password 瀏覽器擴充功能現在會針對 DOM (Document Object Model) 中的欄位屬性進行啟發式分析。當使用者在未被記住的網域上嘗試填入憑證時，系統會比對已知釣魚特徵庫及網站憑證的聲譽評分。
+*   **⚔️ 攻擊向量**：**同形異義字攻擊 (Homograph Attack)** 或 **子網域接管 (Subdomain Takeover)**。攻擊者利用外觀相似的 URL 誘導使用者自動填入主密碼或祕鑰。
+*   **🛡️ 防禦緩解**：
+    1. 實施 **FIDO2/WebAuthn** 硬體密鑰以抵禦即時釣魚。
+    2. 強化終端使用者的 **資安意識培訓 (Security Awareness Training)**。
+*   **🧠 名詞定義**：
+    *   **啟發式分析 (Heuristic Analysis)**：一種基於特徵與行為規律，而非單一簽名（Signature）的偵測技術。
+
+---
+
+### 🛡️ 案例二：Windows 11 補丁導致的引導失敗
+*   **🔍 技術原理**：微軟 2026 年 1 月的累積更新 (Cumulative Update) 疑似與特定的 **UEFI Secure Boot** 變數或第三方磁碟加密驅動程式衝突，導致 Windows Boot Manager 在載入核心 (Kernel) 前崩潰。
+*   **⚔️ 攻擊向量**：雖然非直接攻擊，但攻擊者可利用系統不穩定的「維護模式」繞過部分安全限制。
+*   **🛡️ 防禦緩解**：
+    1. 採用 **WSUS (Windows Server Update Services)** 進行分階段部署 (Phased Deployment)。
+    2. 在生產環境部署前，利用 **虛擬桌面環境 (VDI)** 進行回歸測試。
+*   **🧠 名詞定義**：
+    *   **OOB (Out-of-Band) 更新**：在常規「週二補丁日」之外發布的緊急修補程式。
+
+---
+
+### 🛡️ 案例三：Outlook 凍結與緊急 OOB 修復
+*   **🔍 技術原理**：該問題涉及 Outlook 在處理 **MAPI Over HTTP** 通訊協定時的死結 (Deadlock) 現象，當客戶端嘗試同步特定的行事曆中繼資料時，UI 執行緒會陷入無限等待。
+*   **⚔️ 攻擊向量**：**拒絕服務 (DoS)**。惡意行為者可發送特製的格式化郵件或行事曆邀請，誘發客戶端崩潰。
+*   **🛡️ 防禦緩解**：
+    1. 立即套用微軟發布的 **KB 號碼緊急更新**。
+    2. 臨時改用 **OWA (Outlook Web Access)** 以維持通訊。
+*   **🧠 名詞定義**：
+    *   **MAPI (Messaging Application Programming Interface)**：微軟提供的郵件與協作系統核心通訊協定。
+
+---
+
+### 🛡️ 案例四：Sandworm 對波蘭能源網的 Wiper 攻擊
+*   **🔍 技術原理**：Sandworm (俄羅斯 GRU 組織) 使用了專門設計的 **Wiper Malware (資料抹除軟體)**，旨在破壞電力調配系統的 **HMI (Human Machine Interface)** 介面與伺服器的 **MBR (Master Boot Record)**。
+*   **⚔️ 攻擊向量**：**離地攻擊 (Living-off-the-Land)** 與 **橫向移動 (Lateral Movement)**。利用受損的 VPN 憑證進入能源公司的 OT 網路。
+*   **🛡️ 防禦緩解**：
+    1. 嚴格執行 **IT/OT 網路隔離 (Air-gapping)**。
+    2. 部署 **端點偵測與響應 (EDR)** 並啟用針對毀滅性行為的行為分析。
+*   **🧠 名詞定義**：
+    *   **Wiper Malware**：不以贖金為目的，純粹以徹底破壞硬體檔案系統或韌體為目標的惡意程式。
+
+---
+
+### 🛡️ 案例五：AWS Xeon 6 高記憶體執行個體安全
+*   **🔍 技術原理**：AWS R8g 家族採用 Xeon 6 處理器，提供高達 6TB 的記憶體空間。這意味著單一實例記憶體中可能存放巨量敏感資料，對記憶體取證與隔離提出挑戰。
+*   **⚔️ 攻擊向量**：**Rowhammer 攻擊** 或 **冷啟動攻擊 (Cold Boot Attack)**。當記憶體密度極高時，位元翻轉的風險與記憶體溢位利用的價值同步提升。
+*   **🛡️ 防禦緩解**：
+    1. 啟用 **Nitro System** 的硬體加密隔離。
+    2. 實施 **透明記憶體加密 (TME)** 確保數據在 RAM 中以加密形式存在。
+*   **🧠 名詞定義**：
+    *   **ECC Memory (Error Correction Code)**：能自動偵測並修正記憶體位元錯誤的技術，是防止資料損壞的第一道防線。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **針對性 Wiper 攻擊常態化**：預計 2026 年底前，地緣政治熱區的國家級組織將更頻繁地將 Wiper 偽裝成勒索軟體，以干擾基礎設施運作為核心目標。
+2.  **身分驗證層的 AI 對抗**：隨著 1Password 等工具強化防禦，攻擊者將利用 **Deepfake 音訊與影像** 繞過多因素驗證 (MFA) 中的人為確認環節。
+3.  **大規模補丁帶來的業務風險**：軟體複雜度提升將導致「修補程式本身即故障」的頻率增加，企業需要更強大的 **災難復原 (DR)** 與 **自動化回滾機制**。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [1Password adds pop-up warnings for suspected phishing sites](https://www.bleepingcomputer.com/news/security/1password-adds-pop-up-warnings-for-suspected-phishing-sites/)
+*   [Microsoft investigates Windows 11 boot failures after January updates](https://www.bleepingcomputer.com/news/microsoft/microsoft-investigates-windows-11-boot-failures-after-january-updates/)
+*   [Microsoft releases emergency OOB update to fix Outlook freezes](https://www.bleepingcomputer.com/news/microsoft/microsoft-releases-emergency-oob-update-to-fix-outlook-freezes/)
+*   [Sandworm hackers linked to failed wiper attack on Poland’s energy systems](https://www.bleepingcomputer.com/news/security/sandworm-hackers-linked-to-failed-wiper-attack-on-polands-energy-systems/)
+*   [採用 Xeon 6、提供 6TB 記憶體，AWS 擴增記憶體最佳執行個體](https://www.ithome.com.tw/review/173571)
+
+---
+**文件結尾**
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/01/25)
 
 本文件專為 AI 知識庫訓練與資安決策支援設計，詳盡記錄 2026 年 1 月下旬之全球資安動態、技術細節及戰術演進。

@@ -1,3 +1,90 @@
+# 🛡️ 資安戰情白皮書 (2026/01/30)
+
+這份白皮書旨在整合 2026 年 1 月底的全球資安脈動，特別針對 AI 基礎設施暴露、供應鏈安全漏洞、能源關鍵基礎設施（OT）弱點及大規模代理網路打擊行動進行深度解析。此文件經優化，適合導入 **NotebookLM** 作為企業資安決策與技術訓練之核心知識庫。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+進入 2026 年，資安威脅態勢呈現**「AI 基礎設施暴露化」**與**「供應鏈攻擊精準化」**兩大特徵。
+
+*   **影子 AI (Shadow AI) 的代價：** 隨著 Ollama 等開源 AI 工具的普及，全球超過 17.5 萬台服務器因不當配置暴露於公網，成為駭客獲取企業機敏模型與數據的新入口。
+*   **關鍵基礎設施的隱憂：** 能源系統的 IT/OT 融合導致安全缺口擴大，傳統「氣隙 (Air-Gap)」防禦已失效，漏洞修補速度遠低於威脅演進。
+*   **戰略建議：** CISO 應從「邊界防禦」轉向「韌性架構」，優先處理供應鏈服務（如 SolarWinds、SonicWall）的關鍵漏洞，並針對開發者環境（如遊戲 Mod 誘餌）實施更嚴格的端點偵測與回應 (EDR) 策略。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (繁體中文) | Title (Original English) | 威脅等級 |
+| :--- | :--- | :--- |
+| **研究人員發現 130 國共 17.5 萬個 Ollama AI 伺服器暴露於公網** | Researchers Find 175,000 Publicly Exposed Ollama AI Servers Across 130 Countries | 🔴 高 |
+| **ThreatsDay 快報：新 RCE、暗網破獲、內核錯誤及 25+ 則故事** | ThreatsDay Bulletin: New RCEs, Darknet Busts, Kernel Bugs & 25+ More Stories | 🟡 中 |
+| **針對 100+ 能源系統之調查揭示關鍵 OT 資安缺口** | Survey of 100+ Energy Systems Reveals Critical OT Cybersecurity Gaps | 🔴 高 |
+| **2026 年 CISO 需做出哪三個決定以防止停機風險** | 3 Decisions CISOs Need to Make to Prevent Downtime Risk in 2026 | 🔵 戰略 |
+| **SolarWinds 修復四個具有遠端代碼執行與身份驗證繞過的 Web Help Desk 嚴重漏洞** | SolarWinds Fixes Four Critical Web Help Desk Flaws With Unauthenticated RCE and Auth Bypass | 🔴 高 |
+| **Google 瓦解 IPIDEA：全球最大住宅代理網路之一** | Google Disrupts IPIDEA — One of the World’s Largest Residential Proxy Networks | 🟢 趨勢 |
+| **Google 打擊由惡意軟體驅動的 IPIDEA 住宅代理網路** | Google disrupts IPIDEA residential proxy networks fueled by malware | 🟢 趨勢 |
+| **Match Group 資料外洩：波及 Hinge, Tinder, OkCupid 與 Match** | Match Group breach exposes data from Hinge, Tinder, OkCupid, and Match | 🔴 高 |
+| **Marquis 將勒索軟體攻擊歸咎於 SonicWall 雲端備份遭入侵** | Marquis blames ransomware breach on SonicWall cloud backup hack | 🟠 中 |
+| **這不是小孩的遊戲：從 Roblox 模組到入侵您的公司** | Not a Kids Game: From Roblox Mod to Compromising Your Company | 🟠 中 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Ollama AI 服務器暴露風險分析
+*   **🔍 技術原理**：Ollama 是一款廣受歡迎的本地大型語言模型 (LLM) 執行工具。其預設監聽連接埠為 `11434`。許多使用者在部署時未設定防火牆規則或身份驗證機制，導致 API 接口直接暴露於網際網路。
+*   **⚔️ 攻擊向量**：駭客可透過 API 直接存取模型、竄改提示詞 (Prompt Injection)，甚至利用模型加載過程中的反序列化漏洞進行主機控制。
+*   **🛡️ 防禦緩解**：將 Ollama 綁定至 `localhost` (127.0.0.1)，或部署於 VPN/私有網路後方；實施反向代理並增加 OAuth2 身份驗證。
+*   **🧠 名詞定義**：**API Exposure** 指內部系統的應用程式介面在無防護情況下被外部網路存取。
+
+### 3.2 能源系統 (OT) 資安缺口調查
+*   **🔍 技術原理**：運營技術 (OT) 系統（如 PLC, SCADA）通常使用 Modbus 或 DNP3 等老舊協定，這些協定設計之初未考慮加密與認證。
+*   **⚔️ 攻擊向量**：攻擊者透過 IT 網路橫向移動至 OT 網路，利用未經授權的控制指令關閉電力斷路器或修改化學配方。
+*   **🛡️ 防禦緩解**：實施網路微隔離 (Micro-segmentation)，部署 OT 專用的入侵偵測系統 (IDS)，並對關鍵指令進行多因素驗證。
+*   **🧠 名詞定義**：**OT (Operational Technology)** 指監控或改變實體設備（如閥門、發電機）狀態的硬體與軟體。
+
+### 3.3 SolarWinds Web Help Desk (WHD) 關鍵漏洞
+*   **🔍 技術原理**：漏洞涉及 Java 反序列化與硬編碼加密密鑰，允許攻擊者在不需要任何有效憑證的情況下與系統交互。
+*   **⚔️ 攻擊向量**：**Unauthenticated RCE (遠端代碼執行)**。攻擊者發送惡意建構的數據包到 WHD 服務器，即可直接以最高權限執行任意系統指令。
+*   **🛡️ 防禦緩解**：立即更新至最新補丁版本；限制 WHD 的對外連線。
+*   **🧠 名詞定義**：**Auth Bypass** 指攻擊者繞過正常的身份驗證檢查，獲得系統存取權。
+
+### 3.4 IPIDEA 住宅代理網路解構
+*   **🔍 技術原理**：IPIDEA 利用惡意軟體（如隱藏在免費軟體中的代理插件）將普通用戶的電腦變為代理節點。
+*   **⚔️ 攻擊向量**：駭客租用這些「住宅 IP」發動填塞攻擊 (Credential Stuffing) 或網路爬蟲，因為住宅 IP 較不容易被電商或銀行網站封鎖。
+*   **🛡️ 防禦緩解**：建立威脅情報餵送 (Threat Intel Feed)，封鎖已知的惡意代理節點來源。
+*   **🧠 名詞定義**：**Residential Proxy** 指利用家用網路設備的真實 IP 地址進行轉發的服務，常被用於隱藏真實攻擊來源。
+
+### 3.5 Roblox 模組導致的企業入侵
+*   **🔍 技術原理**：攻擊者在流行的遊戲平台（如 Roblox）上發布惡意 Mod 或插件，其中夾帶資訊竊取程式 (Infostealer)。
+*   **⚔️ 攻擊向量**：員工或其子女在公司電腦或 BYOD 設備下載 Mod，駭客竊取瀏覽器中儲存的企業雲端服務 (SaaS) 憑證。
+*   **🛡️ 防禦緩解**：加強端點管理，禁止安裝未經授權的軟體；推行零信任存取，確保存取企業資源時需檢查設備合規性。
+*   **🧠 名詞定義**：**Infostealer** 專門用於竊取密碼、Cookie 和加密貨幣錢包的惡意軟體。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 基礎設施成為新獵場 (2026-2027)**：隨著企業導入更多開源 AI 模型，針對模型供應鏈（如惡意權重文件）與執行環境（如 Ollama, LocalAI）的自動化掃描將大幅增加。
+2.  **軟體供應鏈備份鏈路攻擊**：Marquis/SonicWall 事件顯示，備份系統正成為勒索軟體的「優先攻擊點」。如果備份被鎖，恢復將變得不可能。
+3.  **遊戲化滲透攻擊**：駭客將更多地利用非工作相關的軟體（遊戲、社交 Mod）作為進入企業網路的跳板，利用「居家辦公」導致的安全防護模糊區。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Ollama AI Servers Exposure (The Hacker News)](https://thehackernews.com/2026/01/researchers-find-175000-publicly.html)
+*   [ThreatsDay Bulletin (The Hacker News)](https://thehackernews.com/2026/01/threatsday-bulletin-new-rces-darknet.html)
+*   [OT Cybersecurity Gaps in Energy (The Hacker News)](https://thehackernews.com/2026/01/survey-of-100-energy-systems-reveals.html)
+*   [SolarWinds Web Help Desk Flaws (The Hacker News)](https://thehackernews.com/2026/01/solarwinds-fixes-four-critical-web-help.html)
+*   [Google Disrupts IPIDEA Proxy Network (BleepingComputer)](https://www.bleepingcomputer.com/news/security/google-disrupts-ipidea-residential-proxy-networks-fueled-by-malware/)
+*   [Match Group Data Breach (BleepingComputer)](https://www.bleepingcomputer.com/news/security/match-group-breach-exposes-data-from-hinge-tinder-okcupid-and-match/)
+*   [Roblox Mod Malware Analysis (BleepingComputer)](https://www.bleepingcomputer.com/news/security/not-a-kids-game-from-roblox-mod-to-compromising-your-company/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/01/29)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練設計，彙整 2026 年 1 月末期全球重大資安事件，涵蓋供應鏈攻擊、關鍵基礎設施威脅、AI 驅動的防禦革新及高危漏洞分析。

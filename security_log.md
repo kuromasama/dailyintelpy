@@ -1,3 +1,131 @@
+# 🛡️ 資安戰情白皮書 (2026/01/31)
+
+本報告旨在為企業決策者、資安架構師與技術專家提供最新、最深度的全球威脅情資。本文件特別針對 **NotebookLM** 知識庫進行優化，包含高密度的技術細節與防禦邏輯，確保 AI 在檢索時能獲取最精確的上下文。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢與戰略建議：**
+進入 2026 年，網路威脅已演變為「全鏈路滲透」與「地緣政治驅動」的高壓局面。本週的情資揭示了三大趨勢：
+1.  **瀏覽器生態系統成為特權入口**：攻擊者不再僅鎖定作業系統，而是透過 Chrome 擴充功能直接劫持 AI 助手（如 ChatGPT）的 Session 與電商流量。
+2.  **邊緣設備與關鍵基礎設施的持續淪陷**：Ivanti 與 SmarterMail 的高危漏洞再次證明，暴露在網路邊界的設備（Edge Devices）是勒索軟體與 APT 組織的首選突破點。
+3.  **地緣政治下的 AI 智慧財產權爭奪**：隨著 AI 算力與算法成為國力象徵，內部威脅（Insider Threat）與針對 AI 基礎架構的間諜活動顯著增加。
+
+**戰略建議**：
+*   **零信任瀏覽策略**：限制企業瀏覽器擴充功能之權限，對敏感 AI 工具實施多因素驗證（MFA）與 Token 生命週期管理。
+*   **遺留協議（Legacy Protocol）清理**：隨微軟停用 NTLM，企業應加速向 Kerberos 與現代驗證協議遷移。
+*   **供應鏈與內部威脅審查**：強化研發環境的 DLP（資料防外洩）監控，特別是針對模型權重與訓練原始碼。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 編號 | 威脅標題 (中/英對照) | 來源平台 | 威脅類別 |
+| :--- | :--- | :--- | :--- |
+| 01 | 研究人員揭露 Chrome 擴充功能濫用推薦連結並竊取 ChatGPT 存取權 <br> (Researchers Uncover Chrome Extensions Abusing Affiliate Links and Stealing ChatGPT Access) | The Hacker News | 帳號劫持 / 廣告詐欺 |
+| 02 | 中國背景 UAT-8099 組織利用 BadIIS SEO 惡意軟體攻擊亞洲 IIS 伺服器 <br> (China-Linked UAT-8099 Targets IIS Servers in Asia with BadIIS SEO Malware) | The Hacker News | APT 攻擊 / SEO 中毒 |
+| 03 | 識別證、位元與勒索：網路勒索的新手法 <br> (Badges, Bytes and Blackmail) | The Hacker News | 實體資安 / 勒索軟體 |
+| 04 | 前 Google 工程師因替中國初創公司竊取 2,000 項 AI 商業機密被判刑 <br> (Ex-Google Engineer Convicted for Stealing 2,000 AI Trade Secrets for China Startup) | The Hacker News | 內部威脅 / IP 竊取 |
+| 05 | SmarterMail 修復 CVSS 9.3 分的高危未授權 RCE 漏洞 <br> (SmarterMail Fixes Critical Unauthenticated RCE Flaw with CVSS 9.3 Score) | The Hacker News | 邊界設備漏洞 / RCE |
+| 06 | 兩個正在被積極利用的 Ivanti EPMM 零日 RCE 漏洞已發布修補程式 <br> (Two Ivanti EPMM Zero-Day RCE Flaws Actively Exploited, Security Updates Released) | The Hacker News | 零日漏洞 / 基礎設施 |
+| 07 | 去年加密貨幣錢包接收了破紀錄的 1,580 億美元非法資金 <br> (Crypto wallets received a record $158 billion in illicit funds last year) | Bleeping Computer | 加密貨幣犯罪 / 洗錢 |
+| 08 | 微軟將在未來 Windows 版本中預設禁用 NTLM 驗證 <br> (Microsoft to disable NTLM by default in future Windows releases) | Bleeping Computer | 系統安全 / 協議汰換 |
+| 09 | 「Switch Off 行動」摧毀了多個大型盜版電視串流服務 <br> (Operation Switch Off dismantles major pirate TV streaming services) | Bleeping Computer | 法律制裁 / 數位版權 |
+| 10 | 微軟修復 Outlook 阻礙加密郵件訪問的錯誤 <br> (Microsoft fixes Outlook bug blocking access to encrypted emails) | Bleeping Computer | 通訊安全 / Bug Fix |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 1. Chrome 擴充功能與 AI Session 劫持
+*   **🔍 技術原理**：攻擊者利用擴充功能的 `webRequest` API 攔截 HTTP 請求，注入特定的 Affiliate ID（推薦代碼）來獲取佣金，同時透過注入 JavaScript 存取 `localStorage` 或 `Cookies` 以獲取 ChatGPT 等 AI 平台的 API Key 或 Session Token。
+*   **⚔️ 攻擊向量**：惡意廣告（Malvertising）誘導用戶下載「提升生產力」的擴充功能，利用權限過大（Over-privileged）的清單文件（Manifest V3 繞過嘗試）進行背景作業。
+*   **🛡️ 防禦緩解**：實施瀏覽器「封閉式列表」（Allowlisting），禁止非必要擴充功能；監控 Endpoint 的擴充功能目錄路徑（如 `%LocalAppData%\Google\Chrome\User Data`）。
+*   **🧠 名詞定義**：**Affiliate Fraud (推薦詐欺)**：利用自動化手段替換流量中的合作夥伴代碼以竊取推廣佣金。
+
+### 2. UAT-8099 與 BadIIS 惡意軟體
+*   **🔍 技術原理**：BadIIS 是一種 IIS 模組擴展（ISAPI Filter/Module），它會攔截傳入的 HTTP 流量。當偵測到搜尋引擎爬蟲（如 Googlebot）時，會回傳經過 SEO 優化的惡意內容；當偵測到一般用戶時，則進行重新導向或植入 Web Shell。
+*   **⚔️ 攻擊向量**：利用 IIS 伺服器上的已知弱點（如未修補的 RCE 或不安全的組態）獲得系統權限後，安裝惡意 DLL 作為 IIS 模組。
+*   **🛡️ 防禦緩解**：使用 `AppCmd.exe` 檢查所有已加載的 IIS 模組；定期掃描 `%SystemRoot%\system32\inetsrv\config\applicationHost.config` 是否有異常條目。
+*   **🧠 名詞定義**：**SEO Poisoning (搜尋引擎最佳化中毒)**：操縱搜尋結果使惡意網站排名提高，誘騙用戶點擊。
+
+### 3. Badges, Bytes and Blackmail (物理與數位融合勒索)
+*   **🔍 技術原理**：攻擊者不再僅依賴軟體漏洞，而是透過社交工程或黑市購買員工的物理識別證（Badges）資訊，結合物聯網設備漏洞（如門禁系統）進入機房，實施硬體級別的植入（Hardware Implant）或直接竊取硬碟。
+*   **⚔️ 攻擊向量**：實體進入（Physical Tailgating）+ 近場通訊（NFC）複製 + 網路勒索。
+*   **🛡️ 防禦緩解**：對機房實施多因子認證（如生物辨識 + 實體卡）；對伺服器硬碟實施全磁碟加密（FDE）與 TPM 驗證。
+*   **🧠 名詞定義**：**Tailgating (尾隨進入)**：未經授權人員跟隨授權人員進入受限區域。
+
+### 4. 前 Google 工程師 AI 機密竊取案
+*   **🔍 技術原理**：利用合法存取權限，將大量機密文件（如 TPU 2.0/3.0 設計圖、集群管理系統原始碼）下載至本地，並透過個人雲端硬碟轉移。
+*   **⚔️ 攻擊向量**：**Privileged User Abuse (特權用戶濫用)**。利用其作為核心開發者的身分，繞過常規的監控閾值。
+*   **🛡️ 防禦緩解**：建立「行為基線」（User Behavior Analytics, UBA），偵測大規模、非典型時間的資料下載行為；對 AI 模型權重實施分段加密存取。
+*   **🧠 名詞定義**：**IP Theft (智慧財產權竊取)**：非法獲取受版權或專利保護的技術資訊。
+
+### 5. SmarterMail 未授權 RCE (CVSS 9.3)
+*   **🔍 技術原理**：漏洞存在於處理特定 API 請求的邏輯中，攻擊者可發送特製的 JSON/XML Payload 觸發反序列化漏洞或邏輯錯誤，從而在伺服器上以高權限執行任意代碼。
+*   **⚔️ 攻擊向量**：對外暴露的 Web 管理介面（預設埠 9998/443）。
+*   **🛡️ 防禦緩解**：立即升級至 SmarterMail 最新修補版本；在 Web 應用程式防火牆 (WAF) 配置過濾規則，阻斷異常的 API 請求模式。
+*   **🧠 名詞定義**：**RCE (Remote Code Execution)**：遠端程式碼執行，駭客能遠端下令受害電腦執行任何指令。
+
+### 6. Ivanti EPMM 零日漏洞 (Active Exploitation)
+*   **🔍 技術原理**：涉及 Endpoint Manager Mobile (EPMM) 的路徑遍歷與 API 鑑權繞過。攻擊者可藉此寫入惡意檔案至 Web 目錄並執行。
+*   **⚔️ 攻擊向量**：針對 MDM (行動裝置管理) 伺服器進行大規模掃描，利用未修補的 API 端點。
+*   **🛡️ 防禦緩解**：檢查系統日誌中是否存在 `/mif/services/` 路徑的異常存取紀錄；實施外部存取 IP 的地理圍欄限制。
+*   **🧠 名詞定義**：**Zero-Day (零日漏洞)**：廠商尚未得知或尚未發布修正補丁的漏洞。
+
+### 7. 加密貨幣 1,580 億美元非法資金流動
+*   **🔍 技術原理**：利用「混幣器」(Mixers)、去中心化交易所 (DEX) 與「跨鏈橋」(Cross-chain bridges) 模糊資金來源，最終流入洗錢管道。2025 年的增長主要來自勒索軟體支付與受制裁實體的規避。
+*   **⚔️ 攻擊向量**：勒索軟體贖金、北韓駭客組織 (Lazarus Group) 的交易所劫持。
+*   **🛡️ 防禦緩解**：企業應避免支付贖金，並與具備區塊鏈分析能力的資安公司合作，追蹤資金去向。
+*   **🧠 名詞定義**：**Tumbling/Mixing (混幣)**：將多個用戶的資金混合以隱藏原始路徑的技術。
+
+### 8. 微軟預設禁用 NTLM
+*   **🔍 技術原理**：NTLM 容易受到 Relay 攻擊與離線暴力破解（因為其使用弱加密哈希）。微軟推動轉向 Kerberos，並引入「Negotiate」機制來替代 NTLM。
+*   **⚔️ 攻擊向量**：NTLM Relay (中繼攻擊)，攻擊者攔截驗證請求並將其轉發至另一台伺服器以獲取存取權。
+*   **🛡️ 防禦緩解**：啟用 LDAP 簽名、SMB 簽署；部署「Windows 11 24H2」及後續版本以實施預設禁用規則。
+*   **🧠 名詞定義**：**NTLM (New Technology LAN Manager)**：微軟舊式的身分驗證協議套件。
+
+### 9. Operation Switch Off 盜版查緝行動
+*   **🔍 技術原理**：跨國執法部門透過技術手段定位 IPTV 的來源伺服器（Origin Servers），並攔截 M3U8 流媒體傳送軌跡，最終實施物理機房扣押。
+*   **⚔️ 攻擊向量**：非正規影視平台常挾帶惡意廣告或挖礦腳本。
+*   **🛡️ 防禦緩解**：企業應使用 DNS 過濾系統（如 Cisco Umbrella）阻斷員工訪問盜版串流網域。
+*   **🧠 名詞定義**：**IPTV (Internet Protocol Television)**：透過網際網路通訊協定傳送的電視內容。
+
+### 10. Outlook 加密郵件 Bug 修復
+*   **🔍 技術原理**：該 Bug 導致 Outlook 在處理 S/MIME 加密或 Microsoft Purview 訊息加密時出現邏輯衝突，導致授權用戶無法解密查看內容，造成業務中斷。
+*   **⚔️ 攻擊向量**：無（此為可用性漏洞）。
+*   **🛡️ 防禦緩解**：更新 Office 365 渠道至最新版本。
+*   **🧠 名詞定義**：**S/MIME**：一種用於加密與數位簽署電子郵件的標準協議。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 蠕蟲 (AI Worms) 的崛起**：預計 2026 年底將出現能透過 LLM 提示詞注入（Prompt Injection）進行自我複製的惡意軟體，專門在企業內部的 RAG 知識庫中傳播。
+2.  **後 NTLM 時代的認證攻擊**：隨著 NTLM 禁用，攻擊者將轉向針對 Kerberos 的「Golden Ticket」或「Silver Ticket」攻擊，以及針對 OAuth 2.0 Device Flow 的新型釣魚。
+3.  **邊緣運算 (Edge Computing) 漏洞化**：隨著更多企業將運算移往邊緣（IoT/5G 閘道），這些設備將成為 APT 組織的首選跳板，且因為硬體碎片化，修補將異常困難。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Chrome Extensions Abusing Affiliate Links and Stealing ChatGPT Access](https://thehackernews.com/2026/01/researchers-uncover-chrome-extensions.html)
+*   [UAT-8099 Targets IIS Servers with BadIIS](https://thehackernews.com/2026/01/china-linked-uat-8099-targets-iis.html)
+*   [Badges, Bytes and Blackmail Analysis](https://thehackernews.com/2026/01/badges-bytes-and-blackmail.html)
+*   [Ex-Google Engineer Conviction Details](https://thehackernews.com/2026/01/ex-google-engineer-convicted-for.html)
+*   [SmarterMail RCE Fix (CVSS 9.3)](https://thehackernews.com/2026/01/smartermail-fixes-critical.html)
+*   [Ivanti EPMM Zero-Day Advisory](https://thehackernews.com/2026/01/two-ivanti-epmm-zero-day-rce-flaws.html)
+*   [Crypto Illicit Funds Record - Bleeping Computer](https://www.bleepingcomputer.com/news/security/crypto-wallets-received-a-record-158-billion-in-illicit-funds-last-year/)
+*   [Microsoft NTLM Deprecation Roadmap](https://www.bleepingcomputer.com/news/microsoft/microsoft-to-disable-ntlm-by-default-in-future-windows-releases/)
+*   [Operation Switch Off Takedown](https://www.bleepingcomputer.com/news/legal/operation-switch-off-dismantles-major-pirate-tv-streaming-services/)
+*   [Outlook Encryption Fixes](https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-outlook-bug-blocking-access-to-encrypted-emails/)
+
+---
+*白皮書結束。本文件由資安專家團隊編撰，旨在提升組織韌性。*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/01/30)
 
 這份白皮書旨在整合 2026 年 1 月底的全球資安脈動，特別針對 AI 基礎設施暴露、供應鏈安全漏洞、能源關鍵基礎設施（OT）弱點及大規模代理網路打擊行動進行深度解析。此文件經優化，適合導入 **NotebookLM** 作為企業資安決策與技術訓練之核心知識庫。

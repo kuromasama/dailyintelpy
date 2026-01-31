@@ -1,3 +1,111 @@
+# 🛡️ 資安戰情白皮書 (2026/02/01)
+
+本白皮書旨在分析近期關鍵資安事件，為企業決策者（CISO）與技術專家提供深度的威脅情資、技術拆解及防禦建議。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+進入 2026 年，我們觀察到威脅態勢已從單純的漏洞利用，轉向高度組織化的**「身份生命週期攻擊」**與**「關鍵基礎設施精確打擊」**。
+
+*   **身份驗證已成新邊界：** 以 ShinyHunters 為首的攻擊者展現了極高效率的社交工程技巧，特別是透過語音釣魚（Vishing）繞過多因素驗證（MFA）並濫用單一登入（SSO），這顯示傳統的 MFA 已不足以支撐雲端安全。
+*   **地緣政治觸手延伸：** 伊朗、波蘭與中國相關的資安事件，反映出國家級駭客（State-sponsored actors）針對非營利組織（NGO）、能源設施及 AI 核心技術的持續覬覦。
+*   **戰略建議：** 企業應立即實施**「抗網絡誘騙的多因素驗證 (Phishing-resistant MFA)」**，如 FIDO2/WebAuthn，並針對內部開發者、高權限維運人員強化**「內部人威脅 (Insider Threat)」**監測機制。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 事件標題 (中英對照) | 威脅級別 | 影響範疇 |
+| :--- | :--- | :--- | :--- |
+| 1 | **伊朗關聯 RedKitten 網路行動鎖定人權 NGO 與活動家**<br>Iran-Linked RedKitten Cyber Campaign Targets Human Rights NGOs | 🔴 高 | 地緣政治、間諜活動 |
+| 2 | **Mandiant 發現 ShinyHunters 式語音釣魚攻擊竊取 MFA 滲透 SaaS**<br>Mandiant Finds ShinyHunters-Style Vishing Attacks Stealing MFA | 🔴 高 | 身份識別、雲端安全 |
+| 3 | **波蘭 CERT 詳述超過 30 座風力與太陽能電廠受協同攻擊**<br>CERT Polska Details Coordinated Cyber Attacks on 30+ Wind/Solar Farms | 🟣 極高 | 關鍵基礎設施 (OT) |
+| 4 | **美方定罪前 Google 工程師，其涉及將 AI 技術數據傳往中國**<br>U.S. convicts ex-Google engineer for sending AI tech data to China | 🟠 中高 | 內部威脅、AI 知識產權 |
+| 5 | **雲端儲存支付詐騙氾濫，偽造續訂信件轟炸信箱**<br>Cloud storage payment scam floods inboxes with fake renewals | 🟡 中 | 社交工程、財務詐騙 |
+| 6 | **Mandiant 詳解 ShinyHunters 如何濫用 SSO 竊取雲端數據**<br>Mandiant details how ShinyHunters abuse SSO to steal cloud data | 🔴 高 | SaaS、SSO 配置錯誤 |
+| 7 | **研究員揭露 Instagram 私人檔案照片外洩證據**<br>Researcher reveals evidence of private Instagram profiles leaking photos | 🟠 中 | 隱私保護、API 漏洞 |
+| 8 | **Google 推第二款自研 Arm 處理器 VM，性價比達 x86 平臺兩倍**<br>Google Launches Axion-based Arm VM with 2x Performance/Price | 🔵 資訊 | 雲端架構、硬體安全 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 事件 1：伊朗 RedKitten 鎖定 NGO 行動
+*   **🔍 技術原理：** 利用社交工程建立信任後，發送含有惡意巨集或遠端存取木馬 (RAT) 的文檔，針對人權組織進行長期潛伏與資料搜集。
+*   **⚔️ 攻擊向量：** 魚叉式網路釣魚 (Spear Phishing)、惡意 PDF/Word 附件、假冒通訊軟體。
+*   **🛡️ 防禦緩解：** 禁用不必要的 Office 巨集，部署端點偵測與回應 (EDR) 系統監控異常的子程序啟動（如 PowerShell 從 Word 啟動）。
+*   **🧠 名詞定義：** **RAT (Remote Access Trojan)**：允許攻擊者遠端完全控制受害者電腦的木馬程式。
+
+### 事件 2：ShinyHunters 式語音釣魚 (Vishing)
+*   **🔍 技術原理：** 攻擊者撥打電話給公司員工，偽裝成 IT 支援人員。引導員工存取假冒的登入頁面（AiTM 攻擊），攔截 Session Token 並在員工輸入 MFA 碼時即時中繼利用。
+*   **⚔️ 攻擊向量：** 語音誘導 (Social Engineering)、中間人攻擊 (Adversary-in-the-Middle)。
+*   **🛡️ 防禦緩解：** 強制執行 **FIDO2 實體金鑰**（抗誘騙 MFA），並對客服與 IT 人員進行語音辨識培訓。
+*   **🧠 名詞定義：** **Vishing**：Voice Phishing 的縮寫，利用電話語音進行的釣魚攻擊。
+
+### 事件 3：波蘭能源設施協同攻擊
+*   **🔍 技術原理：** 攻擊者鎖定 OT 網路與控制系統（SCADA），透過未加密的通訊協議或脆弱的遠端連線軟體進入工業控制環境。
+*   **⚔️ 攻擊向量：** 供應鏈攻擊、脆弱的遠端桌面存取 (RDP)、工業協議漏洞利用。
+*   **🛡️ 防禦緩解：** 實施 **IT/OT 網路隔離 (Air-gapping or Micro-segmentation)**，建立異常流量基線監控。
+*   **🧠 名詞定義：** **SCADA**：數據採集與監控系統，用於控制工業生產設備。
+
+### 事件 4：Google 工程師竊取 AI 數據案
+*   **🔍 技術原理：** 利用內部存取權限，將機密代碼或 AI 模型權重下載至私人設備或轉傳至第三方雲端空間。
+*   **⚔️ 攻擊向量：** 內部特權濫用 (Privileged Abuse)、數據外洩 (Data Exfiltration)。
+*   **🛡️ 防禦緩解：** 部署 **DLP (Data Loss Prevention)** 系統，並對下載大量核心代碼庫的行為進行行為審計 (UEBA)。
+*   **🧠 名詞定義：** **Insider Threat**：擁有合法存取權的組織成員，出於惡意或疏忽造成安全損失。
+
+### 事件 5：雲端儲存假續訂詐騙
+*   **🔍 技術原理：** 透過大規模群發電子郵件，模仿知名雲端服務（如 iCloud, OneDrive）的支付過期警告，導向精緻的信用卡資料竊取頁面。
+*   **⚔️ 攻擊向量：** 品牌冒用 (Brand Impersonation)、網址重定向。
+*   **🛡️ 防禦緩解：** 啟用電子郵件安全閘道 (SEG)，檢查 DMARC/SPF/DKIM 設定以過濾偽造網域。
+*   **🧠 名詞定義：** **DMARC**：基於網域的郵件認證、報告和一致性機制，防止電子郵件欺詐。
+
+### 事件 6：ShinyHunters 濫用 SSO 竊取雲端數據
+*   **🔍 技術原理：** 一旦掌握了高權限帳號的 SSO Session，攻擊者會橫向移動至企業所有的 SaaS 應用（如 Slack, GitHub, Salesforce），利用 API 批量導出敏感資料。
+*   **⚔️ 攻擊向量：** 令牌竊取 (Token Theft)、SSO 權限配置錯誤。
+*   **🛡️ 防禦緩解：** 實施**「條件式存取 (Conditional Access)」**，限制僅能在受管理設備及特定 IP 範圍內使用 SSO。
+*   **🧠 名詞定義：** **SSO (Single Sign-On)**：單一登入，允許用戶使用一組憑據存取多個獨立應用。
+
+### 事件 7：Instagram 私人檔案洩漏
+*   **🔍 技術原理：** 透過操縱 API 請求或利用 CDN 緩存漏洞，研究員發現即便帳號設置為私有，其媒體文件 URL 在特定條件下仍可被未授權者存取。
+*   **⚔️ 攻擊向量：** 越權存取漏洞 (BOLA/IDOR)、不安全的直接對象引用。
+*   **🛡️ 防禦緩解：** 對所有 API 回傳對象進行強制的伺服器端權限校驗。
+*   **🧠 名詞定義：** **IDOR**：當應用程式在存取對象時不進行權限驗證，導致攻擊者可存取他人數據。
+
+### 事件 8：Google Axion Arm 處理器 VM
+*   **🔍 技術原理：** 採用 Armv9 架構的自研處理器，除了性價比提升，通常整合了更現代的硬體加密指令集與內存標記技術（MTE）。
+*   **⚔️ 攻擊向量：** 雖然安全性提高，但需防範針對不同 CPU 架構的微架構側信道攻擊 (Side-channel attacks)。
+*   **🛡️ 防禦緩解：** 定期更新作業系統核心 (Kernel) 以獲取最新的硬體緩解補丁。
+*   **🧠 名詞定義：** **Armv9**：Arm 公司的新一代架構，強調 AI 性能與硬體級安全增強。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 技術成為竊密核心：** Google 案件僅是開端。未來一年，針對 AI 模型、權重檔案及訓練數據的間諜活動將大幅增加，模型洩漏將成為新型態的資料外洩 (Data Breach)。
+2.  **抗 MFA 技術將被廣泛採用：** 隨著 ShinyHunters 證明了傳統 MFA 的脆弱性，駭客將開發出更多自動化的 AiTM (中間人) 工具。企業將被迫向 FIDO2 全面轉型。
+3.  **基礎設施的「間接打擊」：** 波蘭電廠案例顯示，攻擊者不一定直接攻擊核心系統，而是透過攻擊邊緣組件（如感測器網關）來達成連鎖反應。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Iran-Linked RedKitten Cyber Campaign](https://thehackernews.com/2026/01/iran-linked-redkitten-cyber-campaign.html)
+*   [Mandiant: ShinyHunters Vishing Attacks](https://thehackernews.com/2026/01/mandiant-finds-shinyhunters-using.html)
+*   [CERT Polska: Cyber Attacks on Wind/Solar Farms](https://thehackernews.com/2026/01/poland-attributes-december-cyber.html)
+*   [U.S. convicts ex-Google engineer for AI tech theft](https://www.bleepingcomputer.com/news/security/us-convicts-ex-google-engineer-for-sending-ai-tech-data-to-china/)
+*   [Cloud storage payment scam floods inboxes](https://www.bleepingcomputer.com/news/security/cloud-storage-payment-scam-floods-inboxes-with-fake-renewals/)
+*   [Mandiant: ShinyHunters abuse SSO for Cloud Data](https://www.bleepingcomputer.com/news/security/mandiant-details-how-shinyhunters-abuse-sso-to-steal-cloud-data/)
+*   [Instagram private profiles leaking photos](https://www.bleepingcomputer.com/news/security/researcher-reveals-evidence-of-private-instagram-profiles-leaking-photos/)
+*   [Google 推第二款自研 Arm 處理器 VM (iThome)](https://www.ithome.com.tw/review/173697)
+
+---
+**文件狀態：** ⚡ 戰情機密 / 用於 AI 知識庫訓練
+**編撰日期：** 2026/02/01
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/01/31)
 
 本報告旨在為企業決策者、資安架構師與技術專家提供最新、最深度的全球威脅情資。本文件特別針對 **NotebookLM** 知識庫進行優化，包含高密度的技術細節與防禦邏輯，確保 AI 在檢索時能獲取最精確的上下文。

@@ -1,3 +1,127 @@
+# 🛡️ 資安戰情白皮書 (2026/02/05)
+
+本白皮書旨在提供 2026 年初全球資安威脅的深度技術分析與防禦建議，針對當前針對性攻擊 (APT)、軟體供應鏈漏洞及新興 AI 模型安全進行全面拆解。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年的威脅版圖中，我們觀察到三個核心轉向：
+1.  **AI 供應鏈的實體化風險**：微軟開發掃描器應對開源權重模型（Open-Weight LLMs）的後門，顯示 AI 模型本身已成為新的惡意代碼載體。
+2.  **分散式基礎設施的惡意化運用**：利用 IPFS (星際檔案系統) 託管惡意載體已成為主流，傳統基於網域名稱（Domain）或 IP 的封鎖機制面臨巨大挑戰。
+3.  **邊緣與自動化工具的破口**：如 n8n 及 SolarWinds 的 RCE 漏洞，反映了企業在追求業務自動化的過程中，其核心協調工具正成為攻擊者的「一站式」跳板。
+
+**戰略建議**：企業應從單純的「邊界防禦」轉向「身分持續觀測（Identity Observability）」與「快速事件決策機制」，並將 AI 模型的完整性校驗納入軟體發展生命週期 (SDLC)。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中/英對照) | 威脅類別 |
+| :--- | :--- |
+| **微軟開發掃描器以檢測開源權重大型語言模型中的後門**<br>Microsoft Develops Scanner to Detect Backdoors in Open-Weight LLMs | AI 模型安全 / 供應鏈 |
+| **DEAD#VAX 惡意軟體行動透過 IPFS 託管的 VHD 釣魚文件部署 AsyncRAT**<br>DEAD#VAX Malware Campaign Deploys AsyncRAT via IPFS-Hosted VHD Phishing Files | 惡意軟體 / 去中心化網路 |
+| **與中國相關的 Amaranth-Dragon 在間諜行動中利用 WinRAR 漏洞**<br>China-Linked Amaranth-Dragon Exploits WinRAR Flaw in Espionage Campaigns | APT 攻擊 / 漏洞利用 |
+| **Orchid Security 為企業應用推出持續身分觀測功能**<br>Orchid Security Introduces Continuous Identity Observability for Enterprise Applications | 身分治理 (IAM/IGA) |
+| **最初的 90 秒：早期決策如何形塑事件響應調查**<br>The First 90 Seconds: How Early Decisions Shape Incident Response Investigations | 事件響應 (IR) / 管理 |
+| **微軟警告 Python 資訊竊取程式透過虛假廣告和安裝程序瞄準 macOS**<br>Microsoft Warns Python Infostealers Target macOS via Fake Ads and Installers | 終端安全 / 資訊竊取 |
+| **Eclipse 基金會強制要求 Open VSX 擴展在發布前進行安全檢查**<br>Eclipse Foundation Mandates Pre-Publish Security Checks for Open VSX Extensions | 開源生態系 / 供應鏈安全 |
+| **CISA 將已遭積極利用的 SolarWinds Web Help Desk RCE 加入 KEV 目錄**<br>CISA Adds Actively Exploited SolarWinds Web Help Desk RCE to KEV Catalog | 漏洞管理 (Vulnerability) |
+| **關鍵 n8n 漏洞披露及公開漏洞利用代碼**<br>Critical n8n flaws disclosed along with public exploits | 自動化工具安全 / RCE |
+| **CISA：VMware ESXi 漏洞現已被利用於勒索軟體攻擊**<br>CISA: VMware ESXi flaw now exploited in ransomware attacks | 虛擬化安全 / 勒索軟體 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 AI 模型安全：Microsoft 權重掃描器
+- **🔍 技術原理**：微軟開發的掃描器主要針對 Open-Weight 模型（如 Llama 3, Mistral 等）的張量權重進行靜態與動態分析。它搜尋是否存在「神經網路觸發器」（Neural Triggers），這些觸發器能在特定輸入下強制模型輸出有害代碼或洩漏訓練數據。
+- **⚔️ 攻擊向量**：攻擊者在 Hugging Face 等平台發布預訓練模型，並在權重中植入特定神經元路徑。當企業下載並微調 (Fine-tuning) 這些模型後，模型會在特定指令下開啟系統後門。
+- **🛡️ 防禦緩解**：
+    1. 使用 **TensorSafe** 等工具校驗權重。
+    2. 對所有下載的開源模型進行沙盒隔離測試。
+- **🧠 名詞定義**：**Open-Weight Models (開源權重模型)** 指提供完整神經網路參數，允許用戶在本地運行的 AI 模型。
+
+### 3.2 去中心化威脅：DEAD#VAX 行動
+- **🔍 技術原理**：利用 IPFS (InterPlanetary File System) 的內容定址特性，將惡意 VHD (虛擬硬碟) 文件碎片化存儲於全球節點，規避了傳統防火牆對特定 URL 的過濾。
+- **⚔️ 攻擊向量**：發送釣魚郵件誘導用戶下載 VHD 文件。掛載 VHD 後，惡意腳本會執行，最終植入 **AsyncRAT** 以獲取遠端控制權。
+- **🛡️ 防禦緩解**：
+    1. 阻斷企業內網對 IPFS Gateways (如 `ipfs.io`) 的直接存取。
+    2. 禁用 macOS/Windows 自動掛載 VHD/ISO 文件的功能。
+- **🧠 名詞定義**：**IPFS** 是一種點對點的分散式文件系統，旨在建立持久且分散的網絡存儲。
+
+### 3.3 APT 間諜活動：Amaranth-Dragon 與 WinRAR
+- **🔍 技術原理**：利用 WinRAR 舊版本漏洞 (如 CVE-2023-38831)，當用戶嘗試點擊壓縮檔內看似無害的文件時，會導致同名資料夾內的隱藏惡意程式被執行。
+- **⚔️ 攻擊向量**：針對特定政府機構發送帶有該漏洞的壓縮附件。
+- **🛡️ 防禦緩解**：
+    1. 強制升級 WinRAR 至最新版本或切換至 Windows 內建的 7z/RAR 支援。
+    2. 部署 EDR 監控 `WinRAR.exe` 產生的異常子進程。
+- **🧠 名詞定義**：**APT (Advanced Persistent Threat)** 指具有國家背景、長期且針對性的進階持續性威脅。
+
+### 3.4 現代身分防禦：Orchid Security 的持續觀測
+- **🔍 技術原理**：超越靜態的 MFA，透過監控 API 調用行為、存取權限的漂移 (Entitlement Drift) 及地理位置異常，建立身分行為基準。
+- **⚔️ 攻擊向量**：繞過 MFA 的 Session Hijacking 或權限提升攻擊。
+- **🛡️ 防禦緩解**：實施 **ITDR (Identity Threat Detection and Response)**，及時撤銷異常 Session。
+- **🧠 名詞定義**：**Identity Observability (身分觀測)** 是指對數位身分全生命週期行為的透明化與即時監控。
+
+### 3.5 事件響應：黃金 90 秒決策
+- **🔍 技術原理**：心理學與運營流程的結合。在檢測到勒索軟體初期，是否立即切斷骨幹網路、隔離關鍵伺服器，將決定損失規模。
+- **⚔️ 攻擊向量**：勒索軟體自動化傳播，數分鐘內即可加密整個網段。
+- **🛡️ 防禦緩解**：建立 **自動化響應劇本 (SOAR Playbooks)**，減少人為猶豫時間。
+
+### 3.6 macOS 平台威脅：Python Infostealers
+- **🔍 技術原理**：利用 Python 編寫跨平台腳本，透過 Google 搜索廣告 (Malvertising) 散布偽裝成正版軟體的安裝包，繞過 macOS Gatekeeper。
+- **⚔️ 攻擊向量**：竊取瀏覽器儲存的密碼、Cookie 以及加密貨幣錢包金鑰。
+- **🛡️ 防禦緩解**：啟用 **MDM (行動裝置管理)** 限制未簽署的應用程序執行。
+
+### 3.7 插件供應鏈：Eclipse Open VSX 新規
+- **🔍 技術原理**：IDE 擴展插件具有極高權限，可讀取原始碼與環境變量。Eclipse 引入自動化掃描機制以偵測惡意代碼片段。
+- **⚔️ 攻擊向量**：惡意插件在發布時隱藏混淆代碼，竊取開發者的 API Keys。
+- **🛡️ 防禦緩解**：開發者應僅從官方、高信譽的市場下載插件，並檢視其權限請求。
+
+### 3.8 關鍵漏洞利用：SolarWinds RCE (CVE-2024-28986)
+- **🔍 技術原理**：該漏洞存在於 Web Help Desk 產品中，源於反序列化缺陷，允許未經身份驗證的遠端攻擊者執行任意命令。
+- **⚔️ 攻擊向量**：直接掃描網際網路暴露的 8081 端口實施攻擊。
+- **🛡️ 防禦緩解**：立即套用 SolarWinds 發布的官方補丁；限制管理介面僅對 VPN 開放。
+- **🧠 名詞定義**：**RCE (Remote Code Execution)** 指攻擊者可從遠端在目標機器上執行任意程式碼。
+
+### 3.9 自動化工具破口：n8n 漏洞
+- **🔍 技術原理**：n8n 作為工作流自動化平台，連接了多個 SaaS 與內部資料庫。披露的漏洞涉及身份驗證繞過與權限提升。
+- **⚔️ 攻擊向量**：利用公開的 Exploit 獲取 n8n 伺服器控制權，進而橫向移動至連接的所有雲端服務（如 AWS, Slack）。
+- **🛡️ 防禦緩解**：對 n8n 實例進行版本審計，禁止對公網開放其管理控制面板。
+
+### 3.10 基礎設施打擊：VMware ESXi 勒索軟體
+- **🔍 技術原理**：攻擊者利用已知的身分認證繞過漏洞 (如 CVE-2024-37085) 獲取 Hypervisor 的 Root 權限。
+- **⚔️ 攻擊向量**：直接在 Hypervisor 層級加密所有虛擬機的 .vmdk 文件，導致所有服務同時中斷。
+- **🛡️ 防禦緩解**：
+    1. 確保 ESXi 主機加入 Active Directory 時使用特定限制權限。
+    2. 強制執行離線備份 (Immutable Backups)。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 後門生態化**：預計 2026 年底將出現專門買賣「已注入後門之 AI 權重」的黑市。
+2.  **IPFS 的隱匿性競賽**：威脅狩獵者將需要更精進的分散式節點追蹤技術來應對 IPFS 與其他 Web3 存儲協議。
+3.  **無人化 IR**：隨著攻擊速度加快，企業將被迫接受由 AI 主導的「自主隔離機制」，而非依賴人類判斷。
+
+---
+
+## 5. 🔗 參考文獻
+
+1. [Microsoft Develops Scanner to Detect Backdoors in Open-Weight LLMs](https://thehackernews.com/2026/02/microsoft-develops-scanner-to-detect.html)
+2. [DEAD#VAX Malware Campaign Deploys AsyncRAT via IPFS-Hosted VHD Phishing Files](https://thehackernews.com/2026/02/deadvax-malware-campaign-deploys.html)
+3. [China-Linked Amaranth-Dragon Exploits WinRAR Flaw in Espionage Campaigns](https://thehackernews.com/2026/02/china-linked-amaranth-dragon-exploits.html)
+4. [Orchid Security Introduces Continuous Identity Observability](https://thehackernews.com/2026/02/orchid-security-introduces-continuous.html)
+5. [The First 90 Seconds: How Early Decisions Shape Incident Response Investigations](https://thehackernews.com/2026/02/the-first-90-seconds-how-early.html)
+6. [Microsoft Warns Python Infostealers Target macOS](https://thehackernews.com/2026/02/microsoft-warns-python-infostealers.html)
+7. [Eclipse Foundation Mandates Pre-Publish Security Checks](https://thehackernews.com/2026/02/eclipse-foundation-mandates-pre-publish.html)
+8. [CISA Adds SolarWinds Web Help Desk RCE to KEV Catalog](https://thehackernews.com/2026/02/cisa-adds-actively-exploited-solarwinds.html)
+9. [Critical n8n flaws disclosed along with public exploits](https://www.bleepingcomputer.com/news/security/critical-n8n-flaws-disclosed-along-with-public-exploits/)
+10. [CISA: VMware ESXi flaw now exploited in ransomware attacks](https://www.bleepingcomputer.com/news/security/cisa-vmware-esxi-flaw-now-exploited-in-ransomware-attacks/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/04)
 
 本文件旨在為資深安全架構師、CISO 及 AI 知識庫（如 NotebookLM）提供高密度的資安威脅分析。本文匯整了 2026 年 2 月初的關鍵資安事件，涵蓋 AI 安全、供應鏈攻擊、國家級駭客活動及雲端基礎設施風險。

@@ -1,3 +1,95 @@
+# 🛡️ 資安戰情白皮書 (2026/02/06)
+
+本文件旨在為企業資安架構師、技術長（CTO）及資安維運中心（SOC）提供深度技術洞察。本文將 2026 年 2 月初發生的重大資安事件進行解構，並將其轉換為可供 AI 知識庫（如 NotebookLM）檢索與學習的高度結構化知識。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年初的威脅態勢顯示出 **「規模化、隱蔽化、自動化」** 的三大特徵。AISURU/Kimwolf 創紀錄的 31.4 Tbps DDoS 攻擊宣告了「超大規模拒絕服務」時代的到來，這對 ISP 與雲端服務商的洗流量能力提出了極限挑戰。同時，我們觀察到攻擊者正將目光轉向 **自動化工作流工具（如 n8n）** 與 **軟體開發環境（GitHub Codespaces）**，利用開發者與維運自動化的信任鏈進行滲透。
+
+**戰略建議：**
+1.  **彈性基礎架構：** 面對 30Tbps+ 的攻擊，企業必須確保具備多層次的 Cloud DDoS 防護與 Anycast 路由冗餘。
+2.  **工作流安全（Workflow Security）：** 嚴格審查低代碼/無代碼工具（Low-code/No-code）的代碼執行權限與輸入驗證。
+3.  **現代化 API 轉型：** 隨著 Microsoft Exchange EWS 的停用，企業應加速向 Microsoft Graph API 遷移，以強化身分認證與授權顆粒度。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中/英) | 關鍵詞 |
+| :--- | :--- |
+| **AISURU/Kimwolf 殭屍網路發動創紀錄 31.4 Tbps DDoS 攻擊**<br>AISURU/Kimwolf Botnet Launches Record-Setting 31.4 Tbps DDoS Attack | DDoS, IoT Botnet, Tbps |
+| **ThreatsDay 簡報：Codespaces RCE、AsyncRAT C2 與 AI 雲端入侵**<br>ThreatsDay Bulletin: Codespaces RCE, AsyncRAT C2, BYOVD Abuse, AI Cloud Intrusions | RCE, Cloud Security, BYOVD |
+| **AI 使用控制採購指南**<br>The Buyer’s Guide to AI Usage Control | AI Governance, DLP, LLM Security |
+| **伊朗 Infy 駭客組織在網路封鎖解除後重啟 C2 伺服器運作**<br>Infy Hackers Resume Operations with New C2 Servers After Iran Internet Blackout Ends | APT, Infy Malware, Geopolitics |
+| **n8n 關鍵漏洞 CVE-2026-25049 允許透過惡意工作流執行系統命令**<br>Critical n8n Flaw CVE-2026-25049 Enables System Command Execution via Malicious Workflows | Supply Chain, Workflow RCE |
+| **惡意 NGINX 配置導致大規模網頁流量劫持**<br>Malicious NGINX Configurations Enable Large-Scale Web Traffic Hijacking Campaign | Traffic Hijacking, NGINX, React2Shell |
+| **西班牙科學部因遭遇入侵聲明而關閉系統**<br>Spain's Ministry of Science shuts down systems after breach claims | Gov Security, Incident Response |
+| **勒索軟體組織利用 ISPsystem 虛擬機進行隱蔽負載交付**<br>Ransomware gang uses ISPsystem VMs for stealthy payload delivery | Ransomware, Virtualization, ISPsystem |
+| **微軟將於 2027 年 4 月關閉 Exchange Online EWS 服務**<br>Microsoft to shut down Exchange Online EWS in April 2027 | Legacy API, Microsoft Graph |
+| **義大利羅馬大學 (La Sapienza) 遭網路攻擊後離線**<br>Italian university La Sapienza goes offline after cyberattack | Academic Security, Ransomware |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### A. AISURU/Kimwolf DDoS 破紀錄攻擊
+*   **🔍 技術原理：** 該攻擊利用了大規模感染的 IoT 設備與伺服器，結合多種放大攻擊技術（如 NTP, DNS, Memcached 放大），產生了驚人的 31.4 Tbps 流量。這不僅是 Layer 4 的洪泛，還包含了複雜的 Layer 7 應用層請求。
+*   **⚔️ 攻擊向量：** 殭屍網路透過漏洞（如 1Day/NDay）或弱口令控制邊緣設備，同步發起 SYN Flood、UDP Reflection 及 HTTPS Flood。
+*   **🛡️ 防禦緩解：** 部署具備 AI 流量識別的清洗中心，使用 BGP Anycast 分散流量負載，並在邊緣實施嚴格的封包檢測（DPI）。
+*   **🧠 名詞定義：** **Tbps (Terabits per second)** 指每秒萬億位元組；**Botnet (殭屍網路)** 是受駭客遠端控制的設備集群。
+
+### B. n8n 工作流 RCE (CVE-2026-25049)
+*   **🔍 技術原理：** n8n 在處理工作流定義時，未對特定節點（Node）中的輸入進行充分過濾，導致攻擊者可以構造特殊的 JSON payload，在伺服器端觸發代碼執行。
+*   **⚔️ 攻擊向量：** 攻擊者誘導管理員導入惡意工作流文件，或利用公開 API 接口提交惡意定義，實現對主機的 RCE。
+*   **🛡️ 防禦緩解：** 升級 n8n 至最新安全版本，限制 n8n 執行環境的容器權限，實施沙箱化（Sandboxing）。
+*   **🧠 名詞定義：** **RCE (Remote Code Execution)** 遠端代碼執行，是危害等級最高的漏洞之一。
+
+### C. NGINX 配置劫持 (React2Shell)
+*   **🔍 技術原理：** 駭客利用特定工具或漏洞修改 NGINX 的 `nginx.conf` 或相關 site 配置，注入 `proxy_pass` 重定向或惡意 Lua 腳本。
+*   **⚔️ 攻擊向量：** 透過供應鏈漏洞或 SSH 弱口令獲取管理員權限後，靜默修改 Web 伺服器配置，將合法用戶引導至釣魚網站。
+*   **🛡️ 防禦緩解：** 使用配置審計工具（如 Gitleaks 或自建腳本）檢查 NGINX 配置完整性，實施主機入侵檢測（HIDS）。
+*   **🧠 名詞定義：** **Traffic Hijacking (流量劫持)** 指非授權地改變網路通訊路徑。
+
+### D. ISPsystem VM 勒索軟體隱匿技術
+*   **🔍 技術原理：** 勒索軟體組織不再直接在實體機運行，而是控制 ISPsystem 虛擬化平台，在受害者環境中創建隱蔽的虛擬機（VM）作為攻擊跳板或加密引擎，躲避宿主機的 EDR 檢測。
+*   **⚔️ 攻擊向量：** 濫用虛擬化管理平台的 API 憑證，自動化部署惡意 VM。
+*   **🛡️ 防禦緩解：** 強化虛擬化管理介面的 MFA 認證，監控異常的 VM 創建活動與跨虛擬機流量。
+*   **🧠 名詞定義：** **BYOVD (Bring Your Own Vulnerable Driver)** 攜帶漏洞驅動攻擊，常用於繞過內核保護。
+
+### E. Infy 駭客組織復甦
+*   **🔍 技術原理：** Infy 是一種高度客製化的間諜軟體（Spyware），具備多層級的 C2 通訊機制。在網路封鎖期間，它進入休眠狀態，待網路恢復後立即更新其 C2 域名。
+*   **⚔️ 攻擊向量：** 主要透過魚叉式釣魚郵件（Spear-phishing）夾帶惡意附件進行滲透。
+*   **🛡️ 防禦緩解：** 阻斷已知的 Infy 指紋（IOCs），加強對伊朗相關 APT 組織的威脅情報監測。
+*   **🧠 名詞定義：** **C2 (Command and Control)** 是攻擊者用來下達指令給受感染系統的伺服器。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **Tbps 攻擊常態化：** 隨著 5G 與高性能 IoT 設備普及，30Tbps 可能只是起點，未來企業需考慮「不可過濾」流量下的業務連續性計劃。
+2.  **AI 供應鏈中毒：** 針對「AI Usage Control」的討論顯示，攻擊者將開發專門針對 LLM 模型輸出的投毒攻擊（Data Poisoning）或提示詞注入（Prompt Injection）。
+3.  **自動化工具成為新戰場：** n8n 與 GitHub Codespaces 的案例預示，攻擊者將更多地利用「開發者效率工具」來繞過傳統企業邊界防護。
+4.  **Legacy API 的崩潰點：** 隨著 2027 年 EWS 停用期限逼近，未來兩年將出現大量針對尚未遷移的舊系統的漏洞利用。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [AISURU/Kimwolf Botnet Record DDoS](https://thehackernews.com/2026/02/aisurukimwolf-botnet-launches-record.html)
+*   [ThreatsDay Bulletin - Feb 2026](https://thehackernews.com/2026/02/threatsday-bulletin-codespaces-rce.html)
+*   [AI Usage Control Buyer’s Guide](https://thehackernews.com/2026/02/the-buyers-guide-to-ai-usage-control.html)
+*   [Infy Hackers Resumption](https://thehackernews.com/2026/02/infy-hackers-resume-operations-with-new.html)
+*   [n8n CVE-2026-25049 Detail](https://thehackernews.com/2026/02/critical-n8n-flaw-cve-2026-25049.html)
+*   [NGINX Traffic Hijacking Campaign](https://thehackernews.com/2026/02/hackers-exploit-react2shell-to-hijack.html)
+*   [Spain's Ministry of Science Breach](https://www.bleepingcomputer.com/news/security/spains-ministry-of-science-shuts-down-systems-after-breach-claims/)
+*   [ISPsystem VMs Ransomware Delivery](https://www.bleepingcomputer.com/news/security/ransomware-gang-uses-ispsystem-vms-for-stealthy-payload-delivery/)
+*   [Microsoft Exchange Online EWS Shutdown](https://www.bleepingcomputer.com/news/microsoft/microsoft-to-shut-down-exchange-web-services-in-cloud-in-2027/)
+*   [La Sapienza University Cyberattack](https://www.bleepingcomputer.com/news/security/italian-university-la-sapienza-goes-offline-after-cyberattack/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/05)
 
 本白皮書旨在提供 2026 年初全球資安威脅的深度技術分析與防禦建議，針對當前針對性攻擊 (APT)、軟體供應鏈漏洞及新興 AI 模型安全進行全面拆解。

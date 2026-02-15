@@ -1,3 +1,106 @@
+# 🛡️ 資安戰情白皮書 (2026/02/16)
+
+本白皮書旨在針對 2026 年 2 月中旬爆發的高級持續性威脅（APT）與新型態惡意軟體活動進行深度剖析。本次威脅的核心特徵在於「**信任濫用 (Abuse of Trust)**」，攻擊者正以前所未有的技術手段利用合法系統工具（如 `nslookup`）與全球知名平台（如 Google Groups, Pastebin）來規避傳統的安全防護體系。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+### 威脅態勢分析
+目前的網路威脅已全面演進至 **「無檔案化 (Fileless)」** 與 **「低調生活 (Living-off-the-Land, LotL)」** 的新階段。攻擊者不再單純依賴附件下載，而是利用系統預裝的網路診斷工具來分階段加載惡意代碼。此外，「**ClickFix**」攻擊模式（透過偽裝系統修復引導使用者執行指令）已成為社工攻擊的主流腳本。
+
+### 戰略建議
+1.  **實施端點工具監控**：不僅要監控可執行檔，更需針對 `nslookup.exe`、`powershell.exe` 等系統內建工具的異常網路活動（如頻繁查詢 TXT 記錄）建立行為基準。
+2.  **重新評估信任網域策略**：傳統上被視為安全的網域（google.com, pastebin.com）現在是分發惡意腳本的熱點，應導入內容檢查機制而非單純的白名單。
+3.  **零信任瀏覽器防護**：強化瀏覽器端的安全擴充功能監控，防止 JavaScript 注入導致的加密貨幣資產截留。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 (中英對照) | 原始來源 |
+| :--- | :--- |
+| **微軟揭露基於 DNS 的 ClickFix 攻擊：利用 Nslookup 進行惡意軟體暫存**<br>Microsoft Discloses DNS-Based ClickFix Attack Using Nslookup for Malware Staging | [The Hacker News](https://thehackernews.com/2026/02/microsoft-discloses-dns-based-clickfix.html) |
+| **CTM360 警示：Lumma Stealer 與 Ninja Browser 惡意軟體活動正濫用 Google 網上論壇**<br>CTM360: Lumma Stealer and Ninja Browser malware campaign abusing Google Groups | [Bleeping Computer](https://www.bleepingcomputer.com/news/security/ctm360-lumma-stealer-and-ninja-browser-malware-campaign-abusing-google-groups/) |
+| **Pastebin 評論區推送 ClickFix JavaScript 攻擊以劫持加密貨幣交換**<br>Pastebin comments push ClickFix JavaScript attack to hijack crypto swaps | [Bleeping Computer](https://www.bleepingcomputer.com/news/security/pastebin-comments-push-clickfix-javascript-attack-to-hijack-crypto-swaps/) |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ 案例一：微軟揭露 Nslookup 隱蔽通道攻擊
+#### 🔍 技術原理
+攻擊者利用 DNS 協議中的 **TXT 記錄** 作為惡意代碼的儲存空間。當受害者訪問釣魚頁面時，會看到一個偽造的錯誤視窗（如「瀏覽器組件缺失」），要求使用者複製並在終端機執行一段指令。該指令會觸發 `nslookup -q=txt <惡意網域>`，從遠端 DNS 伺服器獲取經過 Base64 編碼的 PowerShell 指令稿並直接在記憶體中執行。
+
+#### ⚔️ 攻擊向量
+- **初始進入**：透過惡意廣告或受感染的合法網站進行 ClickFix 彈窗誘導。
+- **持續性與躲避**：利用 `nslookup` 作為下載器，因其為合法系統工具，多數防毒軟體不會阻擋其網路請求。
+- **酬載 (Payload)**：通常載入偵察腳本，隨後部署勒索軟體或間諜軟體。
+
+#### 🛡️ 防禦緩解
+- **EDR 規則設定**：監測 `nslookup` 進程是否與異常的外部 DNS 伺服器通訊，或觀察其命令列參數中是否包含 `txt` 查詢與管道符號（`|`）。
+- **DNS 過濾**：阻擋新註冊網域（NRDs）的 DNS 查詢，並利用威脅情報庫封鎖已知的惡意 C2 網域。
+
+#### 🧠 名詞定義
+- **ClickFix**：一種社會工程學技術，透過模擬系統錯誤提示，誘導使用者手動執行惡意指令以「修復」問題。
+- **TXT Record**：DNS 記錄的一種，允許儲存任意文本資訊，常被攻擊者濫用來封裝指令。
+
+---
+
+### 🛡️ 案例二：Google Groups 濫用與 Lumma Stealer
+#### 🔍 技術原理
+攻擊者利用 Google Groups 的高網域信譽（Domain Reputation）來規避電子郵件安全網關（SEG）的攔截。他們在 Google Groups 討論區發布包含惡意連結的帖子，並透過垃圾郵件邀請大量受害者。這些連結通常指向託管在 Google 基礎設施上的惡意檔案或進一步的重新導向鏈，最終導致 **Lumma Stealer** 或 **Ninja Browser** 惡意軟體的感染。
+
+#### ⚔️ 攻擊向量
+- **傳遞媒介**：Google Groups 的邀請函郵件，帶有合法 Google 簽章。
+- **惡意行為**：Lumma Stealer 會掃描受害者的瀏覽器緩存、Cookie、加密貨幣錢包擴充功能（如 MetaMask）並竊取敏感憑據。
+- **Ninja Browser**：一種定制化瀏覽器，旨在劫持使用者的網路會話並進行廣告詐騙或中間人攻擊（MITM）。
+
+#### 🛡️ 防禦緩解
+- **郵件策略優化**：針對來自 `groups.google.com` 的郵件進行深度內容掃描，檢查是否包含壓縮檔（ZIP/RAR）或指向外部下載站點的連結。
+- **威脅狩獵**：在端點搜尋 `lumma` 相關的 C2 通訊特徵（通常為特定的 HTTP POST 請求格式）。
+
+#### 🧠 名詞定義
+- **Lumma Stealer**：一種基於 C 語言開發的資訊竊取程式（Infostealer），專門針對敏感憑證與加密資產。
+- **Domain Reputation**：網域信譽，指安全防護系統根據網域的歷史行為給予的信任評分。
+
+---
+
+### 🛡️ 案例三：Pastebin JavaScript 劫持加密貨幣交換
+#### 🔍 技術原理
+此攻擊鎖定去中心化金融（DeFi）用戶。攻擊者在 Pastebin 等公開代碼分享平台的評論區中植入惡意的 JavaScript 代碼片段。當開發者或使用者不慎在受污染的 Web 環境中執行相關腳本時，攻擊者會利用 ClickFix 邏輯接管前端 UI，將用戶在進行加密貨幣「交換（Swap）」時的目標錢包地址修改為攻擊者的地址。
+
+#### ⚔️ 攻擊向量
+- **目標對象**：頻繁使用 Web3 錢包與去中心化交易所（DEX）的用戶。
+- **劫持機制**：利用 DOM 操作（Document Object Model Manipulation）替換轉帳表單中的 `to_address` 欄位。
+- **規避手段**：將惡意代碼隱藏在 Pastebin 的評論中，而非主體代碼，以躲避自動化掃描器的偵測。
+
+#### 🛡️ 防禦緩解
+- **內容安全策略 (CSP)**：網站管理員應配置嚴格的 CSP 標頭，限制第三方腳本的執行來源。
+- **硬體錢包校驗**：強制要求用戶在硬體錢包的實體螢幕上確認交易地址，而非僅依賴瀏覽器顯示。
+
+#### 🧠 名詞定義
+- **JS Injection**：JavaScript 注入攻擊，指將惡意腳本插入到合法網頁中執行的技術。
+- **Crypto Swap Hijacking**：加密貨幣交換劫持，指透過篡改智能合約互動參數來竊取資金的行為。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **「合法工具武器化」將常態化**：預計未來會出現更多利用 Windows 管理工具（如 WMI, BITSAdmin）隱藏惡意酬載的案例，傳統的特徵碼過濾將徹底失效。
+2.  **AI 生成的 ClickFix 腳本**：攻擊者將利用大型語言模型（LLM）生成極其擬真的系統錯誤說明，並根據受害者的語系、作業系統版本自動調整攻擊腳本，大幅提高社工成功率。
+3.  **供應鏈基礎設施攻擊**：攻擊者將不再直接攻擊企業，而是滲透如 Pastebin、GitHub、Google Groups 等開發者與維運人員高度信任的平台，透過「污染水源」的方式進行大規模攻擊。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [Microsoft Discloses DNS-Based ClickFix Attack Using Nslookup for Malware Staging](https://thehackernews.com/2026/02/microsoft-discloses-dns-based-clickfix.html)
+- [CTM360: Lumma Stealer and Ninja Browser malware campaign abusing Google Groups](https://www.bleepingcomputer.com/news/security/ctm360-lumma-stealer-and-ninja-browser-malware-campaign-abusing-google-groups/)
+- [Pastebin comments push ClickFix JavaScript attack to hijack crypto swaps](https://www.bleepingcomputer.com/news/security/pastebin-comments-push-clickfix-javascript-attack-to-hijack-crypto-swaps/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/15)
 
 此白皮書旨在深入分析近期全球資安威脅態勢，提供企業決策者（CISO）與技術人員深入的攻擊技術拆解與戰略防禦指引。本文件已針對 AI 知識庫進行優化，包含高密度的技術細節與結構化分析。

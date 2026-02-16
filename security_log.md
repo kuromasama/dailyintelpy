@@ -1,3 +1,108 @@
+# 🛡️ 資安戰情白皮書 (2026/02/17)
+
+本報告旨在為企業決策者、資安架構師及技術團隊提供當前全球威脅環境的深度分析。2026 年初的威脅態勢顯示，**「人工智慧基礎設施 (AI Infrastructure)」**與**「雲端身分生命週期 (Cloud Identity Lifecycle)」**已成為攻擊者的核心目標。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+根據本週追蹤的資安事件，我們正處於一個「雙重轉型」的威脅節點：
+
+1.  **AI 供應鏈漏洞化**：攻擊者不再僅僅攻擊 AI 生成的內容，而是開始針對 **AI Agent (如 OpenClaw)** 的配置檔案與 Gateway Tokens 進行物理奪取。這意味著 AI 模型的存取權與商業機密已成為 Infostealer 的新型獲利模式。
+2.  **身分認證機制的結構性崩潰**：雲端密碼管理器的「密碼找回」機制被發現存在 25 種攻擊路徑。這提醒我們，最強大的加密若沒有完善的邏輯工作流保護，依然是脆弱的。
+3.  **零時差漏洞 (Zero-Day) 的常態化**：Chrome (CVE-2026-2441) 與新型行動裝置 RAT (ZeroDayRAT) 的出現，顯示攻擊者正以前所未有的速度開發繞過現代防禦系統的工具。
+
+**戰略建議**：
+*   **即刻盤點 AI 資產**：對所有 AI Agent 及其 API Key 存放位置進行硬化，嚴禁明文存放配置檔案。
+*   **重新評估身分恢復策略**：針對雲端服務，應啟用硬體金鑰 (FIDO2/WebAuthn) 並禁用基於簡訊或電子郵件的弱恢復路徑。
+*   **主動式端點監控**：強化對 Infostealer 行為模式的偵測，而不僅僅是過往的特徵碼比對。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中/英) | 來源 | 威脅等級 |
+| :--- | :--- | :--- |
+| **Infostealer 竊取 OpenClaw AI 代理配置與網關令牌** (Infostealer Steals OpenClaw AI Agent Configuration Files and Gateway Tokens) | The Hacker News / Bleeping Computer | 🔴 高 |
+| **研究揭露主流雲端密碼管理器存在 25 種密碼找回攻擊** (Study Uncovers 25 Password Recovery Attacks in Major Cloud Password Managers) | The Hacker News | 🟠 中高 |
+| **每週回顧：Outlook 增益集劫持、零時差補丁、蠕蟲化機器人與 AI 惡意軟體** (Weekly Recap: Outlook Add-Ins Hijack, 0-Day Patches, Wormable Botnet & AI Malware) | The Hacker News | 🟠 中 |
+| **安全且具包容性的電子化社會：立陶宛如何應對 AI 驅動的網路詐騙** (Safe and Inclusive E‑Society: How Lithuania Is Bracing for AI‑Driven Cyber Fraud) | The Hacker News | 🔵 低 |
+| **新型 ZeroDayRAT 行動間諜軟體實現實時監控與數據竊取** (New ZeroDayRAT Mobile Spyware Enables Real-Time Surveillance and Data Theft) | The Hacker News | 🔴 高 |
+| **Chrome 新零時差漏洞 (CVE-2026-2441) 遭利用 — 補丁已發佈** (New Chrome Zero-Day (CVE-2026-2441) Under Active Attack — Patch Released) | The Hacker News | 🔴 高 |
+| **日本華盛頓酒店揭露遭勒索軟體感染事件** (Washington Hotel in Japan discloses ransomware infection incident) | Bleeping Computer | 🟠 中高 |
+| **Eurail 歐鐵證實旅客數據遭竊並於暗網出售** (Eurail says stolen traveler data now up for sale on dark web) | Bleeping Computer | 🟠 中高 |
+| **男子因在警方數據外洩後索要報酬被捕** (Man arrested for demanding reward after accidental police data leak) | Bleeping Computer | 🔵 低 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 AI 代理安全危機：OpenClaw 配置竊取
+*   **🔍 技術原理**：Infostealer (資訊竊取軟體) 演化出專門偵測 AI 框架目錄的掃描引擎。針對 OpenClaw 框架，它會掃描 `.env`、`config.yaml` 或特定的 Gateway 快取目錄。
+*   **⚔️ 攻擊向量**：透過釣魚郵件或盜版軟體夾帶惡意載荷，感染開發者工作站，自動打包 OpenClaw 的 API Keys、模型端點 (Endpoints) 及自定義 Prompt 邏輯。
+*   **🛡️ 防禦緩解**：使用環境變數管理工具 (如 HashiCorp Vault) 取代明文檔案；針對 AI API 實施 IP 白名單與異常流量配額限制。
+*   **🧠 名詞定義**：**OpenClaw** (一套開源的 AI Agent 編排框架，用於連接大型語言模型與企業內部數據)。
+
+### 3.2 密碼管理器邏輯漏洞：25 種找回攻擊
+*   **🔍 技術原理**：研究發現雲端密碼管理器的「身分恢復工作流」存在逻辑缺陷，例如：恢復驗證碼的預測、跨裝置同步時的身分冒充、以及社交工程誘導客服重置。
+*   **⚔️ 攻擊向量**：攻擊者利用受害者的信箱權限或偽造的裝置指紋，觸發「忘記密碼」流程，繞過主密碼 (Master Password) 直接接管金庫。
+*   **🛡️ 防範緩解**：停用非必要的「帳號恢復」功能；強制要求恢復流程必須經過物理安全金鑰 (YubiKey) 驗證。
+*   **🧠 名詞定義**：**Identity Recovery Attack** (針對帳號恢復流程中的安全漏洞進行攻擊，而非直接破解密碼)。
+
+### 3.3 Outlook 增益集 (Add-Ins) 劫持
+*   **🔍 技術原理**：惡意增益集利用 Office JS API 獲取郵件讀取與發送權限，且可在受害者電腦重啟後保持持久性 (Persistence)。
+*   **⚔️ 攻擊向量**：偽裝成會議工具或簽章工具，誘使企業用戶安裝，進而攔截內部機密郵件或進行商務電子郵件詐騙 (BEC)。
+*   **🛡️ 防禦緩解**：管理員應透過 Microsoft 365 管理中心實施增益集審批制度 (App Governance)，禁止使用者自行安裝未簽署的增益集。
+
+### 3.4 ZeroDayRAT：行動裝置實時間諜軟體
+*   **🔍 技術原理**：該 RAT 利用 Android/iOS 的零時差漏洞進行權限提升，繞過系統沙箱，實現對螢幕擷取、麥克風監聽及加密通訊軟體 (Signal/Telegram) 的內容讀取。
+*   **⚔️ 攻擊向量**：透過特製的簡訊連結 (Smishing) 觸發瀏覽器漏洞，實現無感安裝 (Zero-click)。
+*   **🛡️ 防禦緩解**：定期更新行動作業系統；安裝行動威脅防禦 (MTD) 方案；企業設備應實施 MDM 硬性政策。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)** (遠端存取木馬，允許攻擊者完全控制受害裝置)。
+
+### 3.5 Chrome CVE-2026-2441 零時差攻擊
+*   **🔍 技術原理**：該漏洞屬於高危險等級的 V8 引擎類型混淆 (Type Confusion) 漏洞，允許攻擊者在渲染進程中執行任意程式碼 (RCE)。
+*   **⚔️ 攻擊向量**：誘使受害者訪問含有惡意 JavaScript 的網頁。
+*   **🛡️ 防禦緩解**：立即更新至最新版本 (133.x 以上)；在關鍵工作環境啟用 Chrome 的「強大保護 (Enhanced Protection)」模式。
+
+### 3.6 日本華盛頓酒店勒索事件
+*   **🔍 技術原理**：典型的人為參與勒索軟體 (Human-Operated Ransomware)。攻擊者可能透過 VPN 漏洞進入內網，進行橫向移動並加密預約系統數據。
+*   **⚔️ 攻擊向量**：利用未修補的邊緣設備 (Edge Device) 進入內網，部署加密載荷。
+*   **🛡️ 防禦緩解**：實施網路微隔離 (Micro-segmentation)；定期進行異地離線備份。
+
+### 3.7 Eurail 數據外洩案
+*   **🔍 技術原理**：疑似為 API 滲透或資料庫配置錯誤，導致旅客姓名、電子郵件、護照號碼與行程資訊外流。
+*   **⚔️ 攻擊向量**：攻擊者針對後端 API 進行大規模抓取 (Scraping) 或利用 SQL 注入。
+*   **🛡️ 防禦緩解**：強化 API 安全網關 (API Gateway) 的速率限制與認證檢查；敏感數據加密存儲。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI-to-AI 攻擊興起**：2026 年底前，我們將看到攻擊者利用自有的惡意 AI 模型自動掃描並攻擊企業部署的 AI Agents，形成「AI 對抗 AI」的戰場。
+2.  **身分識別代幣竊取成為主流**：隨著多因素驗證 (MFA) 的普及，攻擊者將更專注於竊取瀏覽器 Session Cookies 和 API Tokens，因為這些可以繞過 MFA 挑戰。
+3.  **地緣政治驅動的供應鏈破壞**：如立陶宛案例所示，關鍵基礎設施與電子化社會的數位韌性將成為國家級駭客攻擊的首選目標。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Infostealer steals OpenClaw AI agent configuration](https://thehackernews.com/2026/02/infostealer-steals-openclaw-ai-agent.html)
+*   [Study on 25 Password Recovery Attacks](https://thehackernews.com/2026/02/study-uncovers-25-password-recovery.html)
+*   [Weekly Security Recap: AI Malware](https://thehackernews.com/2026/02/weekly-recap-outlook-add-ins-hijack-0.html)
+*   [Lithuania AI-Driven Cyber Fraud Defense](https://thehackernews.com/2026/02/safe-and-inclusive-esociety-how.html)
+*   [ZeroDayRAT Mobile Spyware Deep Dive](https://thehackernews.com/2026/02/new-zerodayrat-mobile-spyware-enables.html)
+*   [Chrome CVE-2026-2441 Update](https://thehackernews.com/2026/02/new-chrome-zero-day-cve-2026-2441-under.html)
+*   [Washington Hotel Ransomware Incident](https://www.bleepingcomputer.com/news/security/washington-hotel-in-japan-discloses-ransomware-infection-incident/)
+*   [Eurail Data Breach on Dark Web](https://www.bleepingcomputer.com/news/security/eurail-says-stolen-traveler-data-now-up-for-sale-on-dark-web/)
+*   [Legal Case: Police Data Leak Reward Arrest](https://www.bleepingcomputer.com/news/security/man-arrested-for-demanding-reward-after-accidental-police-data-leak/)
+*   [BleepingComputer: OpenClaw Secrets Theft](https://www.bleepingcomputer.com/news/security/infostealer-malware-found-stealing-openclaw-secrets-for-first-time/)
+
+---
+**免責聲明**：本白皮書由資安專家團隊編撰，僅供參考。資安態勢瞬息萬變，建議讀者針對具體系統進行個案評估。
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/16)
 
 本白皮書旨在針對 2026 年 2 月中旬爆發的高級持續性威脅（APT）與新型態惡意軟體活動進行深度剖析。本次威脅的核心特徵在於「**信任濫用 (Abuse of Trust)**」，攻擊者正以前所未有的技術手段利用合法系統工具（如 `nslookup`）與全球知名平台（如 Google Groups, Pastebin）來規避傳統的安全防護體系。

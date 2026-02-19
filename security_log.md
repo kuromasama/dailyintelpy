@@ -1,3 +1,123 @@
+# 🛡️ 資安戰情白皮書 (2026/02/20)
+
+本文件專為 AI 知識庫（如 NotebookLM）優化撰寫，旨在提供深度技術分析、攻擊行為建模及防禦策略建議，作為企業資安架構師與技術決策者之參考。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第一季的資安態勢顯示出一個劇烈的轉折點：**「AI 的武器化從理論走入大規模實戰」**。本週最引人注目的威脅在於惡意軟體開始利用生成式 AI（如 Gemini）來動態繞過偵測並維持持久性（Persistence）。此外，攻擊者利用 AI 壓縮了從漏洞揭露到大規模利用的時間差，這意味著傳統的「補丁週期」已不再適用，自動化響應已成為必備。全球執法行動（如 Operation Red Card 2.0）雖取得進展，但針對特定政治目標（CRESCENTHARVEST）與關鍵基礎設施（Grandstream VoIP）的針對性攻擊依然猖獗。
+
+**戰略建議：**
+1. **縮短修補時限**：響應 CISA 指令，關鍵漏洞（如 Dell）必須在 72 小時內完成修補。
+2. **AI 防禦 AI**：建立基於行為的 AI 監測模型，偵測異常的 API 調用（特別是針對 LLM API 的調用）。
+3. **加強移動端治理**：針對側載（Sideloading）App 實施嚴格的 MDM 策略，防範假冒 IPTV 等社交工程威脅。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中文) | 原文標題 (English) | 威脅等級 |
+| :--- | :--- | :--- |
+| PromptSpy 安卓惡意軟體濫用 Gemini AI 自動化持久性 | PromptSpy Android Malware Abuses Gemini AI to Automate Recent-Apps Persistence | 🔴 緊急 |
+| 國際刑警組織「紅牌行動 2.0」於非洲逮捕 651 名網路犯罪嫌疑人 | INTERPOL Operation Red Card 2.0 Arrests 651 in African Cybercrime Crackdown | 🟠 高 |
+| 微軟修復 Windows Admin Center 提權漏洞 CVE-2026-26119 | Microsoft Patches CVE-2026-26119 Privilege Escalation in Windows Admin Center | 🔴 緊急 |
+| ThreatsDay 快訊：OpenSSL RCE、Copilot 洩漏與 AI 密碼缺陷 | ThreatsDay Bulletin: OpenSSL RCE, Foxit 0-Days, Copilot Leak, AI Password Flaws | 🔴 緊急 |
+| 從暴露到利用：AI 如何壓縮您的反應窗口 | From Exposure to Exploitation: How AI Collapses Your Response Window | 🟡 中 |
+| 虛假 IPTV 應用程式散播 Massiv 安卓惡意軟體鎖定銀行用戶 | Fake IPTV Apps Spread Massiv Android Malware Targeting Mobile Banking Users | 🔴 緊急 |
+| CRESCENTHARVEST 行動利用 RAT 惡意軟體針對伊朗抗議支持者 | CRESCENTHARVEST Campaign Targets Iran Protest Supporters With RAT Malware | 🟠 高 |
+| Grandstream VoIP 電話漏洞允許隱蔽竊聽 | Flaw in Grandstream VoIP phones allows stealthy eavesdropping | 🔴 緊急 |
+| Google 在 2025 年阻擋超過 175 萬個 Play 商店應用提交 | Google blocked over 1.75 million Play Store app submissions in 2025 | 🟢 低 |
+| CISA 要求聯邦機構在 3 天內修復已被利用的 Dell 漏洞 | CISA orders feds to patch actively exploited Dell flaw within 3 days | 🔴 緊急 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 PromptSpy：AI 輔助的持久性攻擊
+*   **🔍 技術原理**：`PromptSpy` 是一款創新的 Android 惡意軟體，它透過 Google 的 Gemini AI API 來分析受害者設備上的「最近應用列表 (Recent Apps)」。它利用生成式 AI 來判斷哪些應用程式與用戶互動最頻繁，並自動生成偽裝腳本，將自己嵌入到用戶最信任的切換流程中。
+*   **⚔️ 攻擊向量**：透過第三方應用商店分發，獲取「Accessibility Services（無障礙服務）」權限，隨後調用後台 API 與雲端 LLM 進行指令同步。
+*   **🛡️ 防禦緩解**：監控 App 是否頻繁調用外部 AI SDK；限制敏感權限的自動授權；使用 EDR 檢測異常的 `UsageStatsManager` 調用。
+*   **🧠 名詞定義**：**Persistence (持久性)**：惡意軟體在設備重啟或清理後依然能自動執行的能力。
+
+### 3.2 INTERPOL「紅牌行動 2.0」
+*   **🔍 技術原理**：針對非洲地區跨國網路詐騙（BEC）與勒索軟體基礎設施進行打擊。涉及對指揮與控制（C2）伺服器的物理查封與數據分析。
+*   **⚔️ 攻擊向量**：主要利用商務電子郵件入侵（BEC）與網路釣魚獲取憑據。
+*   **🛡️ 防禦緩解**：實施多因素身份驗證 (MFA)；加強員工對跨境資金轉帳的審核流程。
+*   **🧠 名詞定義**：**BEC (Business Email Compromise)**：攻擊者假冒公司高層或供應商進行詐騙。
+
+### 3.3 Microsoft CVE-2026-26119 (Windows Admin Center)
+*   **🔍 技術原理**：該漏洞位於 Windows Admin Center 的身份驗證機制中，攻擊者可利用輸入驗證不嚴格進行權限提升（LPE），從普通用戶權限躍升至 SYSTEM 權限。
+*   **⚔️ 攻擊向量**：已登入系統的本地攻擊者或具備低權限遠程訪問權限的惡意份子。
+*   **🛡️ 防禦緩解**：立即部署 Microsoft 2026 年 2 月補丁更新；限制對 Admin Center 門戶的網路暴露。
+*   **🧠 名詞定義**：**Privilege Escalation (提權)**：攻擊者獲得高於預期授權的權限等級。
+
+### 3.4 ThreatsDay 綜合預警 (OpenSSL RCE)
+*   **🔍 技術原理**：OpenSSL 發現遠程代碼執行 (RCE) 漏洞，涉及緩衝區溢位。同時 Copilot 洩漏揭示了 AI 助手在處理敏感數據時可能導致數據外流。
+*   **⚔️ 攻擊向量**：構造惡意的 TLS 握手封包或注入特製的 Prompt 誘使 AI 洩漏密鑰。
+*   **🛡️ 防禦緩解**：升級 OpenSSL 庫至安全版本；在企業內部 AI 網關實施數據遮蔽（DLP）。
+*   **🧠 名詞定義**：**RCE (Remote Code Execution)**：攻擊者能遠端在受害伺服器上執行任意指令。
+
+### 3.5 AI 壓縮反應窗口 (Exploitation Speed)
+*   **🔍 技術原理**：攻擊者利用 AI 自動化掃描原始碼、分析補丁中的「差異 (Diff)」並自動生成概念驗證 (PoC) 代碼。這將 N-Day 漏洞變成 0-Day 的效率大幅提高。
+*   **⚔️ 攻擊向量**：自動化腳本全網掃描剛公佈 CVE 的目標。
+*   **🛡️ 防禦緩解**：採用自動化漏洞管理工具；縮短從掃描到修補的 SLA（服務等級協議）。
+
+### 3.6 Massiv 安卓銀行木馬
+*   **🔍 技術原理**：偽裝成 IPTV 播放器，利用「Overlay Attack (重疊攻擊)」在真實的銀行 App 之上覆蓋虛假登入介面，藉此竊取憑據。
+*   **⚔️ 攻擊向量**：側載 APK；利用用戶追求免費影視資源的心理進行誘導安裝。
+*   **🛡️ 防禦緩解**：禁止設備端的「未知來源安裝」；部署移動威脅防禦 (MTD) 方案。
+*   **🧠 名詞定義**：**Overlay Attack**：在合法 App UI 上顯示惡意視窗，誤導用戶輸入敏感資訊。
+
+### 3.7 CRESCENTHARVEST 伊朗針對性攻擊
+*   **🔍 技術原理**：這是一場進階持續性威脅 (APT) 行動，使用自定義遠端訪問木馬 (RAT)，具有螢幕截圖、麥克風錄音與文件上傳功能。
+*   **⚔️ 攻擊向量**：透過社交媒體發送帶有惡意巨集的文檔或偽裝成安全工具。
+*   **🛡️ 防禦緩解**：對特定敏感群體實施「隔離瀏覽器」技術；監控異常的 DNS 出口流量。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：允許攻擊者遠端完全控制受感染設備。
+
+### 3.8 Grandstream VoIP 隱蔽竊聽
+*   **🔍 技術原理**：Grandstream VoIP 電話的 Web 管理介面存在身份驗證繞過漏洞，攻擊者可遠端開啟電話的對講模式，實現靜默監聽。
+*   **⚔️ 攻擊向量**：暴露在公網上的 VoIP 設備管理端口。
+*   **🛡️ 防禦緩解**：將 VoIP 設備置於獨立 VLAN；修改預設密碼並停用不必要的遠端訪問功能。
+
+### 3.9 Google Play 2025 安全報告
+*   **🔍 技術原理**：Google 利用 AI 審核機制與強化 API 限制，成功攔截了 175 萬個潛在惡意應用，顯示供應鏈安全正在加強。
+*   **⚔️ 攻擊向量**：惡意開發者試圖繞過 Google 的代碼混淆偵測。
+*   **🛡️ 防禦緩解**：儘管有過濾，企業仍應實施應用白名單制度。
+
+### 3.10 CISA Dell 漏洞修補指令
+*   **🔍 技術原理**：該漏洞涉及 Dell 驅動程式中的核心級寫入錯誤，已被確認用於野外攻擊。CISA 下令聯邦機構 3 天內必須修補。
+*   **⚔️ 攻擊向量**：本地權限提升或結合瀏覽器漏洞實現遠端入侵。
+*   **🛡️ 防禦緩解**：強制執行 Dell 官方驅動程式更新；檢測核心模式下的異常驅動加載。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 生成惡意代碼的「多態性」 (Polymorphism)**：
+    預測未來 12 個月內，惡意軟體將能根據受害者環境自動重寫其特徵碼（Signature），使靜態特徵偵測完全失效。
+2.  **針對 LLM 供應鏈的攻擊**：
+    攻擊者將轉向攻擊 AI 基礎設施（如 Python 的 AI 函式庫），透過惡意代碼注入到主流 AI 訓練框架中。
+3.  **語音與影像深偽 (Deepfake) 的即時化**：
+    隨著 Grandstream 等 VoIP 漏洞被利用，攻擊者可能結合 AI 即時變聲技術，在竊聽後進行高仿真的語音釣魚。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [PromptSpy Android Malware Abuses Gemini AI](https://thehackernews.com/2026/02/promptspy-android-malware-abuses-google.html)
+*   [INTERPOL Operation Red Card 2.0](https://thehackernews.com/2026/02/interpol-operation-red-card-20-arrests.html)
+*   [Microsoft CVE-2026-26119 Patch](https://thehackernews.com/2026/02/microsoft-patches-cve-2026-26119.html)
+*   [ThreatsDay Bulletin - Feb 2026](https://thehackernews.com/2026/02/threatsday-bulletin-openssl-rce-foxit-0.html)
+*   [How AI Collapses Response Window](https://thehackernews.com/2026/02/from-exposure-to-exploitation-how-ai.html)
+*   [Massiv Android Malware - Fake IPTV](https://thehackernews.com/2026/02/fake-iptv-apps-spread-massiv-android.html)
+*   [CRESCENTHARVEST RAT Campaign](https://thehackernews.com/2026/02/crescentharvest-campaign-targets-iran.html)
+*   [Grandstream VoIP Eavesdropping Flaw](https://www.bleepingcomputer.com/news/security/flaw-in-grandstream-voip-phones-allows-stealthy-eavesdropping/)
+*   [Google Play Store 2025 Statistics](https://www.bleepingcomputer.com/news/security/google-blocked-over-175-million-play-store-app-submissions-in-2025/)
+*   [CISA Dell Patch Order](https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-actively-exploited-dell-flaw-within-3-days/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/19)
 
 本白皮書旨在彙整並深入分析 2026 年 2 月中旬全球重大資安事件，提供予 AI 知識庫進行深度學習與戰術分析。當前威脅態勢已從單純的漏洞利用，演進為針對供應鏈、AI 基礎設施及關鍵基礎設施（Critical Infrastructure）的高維度攻擊。

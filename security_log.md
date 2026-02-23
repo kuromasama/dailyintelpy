@@ -1,3 +1,122 @@
+# 🛡️ 資安戰情白皮書 (2026/02/24)
+
+本文件旨在為資安決策者與技術專家提供最新的全球威脅情報分析，並作為 AI 知識庫（如 NotebookLM）之核心訓練素材。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢分析：**
+本週的資安態勢顯示出「多層次攻擊路徑」的趨勢。國家級攻擊者（如 **APT28** 與 **MuddyWater**）持續精進其隱匿手段，利用 Webhook 與自定義協定（GhostFetch）躲避偵測。同時，供應鏈攻擊（npm 惡意套件）與基礎設施風險（LLM 端點暴露）正成為企業新的防禦缺口。
+
+**戰略建議：**
+1.  **強化供應鏈審查**：針對 CI/CD 流程實施嚴格的秘密管理（Secret Management），防止 API Token 經由 npm 等相依性套件外洩。
+2.  **升級端點保護**：針對 **BYOVD (Bring Your Own Vulnerable Driver)** 攻擊，應強制實施驅動程式簽章強制執行與黑名單更新。
+3.  **多因素驗證 (MFA) 進化**：鑑於 Optimizely 的 Vishing (語音釣魚) 事件，應從「基於推播」的 MFA 轉向「抗釣魚（FIDO2/WebAuthn）」架構。
+4.  **AI 安全防禦**：建立 LLM 基礎設施的防火牆，隔離未經授權的端點訪問，防止內部模型數據外流。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 | 關鍵對象 | 核心挑戰 |
+| :--- | :--- | :--- |
+| **APT28 Targeted European Entities Using Webhook-Based Macro Malware** | 歐洲實體 | 利用 Webhook 繞過防火牆偵測的惡意巨集。 |
+| **Wormable XMRig Campaign Uses BYOVD Exploit and Logic Bomb** | 全球伺服器 | 具備蠕蟲擴散能力，透過 BYOVD 技術停用防毒軟體。 |
+| **Weekly Recap: Double-Tap Skimmers, PromptSpy AI, 30Tbps DDoS** | 零售、AI、雲端 | 涵蓋大規模 DDoS、AI 間諜軟體與 Docker 惡意程式。 |
+| **How Exposed Endpoints Increase Risk Across LLM Infrastructure** | AI 企業 | LLM 暴露端點導致的模型竊取與敏感資料外洩。 |
+| **Malicious npm Packages Harvest Crypto Keys & CI Secrets** | 開發者/DevOps | 針對 npm 供應鏈的憑證收割攻擊。 |
+| **MuddyWater Targets MENA with GhostFetch & CHAR** | 中東地區 | 伊朗背景組織使用自定義惡意軟體進行間諜活動。 |
+| **Microsoft Outlook Bug Hides Mouse Pointer** | 全球 Office 用戶 | 導致可用性問題的軟體 Bug，可能影響維運效率。 |
+| **Optimizely Data Breach via Vishing Attack** | 廣告技術公司 | 社會工程學（語音釣魚）突破身分驗證邊界。 |
+| **When identity isn’t the weak link, access still is** | 企業架構 | 探討即使身分確認，存取控制失效帶來的風險。 |
+| **CISA: Recently patched RoundCube flaws now exploited** | Webmail 用戶 | 已修補漏洞遭積極利用，強調即時修補的必要性。 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 APT28 歐洲定向攻擊：Webhook 巨集惡意程式
+- **🔍 技術原理**：攻擊者在 Word 檔案中嵌入 VBA 巨集，該巨集不再直接連接 C2 伺服器，而是利用 **Webhook.site** 或類似服務作為中繼站，將收集到的系統資訊加密後透過 HTTP POST 傳出。
+- **⚔️ 攻擊向量**：釣魚郵件 -> 惡意附件 (DOC/DOTM) -> 巨集執行 -> 系統偵察 -> Webhook 滲透。
+- **🛡️ 防禦緩解**：禁用所有非必要巨集；監測出口流量中異常的 Webhook 域名存取；實施封閉式的文件檢視環境（Sandboxing）。
+- **🧠 名詞定義**：**Webhook** 是一種讓應用程式能即時將訊息傳遞給其他應用的方式，常被合法用於開發，但此處被 APT 用作隱蔽 C2 通道。
+
+### 3.2 蠕蟲式 XMRig 運動：BYOVD 與時間邏輯炸彈
+- **🔍 技術原理**：利用 **BYOVD (Bring Your Own Vulnerable Driver)** 技術，攻擊者加載一個帶有合法簽章但存有已知漏洞的驅動程式，藉此獲得核心權限（Kernel-mode）來殺死 EDR 進程。
+- **⚔️ 攻擊向量**：利用弱密碼 SSH/RDP 侵入 -> 橫向移動（Wormable） -> 部署 BYOVD 驅動 -> 執行加密貨幣挖礦。
+- **🛡️ 防禦緩解**：啟用微軟易受攻擊驅動程式阻斷清單（Microsoft Vulnerable Driver Blocklist）；強化帳戶 MFA。
+- **🧠 名詞定義**：**Logic Bomb (邏輯炸彈)** 是一種程式碼，僅在特定時間或條件滿足時觸發破壞行為。
+
+### 3.3 每週概覽：30Tbps DDoS 與 PromptSpy AI 威脅
+- **🔍 技術原理**：30Tbps DDoS 顯示出殭屍網路規模已達到史無前例的高度。**PromptSpy** 則顯示了針對大型語言模型的「提示詞注入攻擊」，旨在竊取 AI 模型背後的原始 Prompt。
+- **⚔️ 攻擊向量**：反射式放大攻擊 (DDoS)；提示詞注入攻擊 (Prompt Injection)。
+- **🛡️ 防禦緩解**：部署抗 DDoS 流量清洗中心（如 Cloudflare/Akamai）；針對 AI 輸入實施嚴格過濾與 Sanitization。
+- **🧠 名詞定義**：**Skimmer** 通常指盜取信用卡資訊的惡意程式或硬體，此處指 Double-Tap 電子側錄技術。
+
+### 3.4 LLM 基礎設施風險：暴露的端點
+- **🔍 技術原理**：企業部署 LLM 時，常因配置錯誤導致 **/v1/chat/completions** 或管理介面暴露於公網，攻擊者可藉此耗盡資源或注入惡意指令。
+- **⚔️ 攻擊向量**：Shodan 搜尋暴露服務 -> 未授權 API 調用 -> 訓練數據檢索。
+- **🛡️ 防禦緩解**：實施嚴格的 RBAC 存取控制；所有 AI 端點必須經過 VPN 或 ZTNA 存取。
+
+### 3.5 npm 惡意套件：憑證收割機
+- **🔍 技術原理**：攻擊者將惡意程式封裝在與熱門套件名稱相似（Typosquatting）的 npm 包中。在 `postinstall` 腳本中加入程式碼，自動掃描硬碟中的 `.aws/credentials` 或 `.env` 檔案。
+- **⚔️ 攻擊向量**：`npm install` -> 自動執行安裝後腳本 -> 外傳 CI 秘密金鑰。
+- **🛡️ 防禦緩解**：使用 `npm audit`；建立私有套件鏡像站（如 Artifactory）並進行安全審查。
+
+### 3.6 MuddyWater (伊朗) 針對中東的間諜活動
+- **🔍 技術原理**：使用名為 **GhostFetch** 的新型下載器，該工具透過自定義的 HTTP 協議與 C2 通訊，並利用 **CHAR** 腳本執行內存中加載，減少硬碟留痕。
+- **⚔️ 攻擊向量**：魚叉式網路釣魚 -> 連結導向惡意 LNK 檔 -> 下載 GhostFetch。
+- **🛡️ 防禦緩解**：強化對 PowerShell 與 LNK 執行限制；監測不常見的 HTTP Header 傳輸。
+
+### 3.7 Microsoft Outlook 滑鼠指標消失漏洞
+- **🔍 技術原理**：這是一個經典 Outlook 的軟體臭蟲（Bug），在特定渲染模式下會導致游標隱形，雖然非直接威脅，但可能造成管理員判斷為遠端控制或系統故障。
+- **⚔️ 影響**：降低工作效率；可能被社會工程學利用，誘騙用戶下載「修復工具」。
+- **🛡️ 防禦緩解**：更新 Office 至最新版本；通知員工此已知現象，防止恐慌。
+
+### 3.8 Optimizely 資料外洩：Vishing 語音釣魚
+- **🔍 技術原理**：攻擊者偽裝成 IT 技術支援，撥打電話給員工，透過話術騙取一次性密碼 (OTP) 或引導其安裝遠端控制工具。
+- **⚔️ 攻擊向量**：語音誘騙 -> 獲取登入憑證 -> 進入企業內部網路。
+- **🛡️ 防禦緩解**：員工防詐騙意識培訓；從 SMS/Push OTP 轉向硬體金鑰 (Security Keys)。
+
+### 3.9 身分與存取控制的鴻溝 (Identity vs Access)
+- **🔍 技術原理**：即使身分驗證 (Identity) 成功，如果存取控制 (Access Control) 權限過大（Over-privileged），攻擊者一旦奪取帳號即可在網內橫向移動。
+- **⚔️ 攻擊向量**：憑證竊取 -> 權限提升 (Privilege Escalation) -> 全域管理員權限濫用。
+- **🛡️ 防禦緩解**：落實最小權限原則 (Least Privilege)；實施及時性存取 (JIT Access)。
+
+### 3.10 RoundCube 漏洞：CISA 警告積極攻擊中
+- **🔍 技術原理**：RoundCube Webmail 存在跨站腳本 (XSS) 與路徑穿越漏洞，允許攻擊者遠端讀取伺服器設定或攔截用戶信件。
+- **⚔️ 攻擊向量**：發送含有惡意腳本的郵件 -> 用戶開啟 -> 執行背景腳本。
+- **🛡️ 防禦緩解**：立即更新 RoundCube 至官方最新修補版本；部署 WAF 阻擋常見 XSS 攻擊。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **BYOVD 攻擊標準化**：由於 EDR 對應用層行為監控日益嚴格，未來更多惡意軟體將轉向內核層級攻擊，利用合法驅動程式作為「特洛伊木馬」。
+2.  **供應鏈攻擊自動化**：攻擊者將使用 AI 自動偵測 npm/PyPI 中新上架的漏洞包，並在數分鐘內生成 Typosquatting 套件。
+3.  **Vishing 與 Deepfake 結合**：Optimizely 案例預示了語音攻擊的復興，預計未來將結合 Deepfake 模擬主管聲音進行轉帳或憑證請求。
+4.  **AI 基礎設施成為新戰場**：針對 LLM 端點的 DDoS 與模型逆向工程將成為國家級黑客的新目標。
+
+---
+
+## 5. 🔗 參考文獻
+- [APT28 Targeted European Entities Using Webhook-Based Macro Malware](https://thehackernews.com/2026/02/apt28-targeted-european-entities-using.html)
+- [Wormable XMRig Campaign Uses BYOVD Exploit and Time-Based Logic Bomb](https://thehackernews.com/2026/02/wormable-xmrig-campaign-uses-byovd.html)
+- [Weekly Recap: Double-Tap Skimmers, PromptSpy AI, 30Tbps DDoS](https://thehackernews.com/2026/02/weekly-recap-double-tap-skimmers.html)
+- [How Exposed Endpoints Increase Risk Across LLM Infrastructure](https://thehackernews.com/2026/02/how-exposed-endpoints-increase-risk.html)
+- [Malicious npm Packages Harvest Crypto Keys, CI Secrets, and API Tokens](https://thehackernews.com/2026/02/malicious-npm-packages-harvest-crypto.html)
+- [MuddyWater Targets MENA Organizations with GhostFetch, CHAR, and HTTP_VIP](https://thehackernews.com/2026/02/muddywater-targets-mena-organizations.html)
+- [Microsoft says bug in classic Outlook hides the mouse pointer](https://www.bleepingcomputer.com/news/microsoft/microsoft-says-bug-in-classic-outlook-hides-the-mouse-pointer/)
+- [Ad tech firm Optimizely confirms data breach after vishing attack](https://www.bleepingcomputer.com/news/security/ad-tech-firm-optimizely-confirm-data-breach-after-vishing-attack/)
+- [When identity isn’t the weak link, access still is](https://www.bleepingcomputer.com/news/security/when-identity-isnt-the-weak-link-access-still-is/)
+- [CISA: Recently patched RoundCube flaws now exploited in attacks](https://www.bleepingcomputer.com/news/security/cisa-recently-patched-roundcube-flaws-now-exploited-in-attacks/)
+
+---
+*文件編撰：資安戰情研究小組 (2026-02-24)*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/23)
 
 這份白皮書旨在深入分析近期出現的資安威脅，特別是針對新興的 AI 輔助型惡意軟體進行技術解構。此文件專為 AI 知識庫（如 NotebookLM）優化，包含豐富的技術細節與戰略指引。

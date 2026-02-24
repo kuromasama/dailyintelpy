@@ -1,3 +1,127 @@
+# 🛡️ 資安戰情白皮書 (2026/02/25)
+
+本白皮書旨在深入分析 2026 年 2 月末全球資安威脅態勢，提供高密度的技術細節與防禦對策，作為企業決策者 (CISO) 與資安架構師部署防護與 AI 知識庫訓練之核心文獻。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+當前資安威脅已進入 **「身分識別與 AI 武器化」** 的深度博弈階段。從 GitHub Codespaces 的漏洞到 Lazarus 集團對醫療體系的勒索，攻擊者的目標正從傳統的邊界突破，轉向開發者環境、AI 供應鏈以及身分驗證權限的精準收割。
+
+**戰略核心建議：**
+- **開發環境硬化**：將 GitHub Codespaces 等雲端 IDE 視為「零信任」區域，強化 Token 生命週期管理。
+- **身分優先安全 (Identity-First Security)**：從傳統的權限清單轉向「行為意圖分析」，識別 AI 代理 (Agent) 的異常請求。
+- **對抗性 AI 防護**：針對大規模 API 掃描與模型蒸餾 (Model Distillation) 攻擊建立速率限制與偵測機制。
+- **針對性 APT 預警**：中亞與歐洲金融業需警惕 UAC-0050 與 UnsolicitedBooker 的多階段後門攻擊。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 (中英對照) | 來源 / 影響力 | 關鍵詞 |
+| :--- | :--- | :--- |
+| **RoguePilot：GitHub Codespaces 漏洞導致 Copilot 洩漏 GITHUB_TOKEN** | The Hacker News | CI/CD, Token Leak |
+| **UAC-0050 利用偽造域名與 RMS 惡意軟體攻擊歐洲金融機構** | The Hacker News | Phishing, RAT |
+| **身分優先級：這不是積壓問題，而是風險數學問題** | The Hacker News | Risk Math, IAM |
+| **Lazarus 集團在美、中東醫療攻擊中使用 Medusa 勒索軟體** | The Hacker News | APT38, Ransomware |
+| **UnsolicitedBooker 利用 LuciDoor 與 MarsSnake 後門攻擊中亞電信業** | The Hacker News | Telecom, Backdoor |
+| **Anthropic 指控中國 AI 公司使用 1600 萬次 Claude 查詢複製模型** | The Hacker News | AI Theft, Scraping |
+| **1Campaign 平台協助惡意 Google 廣告規避檢測** | BleepingComputer | Malvertising, Cloaking |
+| **CarGurus 數據洩漏暴露 1240 萬個帳戶資訊** | BleepingComputer | Data Breach, PII |
+| **Microsoft 為所有儲存位置新增 Copilot 數據管控功能** | BleepingComputer | Data Governance |
+| **身分優先的 AI 安全：CISO 為何必須加入「意圖」分析** | BleepingComputer | Intent, AI Security |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 RoguePilot Flaw in GitHub Codespaces
+*   **🔍 技術原理**：利用 Codespaces 容器內部的環境變數繼承機制。當開發者使用 GitHub Copilot 時，擴充元件會與背後的代理服務溝通。RoguePilot 攻擊展示了惡意擴充元件或經竄改的開發容器環境，能攔截並導出自動注入的 `GITHUB_TOKEN`。
+*   **⚔️ 攻擊向量**：供應鏈攻擊 (惡意 VS Code 擴充套件) 或是 Social Engineering 誘導開發者打開受污染的 Codespace 儲存庫。
+*   **🛡️ 防禦緩解**：實施最小權限原則 (PoLP)，將 Token 權限限制為僅讀取；定期輪換 `GITHUB_TOKEN`；監控容器內異常的外對連線。
+*   **🧠 名詞定義**：**GitHub Codespaces** 是雲端託管的開發環境；**Token Leakage** 指的是身分驗證權限標記被非法獲取。
+
+### 3.2 UAC-0050 Targets European Financial Institution
+*   **🔍 技術原理**：攻擊者使用看似合法的金融域名 (Spoofed Domains) 進行魚叉式網路釣魚。負載包含 Remote Manipulator System (RMS) 惡意軟體，這是一種合法的遠端管理工具，被黑客改造為遠端存取木馬 (RAT)。
+*   **⚔️ 攻擊向量**：Email Phishing -> 偽裝成發票的附件 -> 執行 VBScript/PowerShell -> 下載並執行 RMS 後門。
+*   **🛡️ 防禦緩解**：強化 DMARC/SPF/DKIM 檢查；實施應用程式白名單，阻斷非授權的遠端管理軟體執行。
+*   **🧠 名詞定義**：**UAC-0050** 是一支活躍的烏克蘭/俄羅斯背景威脅組織；**RMS (Remote Manipulator System)** 原為合法遠端桌面工具。
+
+### 3.3 Identity Prioritization & Risk Math
+*   **🔍 技術原理**：傳統 IAM 管理過於依賴權限積壓 (Backlog)，而「風險數學」強調的是權限的「可利用性」與「潛在影響」。透過計算 Blast Radius (爆炸半徑) 來決定身分清理的優先順序。
+*   **⚔️ 攻擊向量**：利用長期不活動但擁有高權限的「殭屍帳戶」(Orphaned Accounts) 進行橫向移動。
+*   **🛡️ 防禦緩解**：部署 ITDR (身分威脅偵測與回應) 方案；使用自動化工具評估權限密度比率。
+*   **🧠 名詞定義**：**Identity Prioritization** 是根據風險權重排列身分管理任務的技術。
+
+### 3.4 Lazarus Group & Medusa Ransomware
+*   **🔍 技術原理**：北韓 APT 集團 Lazarus 轉向使用 Medusa 勒索軟體。他們利用已知漏洞 (如 Citrix Bleed) 進入網路，隨後部屬自定義工具進行憑證竊取與橫向移動。
+*   **⚔️ 攻擊向量**：邊緣設備漏洞利用 -> 憑證傾倒 (Credential Dumping) -> 全域加密與勒索。
+*   **🛡️ 防禦緩解**：針對醫療體系進行漏洞掃描補丁更新；實施網路分段 (Network Segmentation) 以防止勒索病毒擴散。
+*   **🧠 名詞定義**：**Medusa Ransomware** 是以其數據洩漏門戶 (Leak Site) 聞名的勒索軟體家族。
+
+### 3.5 UnsolicitedBooker: LuciDoor & MarsSnake
+*   **🔍 技術原理**：這是一場高度針對性的 APT 攻擊。LuciDoor 透過加密的 C2 頻道進行通信，模擬正常的 Web 流量以規避 IDS。MarsSnake 則是專門用於竊取敏感檔案與敏感通信的後門。
+*   **⚔️ 攻擊向量**：針對電信運營商核心系統的魚叉式釣魚或利用供應鏈軟體漏洞注入。
+*   **🛡️ 防禦緩解**：深度封包檢測 (DPI) 識別異常 C2 模式；終端偵測與回應 (EDR) 捕捉 MarsSnake 的記憶體注入行為。
+*   **🧠 名詞定義**：**MarsSnake** 是一種高級隱蔽性後門，常用於間諜行動。
+
+### 3.6 Anthropic vs. Chinese AI Firms (Model Theft)
+*   **🔍 技術原理**：所謂的「查詢複製」是指透過 1600 萬次 API 請求，利用「模型蒸餾」(Distillation) 技術。透過大量的 Prompt-Response 對，訓練出性能接近 Claude 的自有模型。
+*   **⚔️ 攻擊向量**：自動化 API 爬蟲與 Prompt Injection，系統性地提取模型的內在邏輯與知識結構。
+*   **🛡️ 防禦緩解**：實施 Rate Limiting (速率限制)；使用 AI 浮水印技術；部署意圖分析以偵測「資料搜刮型」查詢。
+*   **🧠 名詞定義**：**Model Distillation** 是指從小模型學習大模型輸出行為的過程。
+
+### 3.7 1Campaign: Malicious Google Ads
+*   **🔍 技術原理**：1Campaign 是一個「惡意廣告分發平台」，它利用「Cloaking (斗篷技術)」。當 Google 審核機器人訪問時顯示正常網頁，當真實用戶從特定地理位置訪問時則跳轉至惡意軟體下載頁。
+*   **⚔️ 攻擊向量**：搜尋引擎劫持 (SEO Poisoning) -> 點擊贊助商廣告 -> 惡意負載下載。
+*   **🛡️ 防禦緩解**：使用瀏覽器安全外掛攔截已知廣告跳轉鏈；教育用戶區分搜尋結果中的「贊助商」標籤。
+*   **🧠 名詞定義**：**Cloaking** 是一種顯示不同內容給搜尋引擎與真實用戶的作弊技術。
+
+### 3.8 CarGurus Data Breach (12.4M Accounts)
+*   **🔍 技術原理**：雖然詳細技術細節尚待公布，但此類大規模洩漏通常涉及資料庫配置錯誤 (Misconfigured DB) 或不安全的 API 端點導致的 Bulk Export。
+*   **⚔️ 攻擊向量**：Credential Stuffing (撞庫) 或 SQL Injection 直接拖庫。
+*   **🛡️ 防禦緩解**：靜態資料加密 (At-rest Encryption)；強化 API 存取控制與日誌稽核。
+*   **🧠 名詞定義**：**PII (Personally Identifiable Information)** 是指個人可識別資訊。
+
+### 3.9 Microsoft Copilot Data Controls
+*   **🔍 技術原理**：微軟在 SharePoint、OneDrive 等儲存位置新增數據管控，防止 Copilot 在執行生成任務時，越權訪問不該被存取的敏感文件 (Over-sharing)。
+*   **⚔️ 攻擊向量**：內部威脅利用 Copilot 詢問「公司的薪資清單在哪裡？」等敏感問題，若權限配置不當則會導致洩漏。
+*   **🛡️ 防禦緩解**：配置敏感度標籤 (Sensitivity Labels)；限制 AI 對特定資料夾的檢索權限。
+
+### 3.10 Identity-First AI Security (Intent)
+*   **🔍 技術原理**：攻擊者現在可以利用身分權限驅動 AI 代理執行惡意意圖。安全防護必須從「這帳號能做什麼」提升到「這帳號現在想做什麼 (Intent)」。
+*   **⚔️ 攻擊向量**：利用受害者的 AI Agent 權限，透過 Prompt 引發非預期的數據操作。
+*   **🛡️ 防禦緩解**：AI 行為基線建模；在 AI 請求與執行之間加入「意圖驗證層」。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 模型的「數位產權」保衛戰**：隨著 Anthropic 被大規模爬取，未來將出現更多「反爬蟲 AI」來保護模型權限。
+2.  **勒索軟體與 APT 的界線模糊**：Lazarus 使用 Medusa 顯示，國家背景組織將更頻繁地利用勒索軟體作為經濟收益手段或混淆其政治意圖的煙霧彈。
+3.  **雲端開發環境 (CDE) 成為一級戰場**：GitHub Codespaces 的案例僅是開始，未來針對 DevSecOps 鏈條的 Token 竊取將成為主流。
+4.  **惡意廣告平台化**：1Campaign 顯示惡意廣告已進入「服務化 (SaaS)」階段，自動化規避偵測的能力將大幅提升。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [RoguePilot: GitHub Codespaces Copilot Flaw](https://thehackernews.com/2026/02/roguepilot-flaw-in-github-codespaces.html)
+- [UAC-0050 European Financial Attack](https://thehackernews.com/2026/02/uac-0050-targets-european-financial.html)
+- [Identity Prioritization Risk Math](https://thehackernews.com/2026/02/identity-prioritization-isnt-backlog.html)
+- [Lazarus Medusa Ransomware](https://thehackernews.com/2026/02/lazarus-group-uses-medusa-ransomware-in.html)
+- [UnsolicitedBooker Backdoors](https://thehackernews.com/2026/02/unsolicitedbooker-targets-central-asian.html)
+- [Anthropic Claude Scraping Controversy](https://thehackernews.com/2026/02/anthropic-says-chinese-ai-firms-used-16.html)
+- [1Campaign Malicious Google Ads](https://www.bleepingcomputer.com/news/security/1campaign-platform-helps-malicious-google-ads-evade-detection/)
+- [CarGurus 12.4M Data Breach](https://www.bleepingcomputer.com/news/security/cargurus-data-breach-exposes-information-of-124-million-accounts/)
+- [Microsoft Copilot Data Controls Update](https://www.bleepingcomputer.com/news/microsoft/microsoft-adds-copilot-data-controls-to-all-storage-locations/)
+- [Identity-First AI Security and Intent](https://www.bleepingcomputer.com/news/security/identity-first-ai-security-why-cisos-must-add-intent-to-the-equation/)
+
+---
+*文件結束 - 2026/02/25 資安情資戰情小組 編撰*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/24)
 
 本文件旨在為資安決策者與技術專家提供最新的全球威脅情報分析，並作為 AI 知識庫（如 NotebookLM）之核心訓練素材。

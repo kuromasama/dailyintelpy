@@ -1,3 +1,118 @@
+# 🛡️ 資安戰情白皮書 (2026/02/26)
+
+本白皮書旨在彙整近期全球關鍵資安威脅情報，提供技術深度分析與戰略防禦建議，專為企業決策者（CISO）、資安架構師及威脅獵人設計。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第一季度的威脅態勢顯示出**「供應鏈毒化」**與**「AI 生態系弱點」**的高度耦合。從 Google 大規模瓦解 UNC2814 的全球性攻勢，到 AI 開發工具（如 Claude Code）的遠端代碼執行漏洞，攻擊者正從傳統的邊界防禦轉向開發生命週期（SDLC）的最前端。
+
+**戰略建議：**
+1.  **AI 治理即資安**：開發者使用的 AI 輔助工具必須納入 EDR 與沙盒監測，嚴防 Prompt Injection 轉化為 RCE。
+2.  **軟體供應鏈深潛**：不僅要掃描原始碼，更需對 NuGet、npm 等第三方組件進行動態行為分析，防範惡意後門。
+3.  **社會工程防禦現代化**：針對日益猖獗的「語音詐騙外包（Vishing-as-a-Service）」與「偽裝面試（Fake Interview）」，應建立多因素身份驗證（MFA）與嚴格的入職硬體檢核機制。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中/英) | 威脅級別 |
+| :--- | :---: |
+| **Google 瓦解 UNC2814 (GRIDTIDE) 跨 42 國 53 起入侵案**<br>Google Disrupts UNC2814 GRIDTIDE Campaign | 🔴 極高 |
+| **Claude Code 漏洞允許遠端代碼執行與 API 金鑰竊取**<br>Claude Code Flaws Allow Remote Code Execution and API Key Exfiltration | 🔴 極高 |
+| **SLH 提供高額報酬招募女性進行 IT 客服語音釣魚攻擊**<br>SLH Offers $500–$1,000 Per Call to Recruit Women for Vishing | 🟠 高 |
+| **分類機制潰敗導致業務風險增加的五大主因**<br>Top 5 Ways Broken Triage Increases Business Risk | 🟡 中 |
+| **惡意 NuGet 套件竊取 ASP.NET 數據；npm 包投放惡意軟體**<br>Malicious NuGet Packages Stole ASP.NET Data | 🔴 極高 |
+| **手動流程正將國家安全置於險境**<br>Manual Processes Are Putting National Security at Risk | 🟠 高 |
+| **國防承包商員工因向俄羅斯經紀人出售 8 個零日漏洞被判刑**<br>Defense Contractor Employee Jailed for Selling 8 Zero-Days | 🔴 極高 |
+| **SolarWinds 修復 4 個允許 Root 權限執行的 Serv-U 關鍵漏洞**<br>SolarWinds Patches 4 Critical Serv-U 15.5 Flaws | 🔴 極高 |
+| **CISA 確認 FileZen CVE-2026-25108 漏洞正遭積極利用**<br>CISA Confirms Active Exploitation of FileZen Vulnerability | 🔴 極高 |
+| **偽裝 Next.js 面試測驗對開發者設備投放後門**<br>Fake Next.js job interview tests backdoor developer's devices | 🟠 高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Google vs. UNC2814 (GRIDTIDE) 戰役
+*   **🔍 技術原理**：UNC2814 是一個疑似具備國家背景的威脅組織，利用廣泛的基礎設施進行憑證收割。其核心工具為 GRIDTIDE 惡意軟體，具備模組化掃描功能，能識別受害者內網中未受保護的端點。
+*   **⚔️ 攻擊向量**：利用受損的雲端帳戶發送大量釣魚郵件，引導至偽裝的 OAuth 登入頁面，藉此繞過 MFA。
+*   **🛡️ 防禦緩解**：實施嚴格的 Conditional Access（條件式存取控制），限制異常地理位置的 OAuth 授權，並加強對異常 API 調用的審計。
+*   **🧠 名詞定義**：**C2 (Command and Control)**：攻擊者用來向受控電腦發送指令的伺服器。
+
+### 3.2 Claude Code AI 工具漏洞
+*   **🔍 技術原理**：Anthropic 推出的 Claude Code CLI 工具在處理不受信任的輸入時存在邏輯漏洞。攻擊者可透過 **Prompt Injection** 誘導 AI 生成惡意 Shell 命令並執行。
+*   **⚔️ 攻擊向量**：攻擊者在開源專案的 README 或代碼註釋中埋入惡意指令，當開發者使用 Claude Code 分析該專案時，觸發自動化執行，導致 API Key 被 exfiltrate（外洩）至遠端伺服器。
+*   **🛡️ 防禦緩解**：限制 AI CLI 工具的權限範圍（Sandboxing），嚴格過濾輸出內容中的敏感環境變數（如 `export`, `env`）。
+*   **🧠 名詞定義**：**Exfiltration**：未經授權將數據從受害者網路轉移至攻擊者控制點。
+
+### 3.3 SLH 語音釣魚 (Vishing) 人力招募
+*   **🔍 技術原理**：這是一種「社交工程即服務（SEaaS）」模式。SLH 組織利用心理學中的「女性聲音更具親和力且降低警覺」的特性，招募女性進行針對性的語音攻擊。
+*   **⚔️ 攻擊向量**：攻擊者撥打 IT Help Desk 電話，聲稱自己是某部門高層，因遺失手機要求重設 MFA 令牌或重設密碼。
+*   **🛡️ 防禦緩解**：落實「反向驗證機制」，要求客服在處理高權限請求時，必須透過公司內部通訊軟體再次確認身分。
+
+### 3.4 分類機制 (Triage) 潰敗風險
+*   **🔍 技術原理**：當漏洞掃描器產生海量數據，而分類（Triage）流程缺乏優先順序時，會導致「警報疲勞」，使真正的關鍵風險被淹沒在 False Positives 中。
+*   **⚔️ 攻擊向量**：攻擊者利用企業在「忽略低風險警報」時的盲點，將多個低風險漏洞串聯（Chain）成高風險攻擊。
+*   **🛡️ 防禦緩解**：導入 EPSS（Exploit Prediction Scoring System）預測漏洞被利用的可能性，而非僅依賴 CVSS 分數。
+*   **🧠 名詞定義**：**SLA (Service Level Agreement)**：在資安中指修復特定等級漏洞所需承諾的時間。
+
+### 3.5 NuGet 與 npm 惡意包
+*   **🔍 技術原理**：這是一種典型的**供應鏈投毒（Supply Chain Poisoning）**。攻擊者上傳名稱極其相似的包（Typosquatting），並在 `post-install` 腳本中植入惡意代碼。
+*   **⚔️ 攻擊向量**：一旦開發者 `npm install` 惡意包，腳本會自動掃描 `.env` 檔案並將 ASP.NET 的加密金鑰上傳至 C2。
+*   **🛡️ 防禦緩解**：使用 `npm audit` 或 Snyk 進行靜態分析，並實施內容安全策略（CSP）防止數據外連。
+
+### 3.6 手動流程對國安的影響
+*   **🔍 技術原理**：在國防與基礎設施中，手動維護的 ACL（存取控制列表）與 Patch 流程極易因人為疏忽導致配置錯誤（Misconfiguration）。
+*   **⚔️ 攻擊向量**：攻擊者掃描因手動更新延遲而暴露的已知漏洞（N-day），並利用配置錯誤進行橫向移動。
+*   **🛡️ 防禦緩解**：全面轉向 **Infrastructure as Code (IaC)** 與自動化漏洞修復管道（Automated Remediation）。
+
+### 3.7 內部威脅：出售零日漏洞 (Zero-Days)
+*   **🔍 技術原理**：內部員工擁有合法存取權限，能接觸到敏感的研究成果（Zero-day 漏洞），這些漏洞尚未被廠商知曉且無補丁。
+*   **⚔️ 攻擊向量**：員工將 8 個針對特定系統的 Zero-day 售予敵對國經紀人，繞過所有外圍防禦。
+*   **🛡️ 防禦緩解**：實施 **UEBA (User and Entity Behavior Analytics)** 監控異常的文件存取與導出行為。
+*   **🧠 名詞定義**：**Zero-day**：尚未發布修正程式的軟體漏洞。
+
+### 3.8 SolarWinds Serv-U 關鍵漏洞
+*   **🔍 技術原理**：Serv-U 檔案傳輸伺服器存在多個與記憶體管理相關的漏洞，允許未經授權的遠端攻擊者以系統 Root 權限執行代碼。
+*   **⚔️ 攻擊向量**：發送精心構造的請求至 Serv-U 監聽埠，引發 Buffer Overflow（緩衝區溢位）。
+*   **🛡️ 防禦緩解**：立即升級至 Serv-U 15.5 或更高版本，並限制 SFTP/HTTP 管理介面的外網存取。
+
+### 3.9 FileZen CVE-2026-25108 (CISA KEV)
+*   **🔍 技術原理**：FileZen 檔案共享設備存在輸入驗證漏洞，已被 CISA 加入 KEV 清單，代表現正有大規模攻擊發生。
+*   **⚔️ 攻擊向量**：利用特定的參數注入，攻擊者可以讀取伺服器上的敏感配置文件。
+*   **🛡️ 防禦緩解**：檢查日誌中是否含有異常的 URL 請求參數，並優先處理 CISA KEV 清單中的漏洞。
+
+### 3.10 偽裝 Next.js 面試測試
+*   **🔍 技術原理**：攻擊者冒充知名科技公司招聘，要求應徵者下載一個專案進行「技術測驗」。該專案隱藏了惡意後門。
+*   **⚔️ 攻擊向量**：在應徵者運行 `npm run dev` 時，腳本會靜默安裝一個遠端存取木馬（RAT），控制開發者的本機設備。
+*   **🛡️ 防禦緩解**：教育開發者在執行任何第三方測試代碼前，應在隔離的虛擬機（VM）或容器中運行。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 開發助手的「雙刃劍」效應**：2026 年底前，預計將出現首個完全由 AI 漏洞導致的大規模企業數據洩漏案。攻擊者將精確瞄準 AI 代理（Agents）的權限過大問題。
+2.  **供應鏈攻擊自動化**：惡意 NuGet/npm 包的產生將由大規模語言模型（LLM）驅動，自動生成看似合法但包含高隱蔽性邏輯炸彈的組件。
+3.  **深偽語音（Deepfake Audio）與 Vishing 的結合**：SLH 等組織將很快採用 AI 生成的特定高層聲音，這使得單純的語音辨識防線完全瓦解。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Google Disrupts UNC2814 GRIDTIDE Campaign](https://thehackernews.com/2026/02/google-disrupts-unc2814-gridtide.html)
+*   [Claude Code Flaws Allow RCE and API Exfiltration](https://thehackernews.com/2026/02/claude-code-flaws-allow-remote-code.html)
+*   [SLH Recruitment for Vishing Attacks](https://thehackernews.com/2026/02/slh-offers-5001000-per-call-to-recruit.html)
+*   [Top 5 Ways Broken Triage Increases Risk](https://thehackernews.com/2026/02/top-5-ways-broken-triage-increases.html)
+*   [Malicious NuGet Packages Stole ASP.NET Data](https://thehackernews.com/2026/02/malicious-nuget-packages-stole-aspnet.html)
+*   [Manual Processes Putting National Security at Risk](https://thehackernews.com/2026/02/manual-processes-are-putting-national.html)
+*   [Defense Contractor Jailed for Selling Zero-Days](https://thehackernews.com/2026/02/defense-contractor-employee-jailed-for.html)
+*   [SolarWinds Patches Critical Serv-U Flaws](https://thehackernews.com/2026/02/solarwinds-patches-4-critical-serv-u.html)
+*   [CISA Confirms Exploitation of FileZen Vulnerability](https://thehackernews.com/2026/02/cisa-confirms-active-exploitation-of.html)
+*   [Fake Next.js Job Interview Backdoor](https://www.bleepingcomputer.com/news/security/fake-nextjs-job-interview-tests-backdoor-developers-devices/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/25)
 
 本白皮書旨在深入分析 2026 年 2 月末全球資安威脅態勢，提供高密度的技術細節與防禦對策，作為企業決策者 (CISO) 與資安架構師部署防護與 AI 知識庫訓練之核心文獻。

@@ -1,3 +1,118 @@
+# 🛡️ 資安戰情白皮書 (2026/02/28)
+
+本文件旨在彙整 2026 年 2 月底之重大網路安全事件，分析當前威脅趨勢，並為組織提供高密度的技術防禦指引。本白皮書特別針對 AI 知識庫 (NotebookLM) 優化，確保語意關聯與技術細節之完整性。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在本報告期間，全球威脅態勢呈現「供應鏈滲透」與「跨境司法執法」兩極化的發展。一方面，國家級威脅組織 (如 APT37) 持續深化對物理隔離網路 (Air-Gapped) 的滲透技術；另一方面，開發環境 (Go Module) 與企業邊緣設備 (Ivanti, FreePBX) 成為新型態的攻擊跳板。
+
+**戰略建議：**
+1.  **零信任延伸至開發端：** 不僅是使用者登入，軟體建置過程中的第三方模組 (Supply Chain) 必須納入動態掃描。
+2.  **邊緣設備深度清理：** 針對 Ivanti 等邊緣設備，不能僅依賴修補程式，必須進行記憶體與磁碟鑑識以發現「潛伏型 (Dormant)」惡意軟體。
+3.  **物理隔離防禦重構：** 重新評估可移動式媒介 (USB) 與雲端協作平台 (Zoho) 的聯動風險，防止側向移動。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中文) | Original Title (English) |
+| :--- | :--- |
+| 美國司法部扣押與「殺豬盤」加密貨幣詐騙相關之 6100 萬美元 Tether | DoJ Seizes $61 Million in Tether Linked to Pig Butchering Crypto Scams |
+| 超過 900 個 Sangoma FreePBX 實例在持續的 Web Shell 攻擊中遭到入侵 | 900+ Sangoma FreePBX Instances Compromised in Ongoing Web Shell Attacks |
+| 惡意 Go 加密模組竊取密碼並部署 Rekoobe 後門 | Malicious Go Crypto Module Steals Passwords, Deploys Rekoobe Backdoor |
+| ScarCruft 利用 Zoho WorkDrive 與 USB 惡意軟體入侵物理隔離網路 | ScarCruft Uses Zoho WorkDrive and USB Malware to Breach Air-Gapped Networks |
+| 偽裝成遊戲工具的特洛伊木馬透過瀏覽器與聊天平台傳播 Java 遠端存取工具 (RAT) | Trojanized Gaming Tools Spread Java-Based RAT via Browser and Chat Platforms |
+| Meta 對巴西、中國、越南廣告商提起訴訟，打擊名人誘餌詐騙 | Meta Files Lawsuits Against Brazil, China, Vietnam Advertisers Over Celeb-Bait Scams |
+| 微軟正在測試 Windows 11 批次檔安全性改進功能 | Microsoft testing Windows 11 batch file security improvements |
+| APT37 駭客利用新型惡意軟體入侵物理隔離網路 | APT37 hackers use new malware to breach air-gapped networks |
+| 歐洲刑警組織領導打擊「The Com」駭客集團，逮捕 30 人 | Europol-led crackdown on The Com hackers leads to 30 arrests |
+| CISA 警告 RESURGE 惡意軟體可能潛伏在 Ivanti 設備中 | CISA warns that RESURGE malware can be dormant on Ivanti devices |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### A. 美國司法部扣押「殺豬盤」相關加密資產 (DoJ Seizes $61M)
+*   **🔍 技術原理**：攻擊者利用區塊鏈的匿名性，透過社交工程（Social Engineering）誘導受害者投資虛假平台。資金流向涉及「鏈跳 (Chain Hopping)」技術，試圖混淆路徑。
+*   **⚔️ 攻擊向量**：浪漫詐騙 (Romance Scams)、偽造虛擬貨幣交易所。
+*   **🛡️ 防禦緩解**：實施區塊鏈分析工具 (如 Chainalysis) 監控異常錢包地址；加強全民資安意識教育。
+*   **🧠 名詞定義**：**Pig Butchering (殺豬盤)**：一種長期的詐騙方式，先與受害者建立信任（養豬），最後誘騙其投入大筆金錢後消失（殺豬）。
+
+### B. Sangoma FreePBX Web Shell 大規模入侵
+*   **🔍 技術原理**：攻擊者利用 FreePBX 框架中的未授權遠端代碼執行 (RCE) 漏洞，上傳 PHP 基礎的 Web Shell，藉此取得作業系統層級的控制權。
+*   **⚔️ 攻擊向量**：過時的 VoIP 伺服器韌體、不安全的管理介面暴露於公網。
+*   **🛡️ 防禦緩解**：立即更新 FreePBX 至安全版本；對 `/var/www/html` 進行完整性檢查 (File Integrity Monitoring)；限制管理介面僅允許特定 IP 存取。
+*   **🧠 名詞定義**：**Web Shell**：上傳到伺服器的腳本，允許攻擊者透過瀏覽器遠端下達系統指令。
+
+### C. 惡意 Go 加密模組 (Go Crypto Module)
+*   **🔍 技術原理**：攻擊者在開源生態系發布名稱相似的惡意模組 (Typosquatting)，當開發者執行 `go get` 時，腳本會自動下載 Rekoobe 後門。
+*   **⚔️ 攻擊向量**：軟體供應鏈攻擊、開發環境配置錯誤。
+*   **🛡️ 防禦緩解**：使用 `go.sum` 驗證模組雜湊值；建立私有鏡像倉庫 (Private Proxy) 並進行資安掃描。
+*   **🧠 名詞定義**：**Rekoobe**：一種基於 Linux 的後門軟體，利用混淆技術躲避防毒軟體檢測，常模仿正常服務程序。
+
+### D. ScarCruft (APT37) 入侵物理隔離網路
+*   **🔍 技術原理**：利用 Zoho WorkDrive 作為指令與控制 (C2) 伺服器來規避流量檢測，並透過 USB 裝置傳遞惡意程式至不連網 (Air-Gapped) 的終端。
+*   **⚔️ 攻擊向量**：可移動式儲存媒體、合法雲端服務被濫用於 C2。
+*   **🛡️ 防禦緩解**：嚴格禁用 USB 自動執行 (AutoRun)；對物理隔離系統實施實體埠封閉；監控異常的雲端同步流量。
+*   **🧠 名詞定義**：**Air-Gapped Network (物理隔離網路)**：不與公共網路連接的電腦或網路，通常用於存放極敏感資訊。
+
+### E. 偽裝遊戲工具之 Java-Based RAT
+*   **🔍 技術原理**：攻擊者將 Java 遠端存取工具 (RAT) 包裝在遊戲外掛或優化器中，利用 Java 的跨平台特性，在 Windows 與 macOS 上皆能執行。
+*   **⚔️ 攻擊向量**：Discord/Telegram 頻道傳播、社交工程誘導執行。
+*   **🛡️ 防禦緩解**：禁止執行未經簽署的 Java 應用程式；使用端點偵測與回應 (EDR) 監控 `java.exe` 的子程序行為。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：一種木馬程式，允許駭客完全控制受害者的攝像頭、鍵盤及檔案系統。
+
+### F. Meta 控告跨國廣告商 (Celeb-Bait Scams)
+*   **🔍 技術原理**：利用 AI 深偽技術 (Deepfake) 或盜取名人照片製作廣告，誘導用戶點擊惡意連結進入釣魚網頁。
+*   **⚔️ 攻擊向量**：社交媒體平台廣告系統漏洞、廣告審核規避技術。
+*   **🛡️ 防禦緩解**：平台端加強廣告商身份驗證 (KYC)；用戶應對過於優渥的投資回報保持警覺。
+
+### G. Windows 11 批次檔 (.bat) 安全改進
+*   **🔍 技術原理**：微軟在 Windows 11 中整合反惡意軟體掃描介面 (AMSI)，讓安全軟體能掃描正在運行的批次指令碼內容，防止混淆代碼繞過。
+*   **⚔️ 攻擊向量**：利用批次檔進行初始腳本下載 (Dropper)。
+*   **🛡️ 防禦緩解**：開啟 AMSI 增強功能；限制非特權用戶執行 `.bat` 檔案。
+*   **🧠 名詞定義**：**AMSI (Antimalware Scan Interface)**：微軟提供的介面，讓防護軟體能深入檢視動態腳本 (如 PowerShell, VBScript) 的行為。
+
+### H. 歐洲刑警組織打擊「The Com」集團
+*   **🔍 技術原理**：該集團涉及暴力、電信詐騙與 SIM 卡劫持 (SIM Swapping)。
+*   **⚔️ 攻擊向量**：內部人威脅 (電信員工)、社交工程。
+*   **🛡️ 防禦緩解**：推行非簡訊基礎的二階段驗證 (如硬體密鑰 Yubikey)；電信商應加強 SIM 卡更換的驗證流程。
+*   **🧠 名詞定義**：**SIM Swapping**：將受害者的電話號碼轉移到攻擊者控制的 SIM 卡，藉此攔截簡訊驗證碼。
+
+### I. CISA 警告 RESURGE 惡意軟體 (Ivanti)
+*   **🔍 技術原理**：RESURGE 是一種具有「潛伏 (Dormant)」能力的惡意軟體，專門針對 Ivanti Connect Secure 設備，能在系統重啟或重置後依然存活。
+*   **⚔️ 攻擊向量**：已知漏洞 (CVE-2024-21887 等) 的連鎖利用。
+*   **🛡️ 防禦緩解**：對設備執行完全硬體重置 (Factory Reset)；查驗外部存取日誌中是否有非預期的 `/api/v1/configuration/users` 存取。
+*   **🧠 名詞定義**：**Persistence (持續感染)**：攻擊者在目標系統重啟或清理後，仍能保持控制權的技術。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **「供應鏈中毒」常態化**：未來一年，攻擊者將更多轉向 Go、Rust 等現代語言的包管理工具 (Crates, Go Modules)，利用開發者對開源套件的盲目信任。
+2.  **物理隔離不再安全**：APT 組織 (如 ScarCruft, APT37) 已經開發出成熟的 USB 與雲端同步橋接技術，未來物理隔離網路必須採取「多重實體存取控制」。
+3.  **邊緣設備成為永久據點**：如 Ivanti 與 FreePBX 事件所示，防火牆與 VPN 設備因其高權限與低監控度，將成為駭客的首選埋伏點，未來硬體層級的 Root of Trust (RoT) 將是關鍵。
+4.  **AI 賦能的自動化詐騙**：名人誘餌 (Celeb-Bait) 將演變為即時生成的語音與影像對話，大幅提升詐騙成功率。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [DoJ Seizes $61 Million in Tether Linked to Pig Butchering Crypto Scams](https://thehackernews.com/2026/02/doj-seizes-61-million-in-tether-linked.html)
+*   [900+ Sangoma FreePBX Instances Compromised in Ongoing Web Shell Attacks](https://thehackernews.com/2026/02/900-sangoma-freepbx-instances.html)
+*   [Malicious Go Crypto Module Steals Passwords, Deploys Rekoobe Backdoor](https://thehackernews.com/2026/02/malicious-go-crypto-module-steals.html)
+*   [ScarCruft Uses Zoho WorkDrive and USB Malware to Breach Air-Gapped Networks](https://thehackernews.com/2026/02/scarcruft-uses-zoho-workdrive-and-usb.html)
+*   [Trojanized Gaming Tools Spread Java-Based RAT via Browser and Chat Platforms](https://thehackernews.com/2026/02/trojanized-gaming-tools-spread-java.html)
+*   [Meta Files Lawsuits Against Brazil, China, Vietnam Advertisers Over Celeb-Bait Scams](https://thehackernews.com/2026/02/meta-files-lawsuits-against-brazil.html)
+*   [Microsoft testing Windows 11 batch file security improvements](https://www.bleepingcomputer.com/news/microsoft/microsoft-testing-windows-11-batch-file-security-improvements/)
+*   [APT37 hackers use new malware to breach air-gapped networks](https://www.bleepingcomputer.com/news/security/apt37-hackers-use-new-malware-to-breach-air-gapped-networks/)
+*   [Europol-led crackdown on The Com hackers leads to 30 arrests](https://www.bleepingcomputer.com/news/security/police-crackdown-on-the-com-cybercrime-gang-leads-to-30-arrests/)
+*   [CISA warns that RESURGE malware can be dormant on Ivanti devices](https://www.bleepingcomputer.com/news/security/cisa-warns-that-resurge-malware-can-be-dormant-on-ivanti-devices/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/27)
 
 這份白皮書旨在彙整 2026 年 2 月底發生的重大資安事件，提供深入的技術分析與戰略建議，專為資安長 (CISO)、架構師及 AI 知識庫訓練設計。

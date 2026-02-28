@@ -1,3 +1,93 @@
+# 🛡️ 資安戰情白皮書 (2026/03/01)
+
+本報告旨在為企業資安架構師、CISO 及技術決策者提供深度威脅分析。內容涵蓋了近期 AI 代理漏洞、雲端金鑰管理失能、供應鏈政治化風險及 Web3 安全威脅。本文件格式針對 **NotebookLM** 等 AI 知識庫優化，強調技術細節的深度與完整性。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**戰略綜述：**
+進入 2026 年，資安威脅已從傳統的惡意程式感染轉向「**AI 基礎設施滲透**」與「**高價值身分憑證收割**」。我們觀察到攻擊者開始利用本地端運行的 AI Agent (如 OpenClaw) 作為跳板，透過瀏覽器跨站指令執行（CSWSH）規避傳統防火牆。
+
+**核心建議：**
+1.  **AI 隔離政策 (AI Isolation)**：針對本地端運行的 AI 模型與 Agent 應實施嚴格的網路權限控管，禁止未授權的 WebSocket 本地存取。
+2.  **機密運算 (Confidential Computing)**：隨著供應鏈風險增加，企業應加速轉向如微軟最新推出的「開源隔離技術」機密虛擬機器（CVM），確保存儲與執行時期的數據加密。
+3.  **API 資產盤點**：針對 Google Cloud 等雲端服務，需即時審核 API Enablement 過程中的預設金鑰權限，防止 Gemini 等生成式 AI 的存取權限外流。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 | 關鍵影響 | 來源分類 |
+| :--- | :--- | :--- |
+| **ClawJacked Flaw** | 惡意網站可劫持本地 OpenClaw AI 代理 | AI 安全 / 本地漏洞 |
+| **Google Cloud API Exposure** | 數千組具備 Gemini 存取權限的 API 金鑰外洩 | 雲端安全 / 錯誤配置 |
+| **Anthropic Supply Chain Risk** | 美國國防部將 Anthropic 列為供應鏈風險名單 | 供應鏈 / 國家安全 |
+| **QuickLens Chrome Extension** | 惡意擴充功能盜取加密貨幣並發動 ClickFix 攻擊 | 瀏覽器安全 / 社交工程 |
+| **Korean Tax Agency Breach** | 韓國稅務機構外洩助記詞導致 $4.8M 加密貨幣遭竊 | 人為疏失 / Web3 安全 |
+| **MS Confidential VM (Open-Source)** | 微軟推出首款導入開源內部隔離技術的機密 VM | 防禦技術 / 雲端架構 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 ClawJacked: 本地 AI 代理劫持漏洞
+*   **🔍 技術原理**：OpenClaw AI 代理在本地端開啟了 WebSocket 伺服器以便通訊。然而，該服務缺乏對 `Origin` 標頭的嚴格校驗，導致 **跨站 WebSocket 劫持 (Cross-Site WebSocket Hijacking, CSWSH)**。
+*   **⚔️ 攻擊向量**：受害者訪問惡意網頁時，網頁腳本會嘗試建立一個指向 `ws://localhost:[PORT]` 的連線。由於缺乏身分驗證，攻擊者可發送指令讓 AI Agent 執行敏感操作（如讀取本地文件、發送私人數據）。
+*   **🛡️ 防禦緩解**：開發者應實施 **Origin Whitelisting** 與 **CSRF Tokens** 機制。終端用戶應限制本地服務的監聽範圍為 `127.0.0.1` 而非 `0.0.0.0`。
+*   **🧠 名詞定義**：**CSWSH (Cross-Site WebSocket Hijacking)** 是指攻擊者利用 WebSocket 握手時不檢查 Origin 的漏洞，從外部網站發起對內部服務的雙向通訊。
+
+### 3.2 Google Cloud API Key Gemini 權限外洩
+*   **🔍 技術原理**：在 Google Cloud 中啟用某些 API 時，系統可能會生成預設 API 金鑰。開發者常將這些金鑰硬編碼在客戶端程式碼中。若該金鑰具備「Gemini 訪問權限」，則攻擊者可濫用此金鑰進行大規模 AI 推論，導致企業帳單爆炸。
+*   **⚔️ 攻擊向量**：攻擊者利用自動化工具掃描 GitHub 儲存庫或公共 JS 文件，提取金鑰並測試其對 `generativelanguage.googleapis.com` 的存取能力。
+*   **🛡️ 防禦緩解**：實施 **API Key Restrictions** (限制 HTTP 參照位址或 IP)；啟用 **Workload Identity Federation** 以取代長期有效的 API 金鑰。
+*   **🧠 名詞定義**：**API Enablement** 指在雲端控制台開啟特定服務功能的過程，此過程常伴隨權限分配。
+
+### 3.3 Pentagon & Anthropic 供應鏈爭議
+*   **🔍 技術原理**：此非純技術漏洞，而是「**實體安全與主權 AI 風險**」。美國五角大廈擔憂 AI 模型供應商的股東結構或開發流程中存在不可控因素，可能導致軍事數據在外流或在衝突中被遠端禁用（Kill Switch）。
+*   **⚔️ 攻擊向量**：供應鏈滲透或透過軟體更新管道植入「模型後門」(Backdoor Attack)，導致 AI 在特定條件下給出錯誤的戰術建議。
+*   **🛡️ 防禦緩解**：推動 **AI Bill of Materials (AI BOM)**，審查模型的訓練數據源與權重完整性。
+*   **🧠 名詞定義**：**Supply Chain Risk Management (SCRM)** 是評估外部供應商對組織安全穩定性影響的過程。
+
+### 3.4 QuickLens 惡意擴充功能與 ClickFix
+*   **🔍 技術原理**：該擴充功能偽裝成 UI 工具，實則包含惡意腳本。它利用 **ClickFix 攻擊手法**，彈出虛擬的「瀏覽器損壞」警告，誘導用戶點擊按鈕來修復，實則在背景執行 PowerShell 或 Shell 指令。
+*   **⚔️ 攻擊向量**：透過 Chrome 擴充功能權限獲取用戶輸入（Keylogging）與讀取分頁數據，自動偵測網頁中的助記詞輸入框並攔截加密貨幣錢包權限。
+*   **🛡️ 防禦緩解**：企業應實施 **Browser Extension Whitelisting**，禁止員工安裝未經審核的擴充功能；偵測異常的 PowerShell 執行行為。
+*   **🧠 名詞定義**：**ClickFix Attack** 一種社交工程技術，誘導用戶執行看起來像是在「修復系統」但實際上是植入木馬的動作。
+
+### 3.5 韓國稅務局助記詞外洩事件
+*   **🔍 技術原理**：管理員在處理稅務相關的加密資產時，不慎將錢包的 **BIP-39 助記詞 (Seed Phrase)** 紀錄於可被外部存取的伺服器或文件中。
+*   **⚔️ 攻擊向量**：攻擊者透過滲透內網或掃描公開資產，取得 12 或 24 個單字。一旦取得助記詞，攻擊者即可重新生成私鑰並取得錢包完全控制權。
+*   **🛡️ 防禦緩解**：強制使用 **Hardware Security Modules (HSM)** 或 **Multi-Sig (多重簽章)** 錢包；禁止以明文形式儲存任何密鑰助記詞。
+*   **🧠 名詞定義**：**Seed Phrase (助記詞)** 是由隨機單字組成的序列，用於生成加密錢包的所有私鑰，一旦外洩等同失去所有資產。
+
+### 3.6 微軟機密虛擬機器 (Confidential VM) 開源技術
+*   **🔍 技術原理**：微軟在 Azure 上導入了基於開源項目的虛擬機器內部隔離技術。利用 **TEE (Trusted Execution Environment)**，確保即便是雲端供應商的管理者（Hypervisor 層級）也無法讀取 VM 內的內存數據。
+*   **⚔️ 攻擊向量**：防範的是 **Cold Boot Attacks** 或 **Insider Threats** (供應商內部員工盜取數據)。
+*   **🛡️ 防禦緩解**：利用 **Remote Attestation (遠端認證)** 來證明 VM 確實運行在受保護的硬體環境中。
+*   **🧠 名詞定義**：**TEE (可信執行環境)** 硬體層級的安全隔離區，確保數據在運算時也是加密狀態。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **Agent-in-the-Middle (AitM)**：隨著 AI Agent 普及，攻擊者將開發專門劫持 AI 決策流的惡意程式，導致 AI 給出具偏見或惡意的自動化指令。
+2.  **API 權限過度蔓延**：2026 年底前，預計 60% 的雲端外洩將與「過度授權的 AI API 金鑰」有關。
+3.  **瀏覽器即戰場**：惡意擴充功能將進化為利用 AI 進行即時社交工程（例如根據用戶瀏覽內容動態生成詐騙彈窗）。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [ClawJacked Flaw Lets Malicious Sites Hijack Local AI Agents](https://thehackernews.com/2026/02/clawjacked-flaw-lets-malicious-sites.html)
+*   [Thousands of Public Google Cloud API Keys Exposed with Gemini Access](https://thehackernews.com/2026/02/thousands-of-public-google-cloud-api.html)
+*   [Pentagon Designates Anthropic Supply Chain Risk Over AI Military Dispute](https://thehackernews.com/2026/02/pentagon-designates-anthropic-supply.html)
+*   [QuickLens Chrome extension steals crypto, shows ClickFix attack](https://www.bleepingcomputer.com/news/security/quicklens-chrome-extension-steals-crypto-shows-clickfix-attack/)
+*   [$4.8M in crypto stolen after Korean tax agency exposes wallet seed](https://www.bleepingcomputer.com/news/security/48m-in-crypto-stolen-after-korean-tax-agency-exposes-wallet-seed/)
+*   [微軟新款機密虛擬機器上陣，首度導入開源VM內部隔離技術](https://www.ithome.com.tw/review/174090)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/02/28)
 
 本文件旨在彙整 2026 年 2 月底之重大網路安全事件，分析當前威脅趨勢，並為組織提供高密度的技術防禦指引。本白皮書特別針對 AI 知識庫 (NotebookLM) 優化，確保語意關聯與技術細節之完整性。

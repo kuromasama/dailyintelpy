@@ -1,3 +1,144 @@
+# 🛡️ 資安戰情白皮書 (2026/03/03)
+
+本白皮書旨在針對 2026 年 3 月初發生的重大資安事件進行深度技術分析，並為企業資安架構師與技術決策者提供行動建議。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第一季的威脅態勢顯示出三個核心趨勢：**生成式 AI 整合風險、後量子密碼學（PQC）轉型期以及精準化的供應鏈滲透**。
+
+目前的攻擊者不再僅僅滿足於傳統的木馬植入，而是轉向利用瀏覽器內部 AI 組件（如 Gemini Panel）進行權限提升，或透過高度偽裝的漸進式網頁應用（PWA）進行社交工程。與此同時，國家級駭客（如 APT28 與北韓組織）持續鎖定供應鏈底層（npm）與作業系統老舊組件（MSHTML），利用零日漏洞進行大規模滲透。
+
+**戰略建議：**
+1. **防禦轉向內核與 AI 組件**：重新評估瀏覽器擴充功能權限，特別是針對與 AI 模型交互的介面。
+2. **加速量子抗性部署**：隨著 Google 推動 Merkle Tree 憑證，企業應開始盤點現有加密資產。
+3. **強化供應鏈完整性**：實施嚴格的 npm/NuGet 套件審核機制，並將行為監測延伸至端點執行期（Runtime）。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 標題 (Title) | 分類 |
+| :--- | :--- | :--- |
+| 1 | **New Chrome Vulnerability Let Malicious Extensions Escalate Privileges via Gemini Panel**<br>(新 Chrome 漏洞：惡意擴充功能可透過 Gemini 面板提升權限) | 瀏覽器安全 / AI 安全 |
+| 2 | **Google Develops Merkle Tree Certificates to Enable Quantum-Resistant HTTPS in Chrome**<br>(Google 開發 Merkle Tree 憑證，於 Chrome 實現抗量子 HTTPS) | 加密技術 / 後量子 |
+| 3 | **⚡ Weekly Recap: SD-WAN 0-Day, Critical CVEs, Telegram Probe, Smart TV Proxy SDK**<br>(週報回顧：SD-WAN 零日漏洞、關鍵 CVE、Telegram 調查與智慧電視代理 SDK) | 綜合威脅情報 |
+| 4 | **How to Protect Your SaaS from Bot Attacks with SafeLine WAF**<br>(如何使用 SafeLine WAF 保護您的 SaaS 免受機器人攻擊) | SaaS 安全 / 防護方案 |
+| 5 | **APT28 Tied to CVE-2026-21513 MSHTML 0-Day Exploited Before Feb 2026 Patch Tuesday**<br>(APT28 與 CVE-2026-21513 MSHTML 零日漏洞掛鉤，在 2 月補丁日前遭利用) | APT 攻擊 / 0-Day |
+| 6 | **North Korean Hackers Publish 26 npm Packages Hiding Pastebin C2 for Cross-Platform RAT**<br>(北韓駭客發佈 26 個 npm 套件，利用 Pastebin 隱藏 C2 通訊以執行跨平台 RAT) | 供應鏈攻擊 / 北韓駭客 |
+| 7 | **Fake Google Security site uses PWA app to steal credentials, MFA codes**<br>(偽造 Google 安全網站利用 PWA 應用竊取憑證與 MFA 驗證碼) | 網路釣魚 / 社交工程 |
+| 8 | **Alabama man pleads guilty to hacking, extorting hundreds of women**<br>(阿拉巴馬州男子承認駭入並勒索數百名女性) | 網路犯罪 / 私隱安全 |
+| 9 | **Florida woman imprisoned for massive Microsoft license fraud scheme**<br>(佛羅里達州女性因大規模微軟授權詐欺案入獄) | 軟體詐欺 / 法律制裁 |
+| 10 | **UK warns of Iranian cyberattack risks amid Middle-East conflict**<br>(英國警告中東衝突期間來自伊朗的網絡攻擊風險) | 地緣政治 / 國家級威脅 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Chrome Gemini 面板權限提升漏洞分析
+*   **🔍 技術原理**：該漏洞涉及 Chrome 瀏覽器新增的「Gemini 側邊欄面板」。惡意擴充功能利用了 Chrome Extensions API 中對於側邊欄通信協議的驗證缺失，誘導 Gemini 解析包含特定 Script 的數據流。
+*   **⚔️ 攻擊向量**：攻擊者開發看似無害的翻譯或效率工具擴充功能，請求 `sidePanel` 權限。當用戶在 Gemini 面板進行互動時，擴充功能透過 Cross-Origin 通訊注入惡意指令，繞過同源政策（SOP）並獲取高權限的 Chrome 內部 API 訪問權（如 `chrome.management` 或 `chrome.identity`）。
+*   **🛡️ 防禦緩解**：
+    1. 限制企業環境中具有「實驗性功能權限」的擴充功能安裝。
+    2. 啟用 Chrome Enterprise 的擴充功能封鎖清單。
+    3. 實施 CSP（內容安全政策）以限制側邊欄與外部域名的腳本執行。
+*   **🧠 名詞定義**：**Privilege Escalation (權限提升)**：指攻擊者利用系統漏洞獲得超出其原先授權範圍的訪問權限。
+
+### 3.2 Google Merkle Tree 抗量子憑證
+*   **🔍 技術原理**：傳統的 RSA 與 ECC 加密易受量子計算機（如 Shor 演算法）威脅。Merkle Tree 憑證基於雜湊函數（Hash-based cryptography），而非數論難題。透過 Merkle Tree 的樹狀結構，簽署過程可被簡化為一系列的雜湊運算，具有先天的抗量子性。
+*   **⚔️ 攻擊向量**：雖然此為防禦技術，但攻擊者可能針對過渡期間的「雙重簽署」（Hybrid Signatures）進行降級攻擊（Downgrade Attack），強迫客戶端回退到傳統易受攻擊的加密算法。
+*   **🛡️ 防禦緩解**：
+    1. 更新伺服器端的 TLS 庫（如 BoringSSL）以支持 Merkle Tree 簽署。
+    2. 監測 TLS 握手過程中的加密套件選擇。
+*   **🧠 名詞定義**：**PQC (Post-Quantum Cryptography)**：指能夠抵禦量子計算機攻擊的密碼演算法。
+
+### 3.3 SD-WAN 0-Day 與智慧電視 Proxy SDK 週報分析
+*   **🔍 技術原理**：SD-WAN 漏洞通常發生在管理平面（Management Plane）的認證繞過；而智慧電視 Proxy SDK 則是將受害設備變成「住宅代理」（Residential Proxy）出口，隱藏駭客的真實 IP。
+*   **⚔️ 攻擊向量**：透過未授權的 API 調用遠端執行代碼（RCE）。針對 IoT 設備，則是透過免費影音 App 綑綁惡意 SDK，利用 UpnP 自動開啟路徑映射。
+*   **🛡️ 防禦緩解**：
+    1. SD-WAN 管理介面嚴禁暴露於公網，必須經過 VPN 或 ZTNA。
+    2. 針對智慧家電建立獨立的 VLAN，禁止訪問企業內網。
+*   **🧠 名詞定義**：**Residential Proxy (住宅代理)**：使用普通家庭網路 IP 的代理服務，常被駭客用來規避基於地理位置或 IP 信譽的封鎖。
+
+### 3.4 SafeLine WAF 對抗 Bot 攻擊
+*   **🔍 技術原理**：現代 Bot 使用 AI 模擬人類鼠標移動與打字頻率。SafeLine WAF 透過行為指紋技術（Fingerprinting）辨識異常。
+*   **⚔️ 攻擊向量**：撞庫攻擊（Credential Stuffing）、黃牛搶購（Scalping）及內容抓取（Scraping）。
+*   **🛡️ 防禦緩解**：
+    1. 部署具有機器學習能力的 WAF。
+    2. 實施動態驗證（如挑戰-響應機制），增加 Bot 爬取成本。
+*   **🧠 名詞定義**：**WAF (Web Application Firewall)**：專門監控、過濾和阻斷進入 Web 應用程式之 HTTP/HTTPS 流量的防火牆。
+
+### 3.5 APT28 CVE-2026-21513 MSHTML 零日漏洞
+*   **🔍 技術原理**：儘管 IE 已退役，但 MSHTML 引擎（Trident）仍保留在 Windows 核心中。APT28 構造了特製的 Office 文件，利用 MSHTML 處理特定標記時的 UAF（Use-After-Free）漏洞觸發遠端代碼執行。
+*   **⚔️ 攻擊向量**：釣魚郵件夾帶 .docx 或 .rtf 附件，利用「預覽視窗」即可觸發感染，無需點擊連結。
+*   **🛡️ 防禦緩解**：
+    1. 套用 2026 年 2 月補丁，並禁用 Office 中的 ActiveX 控制項。
+    2. 啟用 Defender Exploit Guard 中的「攻擊面減少 (ASR)」規則。
+*   **🧠 名詞定義**：**APT28 (Fancy Bear)**：俄羅斯情報總局 (GRU) 轄下的頂尖駭客組織。
+
+### 3.6 北韓 npm 供應鏈攻擊與 Pastebin C2
+*   **🔍 技術原理**：惡意 npm 包（如 `colors-lib` 之類的拼寫錯誤包）在 `postinstall` 腳本中植入 base64 編碼的 Python 代碼。
+*   **⚔️ 攻擊向量**：代碼執行後會訪問 Pastebin 獲取下一階段的 C2 伺服器 IP，並下載跨平台 RAT（支持 Linux/macOS/Windows）。
+*   **🛡️ 防禦緩解**：
+    1. 使用 `npm audit` 進行自動化掃描。
+    2. 在 CI/CD 流程中實施網路隔離，禁止建置環境隨意訪問外部 Pastebin。
+*   **🧠 名詞定義**：**C2 (Command and Control)**：駭客用來發送指令給受感染電腦的中央伺服器。
+
+### 3.7 PWA 釣魚：偽造 Google Security 網站
+*   **🔍 技術原理**：PWA（Progressive Web App）可以安裝到主螢幕，且沒有明顯的瀏覽器網址列。攻擊者誘導用戶「安裝」此 App。
+*   **⚔️ 攻擊向量**：用戶以為在操作系統原生 App，輸入密碼與 MFA 碼。攻擊者利用 `navigator.credentials` 攔截敏感資訊。
+*   **🛡️ 防禦緩解**：
+    1. 教育員工識別「安裝應用」的提示訊息。
+    2. 強制執行基於硬體的 FIDO2 密鑰，這類釣魚網站無法有效中繼硬體密鑰的挑戰。
+*   **🧠 名詞定義**：**PWA (Progressive Web App)**：透過 Web 技術開發，但能提供類似原生 App 體驗的應用。
+
+### 3.8 阿拉巴馬州駭客勒索案
+*   **🔍 技術原理**：主要透過撞庫攻擊獲取受害者的 iCloud 或社交媒體帳戶權限。
+*   **⚔️ 攻擊向量**：利用受害者在不同網站重複使用密碼的習慣。
+*   **🛡️ 防禦緩解**：
+    1. 個人應全面啟用雙因素認證 (2FA)。
+    2. 使用密碼管理器（Password Manager）確保密碼唯一性。
+
+### 3.9 佛羅里達微軟授權詐欺
+*   **🔍 技術原理**：非法轉售金鑰、利用 KMS 漏洞進行大規模非法激活。
+*   **⚔️ 攻擊向量**：假冒代理商向企業或個人銷售極低價的非法授權，可能隱含惡意激活軟體。
+*   **🛡️ 防禦緩解**：
+    1. 僅透過微軟官網或認證合作夥伴購買授權。
+    2. 企業應定期進行軟體資產審計 (SAM)。
+
+### 3.10 伊朗針對英國之網路攻擊警示
+*   **🔍 技術原理**：因地緣政治衝突，伊朗支持的駭客組織（如 MuddyWater）傾向於攻擊能源與關鍵基礎設施（OT）。
+*   **⚔️ 攻擊向量**：利用邊緣設備漏洞（如 Fortinet, Citrix）作為跳板進入內網。
+*   **🛡️ 防禦緩解**：
+    1. 嚴格執行地理位置封鎖（Geo-blocking）。
+    2. 加強 7x24 監控來自伊朗相關 IP 段的掃描活動。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI-to-AI 攻擊興起**：駭客將開發「對抗性 AI」來自動繞過如 SafeLine WAF 般的 AI 防禦層。企業需要建立多模態的檢測機制。
+2.  **供應鏈攻擊自動化**：預計 2026 下半年將出現由 AI 生成的數以萬計惡意 npm 套件，這些套件將能自動適應開發者的代碼風格進行偽裝。
+3.  **後量子過渡期的混亂**：由於並非所有設備都支持 Merkle Tree 或 Dilithium 算法，駭客將針對加密通訊的「降級握手」進行大規模中間人攻擊（MITM）。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Chrome Gemini Panel Vulnerability - The Hacker News](https://thehackernews.com/2026/03/new-chrome-vulnerability-let-malicious.html)
+*   [Google Merkle Tree Certificates - The Hacker News](https://thehackernews.com/2026/03/google-develops-merkle-tree.html)
+*   [Weekly Recap - The Hacker News](https://thehackernews.com/2026/03/weekly-recap-sd-wan-0-day-critical-cves.html)
+*   [SafeLine WAF SaaS Protection - The Hacker News](https://thehackernews.com/2026/03/how-to-protect-your-saas-from-bot.html)
+*   [APT28 MSHTML 0-Day (CVE-2026-21513) - The Hacker News](https://thehackernews.com/2026/03/apt28-tied-to-cve-2026-21513-mshtml-0.html)
+*   [North Korean npm Supply Chain Attack - The Hacker News](https://thehackernews.com/2026/03/north-korean-hackers-publish-26-npm.html)
+*   [PWA Phishing Google Security - BleepingComputer](https://www.bleepingcomputer.com/news/security/fake-google-security-site-uses-pwa-app-to-steal-credentials-mfa-codes/)
+*   [Alabama Extortion Case - BleepingComputer](https://www.bleepingcomputer.com/news/security/alabama-man-pleads-guilty-to-hacking-extorting-hundreds-of-women/)
+*   [Microsoft License Fraud - BleepingComputer](https://www.bleepingcomputer.com/news/security/florida-woman-imprisoned-for-massive-microsoft-license-fraud-scheme/)
+*   [UK Warning on Iranian Cyberattacks - BleepingComputer](https://www.bleepingcomputer.com/news/security/uk-warns-of-iranian-cyberattack-risks-amid-middle-east-conflict/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/02)
 
 ---

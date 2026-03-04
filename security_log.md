@@ -1,3 +1,118 @@
+# 🛡️ 資安戰情白皮書 (2026/03/05)
+
+本文件旨在彙整 2026 年 3 月初全球重大資安事件，為企業資安架構師、技術長（CTO）及資訊安全長（CISO）提供高密度的技術情資，並適合作為 AI 知識庫（如 NotebookLM）之核心訓練素材。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第一季度的威脅態勢顯示出**「地緣政治驅動」**與**「極致化漏洞利用」**的雙重趨勢。駭客組織（Hacktivists）已將 DDoS 攻擊與實體衝突掛鉤；與此同時，行動裝置漏洞利用工具包（Exploit Kit）如 Coruna 的出現，證明了針對 iOS 的自動化攻擊鏈已達到工業化規模。
+
+**戰略建議：**
+1.  **AI 治理先行**：隨著 AI 應用的普及，企業必須立即採用標準化的 AI 使用控制與治理框架（如新發布的 RFP 模板），防止敏感資料外洩。
+2.  **供應鏈防禦深度化**：開源生態系（如 Packagist）的投毒事件頻傳，應導入 SCA（軟體成分分析）並結合動態行為分析。
+3.  **零信任行動化**：針對 iOS 等封閉系統的進階攻擊已普及，需強化行動裝置管理（MDM）與端點偵測（EDR）的協同。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 標題 (中英對照) | 威脅類別 |
+| :--- | :--- | :--- |
+| 01 | **中東衝突後 149 起駭客主義 DDoS 攻擊席捲 16 國 110 個組織**<br>149 Hacktivist DDoS Attacks Hit 110 Organizations in 16 Countries After Middle East Conflict | DDoS / 地緣政治 |
+| 02 | **Coruna iOS 漏洞利用工具包利用 23 個漏洞組成五條攻擊鏈，針對 iOS 13–17.2.1**<br>Coruna iOS Exploit Kit Uses 23 Exploits Across Five Chains Targeting iOS 13–17.2.1 | 行動裝置 / 漏洞利用 |
+| 03 | **全新 AI 使用控制與 AI 治理 RFP 模板發布**<br>New RFP Template for AI Usage Control and AI Governance | 合規 / AI 安全 |
+| 04 | **Packagist 上的虛假 Laravel 套件在多平台部署遠端存取木馬 (RAT)**<br>Fake Laravel Packages on Packagist Deploy RAT on Windows, macOS, and Linux | 供應鏈攻擊 / 木馬 |
+| 05 | **與 APT41 相關的 Silver Dragon 組織利用 Cobalt Strike 與 Google Drive C2 攻擊政府機構**<br>APT41-Linked Silver Dragon Targets Governments Using Cobalt Strike and Google Drive C2 | APT 攻擊 / 雲端濫用 |
+| 06 | **CISA 將 VMware Aria Operations 遭積極利用的漏洞 CVE-2026-22719 加入 KEV 目錄**<br>CISA Adds Actively Exploited VMware Aria Operations Flaw CVE-2026-22719 to KEV Catalog | 關鍵漏洞 / KEV |
+| 07 | **Windows 10 KB5075039 更新修復損壞的修復環境 (WinRE)**<br>Windows 10 KB5075039 update fixes broken Recovery Environment | 補丁管理 / 系統安全 |
+| 08 | **虛假 LastPass 支援電子郵件嘗試竊取加密保險庫密碼**<br>Fake LastPass support email threads try to steal vault passwords | 網路釣魚 / 社交工程 |
+| 09 | **Cisco 警告 Secure FMC 存在最高等級漏洞，可獲取 Root 權限**<br>Cisco warns of max severity Secure FMC flaws giving root access | 基礎設施 / 權限提升 |
+| 10 | **間諜級 Coruna iOS 漏洞包現被用於加密貨幣竊取攻擊**<br>Spyware-grade Coruna iOS exploit kit now used in crypto theft attacks | 金融犯罪 / 行動惡意軟體 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 01. 地緣政治驅動的 DDoS 浪潮
+*   **🔍 技術原理**：駭客利用反射式放大攻擊（Reflection Attack）及應用層 HTTP Flood，鎖定金融與政府門戶。
+*   **⚔️ 攻擊向量**：利用 DNS, NTP 等協定漏洞進行流量放大，或透過殭屍網路發動 Layer 7 攻擊。
+*   **🛡️ 防禦緩解**：部署雲端 DDoS 清洗中心（如 Cloudflare, Akamai），實施速率限制（Rate Limiting）與 Geo-blocking。
+*   **🧠 名詞定義**：**Hacktivist**：具有政治或社會動機的駭客，攻擊行為多為抗議或宣傳。
+
+### 02 & 10. Coruna iOS 行動漏洞利用深度分析
+*   **🔍 技術原理**：這套工具包集成了 23 個漏洞，能根據目標 iOS 版本自動選擇五種不同的漏洞鏈（Exploit Chains），繞過沙箱（Sandbox）並獲取內核權限。
+*   **⚔️ 攻擊向量**：通常透過惡意簡訊（Smishing）或瀏覽器水坑攻擊（Watering Hole）誘發 WebKit 漏洞。
+*   **🛡️ 防禦緩解**：強制升級至 iOS 17.3 以上版本；定期檢查裝置是否有異常的耗電或數據流量。
+*   **🧠 名詞定義**：**Zero-click Exploit**：無需使用者點擊任何連結即可感染裝置的漏洞利用方式。
+
+### 03. AI 治理與 RFP 框架
+*   **🔍 技術原理**：企業需定義 LLM 的輸入與輸出過濾規則（Prompt Injection 防護、敏感資料去識別化）。
+*   **⚔️ 攻擊向量**：Prompt Injection、訓練數據投毒（Data Poisoning）、Shadow AI（未經授權的 AI 使用）。
+*   **🛡️ 防禦緩解**：參考新發布的 RFP 模板建立選型標準，部署 AI Firewall（如 Robust Intelligence 等方案）。
+*   **🧠 名詞定義**：**RFP (Request for Proposal)**：需求建議書，企業採購資安方案時的技術規格標準。
+
+### 04. Laravel 供應鏈投毒事件
+*   **🔍 技術原理**：攻擊者在 Packagist（PHP 套件庫）上上傳與知名套件名稱相似（Typosquatting）的惡意包，在 `post-install` 腳本中植入惡意代碼。
+*   **⚔️ 攻擊向量**：開發者誤引用虛假套件，導致跨平台的 Python RAT 被自動下載並執行。
+*   **🛡️ 防禦緩解**：使用 `composer.lock` 鎖定版本，並對下載的 Vendor 代碼進行自動化掃描。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：遠端存取木馬，允許駭客完全控制受害主機。
+
+### 05. Silver Dragon (APT41) 雲端 C2 戰術
+*   **🔍 技術原理**：該組織利用 Google Drive 的 API 作為指令控制伺服器（C2），這使得惡意流量隱藏在合法的 HTTPS 雲端流量中。
+*   **⚔️ 攻擊向量**：初始滲透透過漏洞或 SQL 注入，隨後部屬 Cobalt Strike 並透過雲端空間進行數據回傳。
+*   **🛡️ 防禦緩解**：監控企業內異常的 API 呼叫（特別是針對 Google Cloud 的高頻傳輸），實施邊界流量深度包檢測（DPI）。
+*   **🧠 名詞定義**：**C2 (Command and Control)**：駭客用來下達指令給受感染電腦的中心伺服器。
+
+### 06. VMware Aria Operations 緊急漏洞 (CVE-2026-22719)
+*   **🔍 技術原理**：這是一個遠端代碼執行（RCE）漏洞，攻擊者可在未經身分驗證的情況下獲取系統控制權。
+*   **⚔️ 攻擊向量**：針對管理介面發送特製的 HTTP 請求。
+*   **🛡️ 防禦緩解**：立即更新至最新修補版本。CISA 要求聯邦機構在特定限期內修補（KEV 目錄要求）。
+*   **🧠 名詞定義**：**KEV (Known Exploited Vulnerabilities)**：CISA 維護的已被廣泛利用的漏洞名單。
+
+### 07. Windows 10 WinRE 維護更新 (KB5075039)
+*   **🔍 技術原理**：修復了 Windows 恢復環境中的安全性缺陷，該缺陷可能導致攻擊者繞過 BitLocker 加密。
+*   **⚔️ 攻擊向量**：本地攻擊者或具有物理存取權的人員利用 WinRE 漏洞進行權限提升。
+*   **🛡️ 防禦緩解**：派送 KB5075039 更新，確保 WinRE 分割區空間足夠以利更新成功。
+*   **🧠 名詞定義**：**WinRE**：Windows Recovery Environment，用於修復、重設或診斷系統。
+
+### 08. LastPass 社交工程釣魚分析
+*   **🔍 技術原理**：釣魚郵件偽裝成技術支援通知，引導用戶進入高度仿真的網站輸入 Master Password 及二階段驗證碼。
+*   **⚔️ 攻擊向量**：心理操縱（Sense of Urgency），針對密碼管理員這種關鍵基礎設施進行精準打擊。
+*   **🛡️ 防禦緩解**：推動無密碼化（Passkeys），並教育員工 LastPass 官方絕不會透過 Email 要求輸入主密碼。
+*   **🧠 名詞定義**：**Credential Harvesting**：憑證收割，是大規模收集使用者帳號密碼的過程。
+
+### 09. Cisco Secure FMC 權限提升漏洞
+*   **🔍 技術原理**：Cisco Firepower Management Center (FMC) 存在指令注入漏洞，允許認證用戶提升至 Root。
+*   **⚔️ 攻擊向量**：惡意內部人員或已獲取低權限帳號的外部駭客利用該漏洞接管整個防火牆管理平台。
+*   **🛡️ 防禦緩解**：應用 Cisco 發布的安全補丁，限制管理介面的存取來源 IP。
+*   **🧠 名詞定義**：**Root Access**：Linux 系統中的最高管理權限。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **移動端漏洞商品化**：隨著 Coruna 工具包的成熟，這類「點擊即用」的漏洞利用包將從國家級駭客流向一般網路犯罪分子（如加密貨幣竊盜組織）。
+2.  **Living-off-the-Cloud (LotC) 激增**：未來將有更多 APT 組織利用 Google Drive, OneDrive, GitHub 等合法雲端服務作為 C2 與數據傳輸通道，防禦者將難以僅透過域名過濾進行阻斷。
+3.  **AI 攻防自動化**：預計 2026 年底前，將出現能自動尋找 Packagist 或 NPM 套件漏洞並生成虛假替代包的 AI 攻擊代理程式。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [149 Hacktivist DDoS Attacks Hit 110 Organizations](https://thehackernews.com/2026/03/149-hacktivist-ddos-attacks-hit-110.html)
+*   [Coruna iOS Exploit Kit Analysis](https://thehackernews.com/2026/03/coruna-ios-exploit-kit-uses-23-exploits.html)
+*   [New RFP Template for AI Governance](https://thehackernews.com/2026/03/new-rfp-template-for-ai-usage-control.html)
+*   [Fake Laravel Packages on Packagist](https://thehackernews.com/2026/03/fake-laravel-packages-on-packagist.html)
+*   [Silver Dragon APT41 Targets Governments](https://thehackernews.com/2026/03/apt41-linked-silver-dragon-targets.html)
+*   [CISA KEV Adds VMware Aria Flaw](https://thehackernews.com/2026/03/cisa-adds-actively-exploited-vmware.html)
+*   [Windows 10 KB5075039 WinRE Fix](https://www.bleepingcomputer.com/news/microsoft/windows-10-kb5075039-update-fixes-broken-recovery-environment/)
+*   [Fake LastPass Phishing Campaign](https://www.bleepingcomputer.com/news/security/fake-lastpass-support-email-threads-try-to-steal-vault-passwords/)
+*   [Cisco Secure FMC Max Severity Flaws](https://www.bleepingcomputer.com/news/security/cisco-warns-of-max-severity-secure-fmc-flaws-giving-root-access/)
+*   [Coruna Exploit Kit and Crypto Theft](https://www.bleepingcomputer.com/news/security/spyware-grade-coruna-ios-exploit-kit-now-used-in-crypto-theft-attacks/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/04)
 
 本文件旨在為企業決策者 (CISO)、資安架構師及威脅分析師提供當前全球資安威脅的深度剖析。內容涵蓋 AI 驅動的攻擊、身份驗證架構的脆弱性、以及國家級駭客組織的最新動向。

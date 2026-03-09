@@ -1,3 +1,138 @@
+# 🛡️ 資安戰情白皮書 (2026/03/10)
+
+本報告旨在彙整近期全球關鍵資安威脅與技術趨勢，提供給資安架構師（CISO）及技術研究人員作為防禦策略與 AI 知識庫訓練之核心素材。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第一季的威脅態勢顯示，**「供應鏈污染」**與**「跨裝置攻擊向量」**已成為攻擊者的首選。從 npm 惡意套件到瀏覽器擴充功能的非法轉讓，攻擊者正精準鎖定開發者與維運人員。同時，針對亞太地區關鍵基礎設施（Critical Infrastructure）的行動並未減緩，Mimikatz 等經典工具在 Web Server 漏洞利用後依然表現強悍。
+
+**戰略建議：**
+1.  **零信任延伸**：不僅限於網路存取，應延伸至開發環境（npm/Python 套件審查）與瀏覽器插件管理。
+2.  **物理/近場防禦**：針對 AirDrop 等點對點傳輸協議，應建立更嚴格的公司設備管理策略（MDM）。
+3.  **雲端 SaaS 審計**：針對 Salesforce Aura 等複雜組件進行持續性的權限掃描與組態稽核。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 標題 (中/英) | 威脅類型 |
+| :--- | :--- | :--- |
+| 01 | **偽裝 OpenClaw 安裝程式之 npm 惡意套件部署 RAT 並竊取 macOS 憑證** <br> Malicious npm Package Posing as OpenClaw Installer Deploys RAT | 供應鏈攻擊 / macOS |
+| 02 | **UNC4899 透過 AirDrop 傳輸木馬化檔案入侵加密貨幣公司** <br> UNC4899 Breached Crypto Firm After Developer AirDropped Trojanized File | 社交工程 / 橫向移動 |
+| 03 | **本週回顧：Qualcomm 零日漏洞、iOS 漏洞鏈、AirSnitch 攻擊與 Vibe 編碼惡意軟體** <br> Weekly Recap: Qualcomm 0-Day, iOS Exploit Chains, AirSnitch Attack | 移動端安全 / AI 惡意代碼 |
+| 04 | **資安平台能否最終為中型市場提供價值？** <br> Can the Security Platform Finally Deliver for the Mid-Market? | 市場策略 / MSSP |
+| 05 | **Chrome 擴充功能在所有權轉讓後變身惡意插件，實現代碼注入與數據竊取** <br> Chrome Extension Turns Malicious After Ownership Transfer | 瀏覽器安全 / 供應鏈 |
+| 06 | **亞太地區關鍵基礎設施遭網頁伺服器漏洞與 Mimikatz 攻擊** <br> Web Server Exploits and Mimikatz Used in Attacks Targeting Asian Critical Infrastructure | APT 攻擊 / 關鍵基礎設施 |
+| 07 | **荷蘭政府針對 Signal、WhatsApp 帳戶劫持攻擊發布預警** <br> Dutch govt warns of Signal, WhatsApp account hijacking attacks | 帳號劫持 / 即時通訊 |
+| 08 | **Ericsson 美國分公司因服務商遭駭導致數據外洩** <br> Ericsson US discloses data breach after service provider hack | 第三方風險 / 數據外洩 |
+| 09 | **Microsoft Teams 將標記試圖加入會議的第三方機器人** <br> Microsoft Teams will tag third-party bots trying to join meetings | 企業協作安全 |
+| 10 | **ShinyHunters 聲稱正針對 Salesforce Aura 進行持續性的數據竊取** <br> ShinyHunters claims ongoing Salesforce Aura data theft attacks | 雲端資安 / SaaS 漏洞 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 01. npm 惡意套件 (OpenClaw RAT)
+*   **🔍 技術原理**：攻擊者利用 `npm` 的 `preinstall` 腳本特性，在用戶執行安裝命令時自動觸發惡意代碼。該惡意軟體專門針對 macOS 系統，能枚舉並提取 Keychain 中的敏感憑證。
+*   **⚔️ 攻擊向量**：開發者在終端執行 `npm install openclaw-installer`（偽造名稱），導致惡意二進制文件被下載並靜默運行。
+*   **🛡️ 防禦緩解**：啟用 `npm install --ignore-scripts`；使用套件審計工具（如 Socket.dev 或 Snyk）；限制開發環境對特定系統路徑（如 `~/Library/Keychains`）的存取權限。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：遠端存取木馬，允許攻擊者遠程控制受害者主機。
+
+---
+
+### 02. UNC4899 AirDrop 攻擊
+*   **🔍 技術原理**：這是一種結合物理接近與社交工程的攻擊。攻擊者（UNC4899，疑與北韓有關）誘使開發者將個人受感染設備上的檔案透過 AirDrop 傳送到受信任的工作設備。
+*   **⚔️ 攻擊向量**：利用 AirDrop 的便利性規避企業防火牆與電子郵件網關的檢測。檔案包含木馬化的合法軟體副本。
+*   **🛡️ 防禦緩解**：實施嚴格的 MDM 政策，禁用或限制 AirDrop 接收來源；教育員工不得在工作設備接收來自不明來源的無線傳輸。
+*   **🧠 名詞定義**：**UNC (Uncategorized)**：Mandiant 用於標識尚未歸類為已知 APT 組件的威脅群體。
+
+---
+
+### 03. 移動端與 Vibe-Coded 惡意軟體
+*   **🔍 技術原理**：Qualcomm 與 iOS 的漏洞鏈允許攻擊者實現核心層級（Kernel-level）的代碼執行。**AirSnitch** 利用無線協議漏洞進行中間人攻擊。**Vibe-Coded Malware** 則是指由 AI 協作開發、針對特定「氛圍」或情境生成的高度規避性代碼。
+*   **⚔️ 攻擊向量**：利用基頻（Baseband）或移動端瀏覽器引擎的 0-Day 漏洞進行遠程溢出。
+*   **🛡️ 防禦緩解**：強制執行操作系統版本更新；使用硬體安全密鑰（FIDO2）；監控設備異常流量（如不尋常的藍牙/Wi-Fi 通訊）。
+*   **🧠 名詞定義**：**Vibe-Coding**：利用自然語言描述需求，由 AI 模型生成完整代碼的開發方式。
+
+---
+
+### 04. 中型市場資安平台 (Mid-Market Platform)
+*   **🔍 技術原理**：中型企業通常缺乏龐大的 SOC 團隊，攻擊者利用其安全工具碎片化（Point Solutions）的弱點。整合式平台（XDR/CNAPP）旨在降低維運門檻。
+*   **⚔️ 攻擊向量**：攻擊者針對缺乏連動防禦的單一弱點（如未受監控的 VPN 帳號）進行突破。
+*   **🛡️ 防禦緩解**：整合日誌與自動化響應（SOAR）；採用託管偵測與回應（MDR）服務。
+
+---
+
+### 05. Chrome 擴充功能所有權劫持
+*   **🔍 技術原理**：攻擊者購買擁有大量用戶基礎的合法 Chrome 擴充功能，隨後推送包含惡意代碼（如 JS 注入）的更新版本。
+*   **⚔️ 攻擊向量**：利用瀏覽器擴充功能的自動更新機制與其對網頁內容（DOM）的廣泛讀寫權限。
+*   **🛡️ 防禦緩解**：企業應使用 GPO 限制擴充功能安裝清單；監控擴充功能權限變更（Permissions change notification）。
+*   **🧠 名詞定義**：**Code Injection**：將惡意腳本插入到合法進程或網頁中執行的技術。
+
+---
+
+### 06. 亞太基礎設施與 Mimikatz
+*   **🔍 技術原理**：攻擊者先透過 Web Server 漏洞（如 RCE 或文件上傳）取得 WebShell，隨後上傳 Mimikatz 提取記憶體中的 LSA 秘密與純文本密碼。
+*   **⚔️ 攻擊向量**：針對過時的 IIS 或 Apache 伺服器進行滲透，作為跳板進入內網。
+*   **🛡️ 防禦緩解**：停用 WDigest 驗證；啟用 Credential Guard (Windows 10+ / Server 2016+)；實施網路分段（Micro-segmentation）。
+*   **🧠 名詞定義**：**Mimikatz**：一款開源工具，可從內存中提取 Windows 憑證（Hashes, PINs, Passwords）。
+
+---
+
+### 07. 通訊軟體劫持 (Signal/WhatsApp)
+*   **🔍 技術原理**：攻擊者透過「簡訊攔截」（SMS Sniffing）或社交工程騙取驗證碼，隨後在攻擊者設備上註冊該帳號，實現接管。
+*   **⚔️ 攻擊向量**：利用行動通訊協議（SS7）缺陷或針對電信業者的 SIM Swap 攻擊。
+*   **🛡️ 防禦緩解**：在 Signal/WhatsApp 中啟用「二階段驗證（PIN 碼）」；避免僅依賴簡訊作為唯一驗證途徑。
+
+---
+
+### 08. Ericsson 第三方外洩
+*   **🔍 技術原理**：典型的第三方風險。攻擊者並非直接侵入 Ericsson 核心網絡，而是攻破了與其合作的服務提供商，從而獲取特定業務數據。
+*   **⚔️ 攻擊向量**：供應鏈關係中的低防護節點（Sub-contractor）。
+*   **🛡️ 防禦緩解**：建立第三方資安風險管理體系（TPRM）；對敏感數據進行加密存儲與動態脫敏。
+
+---
+
+### 09. Microsoft Teams 機器人標籤
+*   **🔍 技術原理**：為了防止攻擊者利用第三方 API 靜默加入會議監聽，微軟引入了強制性的「標記」機制。
+*   **⚔️ 攻擊向量**：利用 API 自動化加入大企業內部的公開會議，進行竊聽或錄音。
+*   **🛡️ 防禦緩解**：會議管理員應定期審查會議大廳（Lobby）中的參與者；限制只有組織內人員可直接加入會議。
+
+---
+
+### 10. Salesforce Aura 數據竊取
+*   **🔍 技術原理**：ShinyHunters 利用了 Salesforce Aura 組件的錯誤配置或已知漏洞（如訪問控制缺陷），自動化爬取（Scrape）組織內部的客戶數據（PII）。
+*   **⚔️ 攻擊向量**：針對未加密或過度暴露的 API 端點。
+*   **🛡️ 防禦緩解**：定期進行 Salesforce Health Check；審查 Guest User 權限；監控大流量的異常數據外流（Data Exfiltration）。
+*   **🧠 名詞定義**：**ShinyHunters**：著名的數據盜竊黑客組織，曾對多家跨國企業進行勒索。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 生成惡意軟體的平民化**：隨著「Vibe-coding」工具的普及，編寫具備高度變形能力的惡意腳本門檻將大幅降低，靜態特徵碼檢測將徹底失效。
+2.  **macOS 成為 APT 戰場的新常態**：隨著企業內 macOS 設備佔比提升，針對 Keychain 與 TCC (Transparency, Consent, and Control) 的繞過技術將頻繁出現。
+3.  **瀏覽器生態系統的武器化**：擴充功能所有權的買賣將形成黑市，成為繞過端點偵測與回應 (EDR) 的新型隱蔽通道。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Malicious npm Package Posing as OpenClaw Installer](https://thehackernews.com/2026/03/malicious-npm-package-posing-as.html)
+*   [UNC4899 Breached Crypto Firm via AirDrop](https://thehackernews.com/2026/03/unc4899-used-airdrop-file-transfer-and.html)
+*   [Weekly Recap: Qualcomm 0-Day, iOS Exploit Chains](https://thehackernews.com/2026/03/weekly-recap-qualcomm-0-day-ios-exploit.html)
+*   [Can the Security Platform Finally Deliver?](https://thehackernews.com/2026/03/can-security-platform-finally-deliver.html)
+*   [Chrome Extension Turns Malicious After Ownership Transfer](https://thehackernews.com/2026/03/chrome-extension-turns-malicious-after.html)
+*   [Web Server Exploits and Mimikatz Targeting Asian Infrastructure](https://thehackernews.com/2026/03/web-server-exploits-and-mimikatz-used.html)
+*   [Dutch Govt Warns of Signal, WhatsApp Hijacking](https://www.bleepingcomputer.com/news/security/dutch-govt-warns-of-signal-whatsapp-account-hijacking-attacks/)
+*   [Ericsson US Discloses Data Breach](https://www.bleepingcomputer.com/news/security/ericsson-us-discloses-data-breach-after-service-provider-hack/)
+*   [Microsoft Teams Will Tag Third-Party Bots](https://www.bleepingcomputer.com/news/microsoft/microsoft-teams-will-tag-third-party-bots-in-meeting-lobbies/)
+*   [ShinyHunters Claims Ongoing Salesforce Aura Attacks](https://www.bleepingcomputer.com/news/security/shinyhunters-claims-ongoing-salesforce-aura-data-theft-attacks/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/09)
 
 ---

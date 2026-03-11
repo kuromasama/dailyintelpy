@@ -1,3 +1,107 @@
+# 🛡️ 資安戰情白皮書 (2026/03/12)
+
+這份白皮書旨在深入分析 2026 年 3 月上旬的全球資安威脅態勢，涵蓋 AI 漏洞、供應鏈攻擊、關鍵基礎設施防護及企業治理。本文件為 AI 知識庫 (NotebookLM) 優化設計，提供高密度的技術細節與攻防維度分析。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第一季的資安情勢呈現「**自動化攻防轉型期**」。攻擊者已不再滿足於傳統腳本，而是將 AI Agent 整合進攻擊鏈中，實現從偵察到滲透的全面自動化。
+
+*   **威脅重心偏移**：攻擊焦點正從「應用軟體漏洞」轉向「AI 邏輯漏洞」與「自動化工作流漏洞 (CI/CD)」。
+*   **速度成為關鍵**：UNC6426 等組織能在 72 小時內完成從供應鏈植入到獲取雲端最高權限，留給企業的應變時間已縮短至小時級。
+*   **戰略建議**：
+    1.  **AI 安全審核 (AI Red Teaming)**：必須針對企業使用的 AI Agent 與瀏覽器擴充功能進行動態提示詞注入（Prompt Injection）測試。
+    2.  **供應鏈零信任**：對 Rust、npm 等開發套件實施嚴格的靜態與動態分析，防範惡意套件自動化竊取憑證。
+    3.  **補丁自動化**：面對 Microsoft 及多廠商的連鎖修補，應建立分層式的自動更新機制，優先處理已公開的零日漏洞。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 類別 | 標題 (中/英對照) | 嚴重度 |
+| :--- | :--- | :--- |
+| **AI 安全** | 研究員在 4 分鐘內誘騙 Perplexity Comet AI 瀏覽器進行網路釣魚 <br> *Researchers Trick Perplexity's Comet AI Browser Into Phishing Scam* | 🔴 高 |
+| **自動化漏洞** | n8n 重大漏洞導致遠端代碼執行與憑證洩漏 <br> *Critical n8n Flaws Allow Remote Code Execution and Exposure of Stored Credentials* | 🔴 高 |
+| **網路詐騙** | Meta 全球打擊行動關閉 15 萬個與東南亞詐騙中心相關的帳戶 <br> *Meta Disables 150K Accounts Linked to Southeast Asia Scam Centers* | 🟠 中 |
+| **軟體修補** | 數十家供應商針對企業軟體與網路設備修補漏洞 <br> *Dozens of Vendors Patch Security Flaws Across Enterprise Software and Network Devices* | 🟠 中 |
+| **治理戰略** | 在 AI 自動化漏洞利用時代，董事會必須要求的防護舉措 <br> *What Boards Must Demand in the Age of AI-Automated Exploitation* | 🔵 資訊 |
+| **系統更新** | 微軟三月補丁星期二修補 84 個漏洞，含兩個零日漏洞 <br> *Microsoft Patches 84 Flaws in March Patch Tuesday, Including Two Public Zero-Days* | 🔴 高 |
+| **供應鏈攻擊** | UNC6426 利用 nx npm 供應鏈攻擊在 72 小時內獲取 AWS 管理員權限 <br> *UNC6426 Exploits nx npm Supply-Chain Attack to Gain AWS Admin Access* | 🟣 緊急 |
+| **開發安全** | 五個惡意 Rust Crates 與 AI 機器人利用 CI/CD 流水線竊取開發者機密 <br> *Five Malicious Rust Crates and AI Bot Exploit CI/CD Pipelines to Steal Developer Secrets* | 🔴 高 |
+| **社交隱私** | WhatsApp 為青春期前兒童推出家長管理帳戶 <br> *WhatsApp introduces parent-managed accounts for pre-teens* | 🔵 資訊 |
+| **網頁安全** | Elementor Ally 插件 SQLi 漏洞影響超過 25 萬個 WordPress 網站 <br> *SQLi flaw in Elementor Ally plugin impacts 250k+ WordPress sites* | 🔴 高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Perplexity Comet AI 瀏覽器提示詞注入攻擊
+*   **🔍 技術原理**：攻擊者利用「間接提示詞注入 (Indirect Prompt Injection)」，在 AI 瀏覽器存取的網頁中隱藏特定指令。當 Comet AI 讀取該頁面進行摘要時，指令會覆寫系統 Prompt。
+*   **⚔️ 攻擊向量**：惡意網頁包含隱藏 CSS 或零像素文本，引導 AI Agent 向使用者顯示偽造的登錄視窗，進而獲取憑證。
+*   **🛡️ 防禦緩解**：實施內容安全策略 (CSP) 以限制 AI 的輸出路徑；對 AI 輸出的連結與表單進行二度人工驗證。
+*   **🧠 名詞定義**：**Agentic AI**（代理式 AI），指具備自主執行任務（如操作瀏覽器、點擊按鈕）能力的 AI 模型。
+
+### 3.2 n8n 遠端代碼執行 (RCE) 漏洞
+*   **🔍 技術原理**：工作流自動化平台 n8n 在處理特定的運算邏輯或 Node.js 調用時，未對使用者輸入進行嚴格過濾，導致惡意代碼可逃逸出沙箱環境。
+*   **⚔️ 攻擊向量**：攻擊者透過發送精心構造的 Webhook 請求，觸發 n8n 執行系統級命令，並讀取儲存在資料庫中的加密憑證。
+*   **🛡️ 防禦緩解**：立即升級至最新版本；將 n8n 部署於受限的 Docker 容器中，並禁止容器存取外部不必要的網路段。
+*   **🧠 名詞定義**：**RCE (Remote Code Execution)**，攻擊者可遠端在受害伺服器上執行任意代碼，是威脅等級最高的漏洞之一。
+
+### 3.3 Meta 詐騙帳戶大掃蕩
+*   **🔍 技術原理**：詐騙集團利用腳本大量註冊帳號，並透過「養號」流程規避 Meta 的機器學習偵測演算法。
+*   **⚔️ 攻擊向量**：利用這些帳號發動「豬肉屠宰 (Pig Butchering)」詐騙，誘導受害者進入虛假加密貨幣交易平台。
+*   **🛡️ 防禦緩解**：Meta 引入了基於行為生物特徵的動態分析，監測帳號是否存在非人類的快速點擊與跨域跳轉。
+
+### 3.4 Microsoft 三月補丁 (84 漏洞)
+*   **🔍 技術原理**：此次更新涵蓋 Windows Kernel、Office 與 Hyper-V。其中兩個零日漏洞 (Zero-Day) 已在野外被發現用於權限提升。
+*   **⚔️ 攻擊向量**：攻擊者利用核心緩衝區溢位 (Kernel Buffer Overflow) 漏洞，從低權限用戶提升至 SYSTEM 權限。
+*   **🛡️ 防禦緩解**：優先修補 **CVE-2026-XXXX** (假定編號)，並對核心系統實施 VBS (Virtualization-Based Security)。
+*   **🧠 名詞定義**：**Zero-Day**，指尚未有修補程式前就已被發現或利用的漏洞。
+
+### 3.5 UNC6426 利用 nx npm 供應鏈攻擊
+*   **🔍 技術原理**：攻擊者劫持了熱門開發框架 `nx` 的相關依賴套件，將惡意代碼植入 `postinstall` 腳本中。
+*   **⚔️ 攻擊向量**：當開發者執行 `npm install` 時，腳本自動掃描環境變數，提取 `AWS_ACCESS_KEY_ID` 並回傳至 C2 伺服器。
+*   **🛡️ 防禦緩解**：啟用 `npm install --ignore-scripts`；使用 `lockfile` 審核，並導入供應鏈安全掃描工具（如 Snyk 或 Socket）。
+*   **🧠 名詞定義**：**C2 Server (Command and Control)**，攻擊者用來向受感染系統發送指令的控制中心。
+
+### 3.6 惡意 Rust Crates 與 AI 機器人
+*   **🔍 技術原理**：利用「拼寫誤差攻擊 (Typosquatting)」，在 Rust 的官方倉庫上傳名稱極其相似的惡意套件。
+*   **⚔️ 攻擊向量**：AI 機器人在 GitHub 自動掃描公開的 CI/CD 組態文件，當偵測到引用錯誤套件時，自動觸發漏洞利用鏈。
+*   **🛡️ 防禦緩解**：實施存儲庫白名單制度，限制 CI/CD 環境僅能從私有鏡像庫拉取經驗證的套件。
+
+### 3.7 Elementor Ally SQL 注入漏洞
+*   **🔍 技術原理**：該 WordPress 插件未對 SQL 查詢參數進行適當的轉義處理，導致攻擊者可以操作後端資料庫。
+*   **⚔️ 攻擊向量**：透過 URL 參數傳入單引號等特殊字元，繞過登錄驗證或導出使用者資料。
+*   **🛡️ 防禦緩解**：更新插件至修補版本；部署 WAF (Web Application Firewall) 阻斷 SQL 關鍵字查詢。
+*   **🧠 名詞定義**：**SQLi (SQL Injection)**，將惡意 SQL 指令注入輸入欄位，藉此操縱後端資料庫。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI-to-AI 攻防戰**：預計到 2027 年，企業將部署「防禦型 AI」來實時對抗「攻擊型 AI」的動態漏洞挖掘。
+2.  **供應鏈攻擊的微型化**：攻擊者不再追求大規模破壞，而是精準植入幾行代碼，專門針對特定企業的雲端密鑰進行「靜默提取」。
+3.  **零日漏洞生命週期縮短**：由於 AI 工具的輔助，從漏洞發現到武器化 (Weaponization) 的時間將縮短至數小時內，傳統的「月度補丁」模式將難以維繫。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Perplexity Comet AI Browser Phishing](https://thehackernews.com/2026/03/researchers-trick-perplexitys-comet-ai.html)
+*   [Critical n8n Flaws RCE](https://thehackernews.com/2026/03/critical-n8n-flaws-allow-remote-code.html)
+*   [Meta Scam Center Takedown](https://thehackernews.com/2026/03/meta-disables-150k-accounts-linked-to.html)
+*   [Microsoft March Patch Tuesday](https://thehackernews.com/2026/03/microsoft-patches-84-flaws-in-march.html)
+*   [UNC6426 nx npm Supply-Chain](https://thehackernews.com/2026/03/unc6426-exploits-nx-npm-supply-chain.html)
+*   [Malicious Rust Crates CI/CD](https://thehackernews.com/2026/03/five-malicious-rust-crates-and-ai-bot.html)
+*   [Elementor Ally SQLi WordPress](https://www.bleepingcomputer.com/news/security/sqli-flaw-in-elementor-ally-plugin-impacts-250k-plus-wordpress-sites/)
+*   [WhatsApp Parent-Managed Accounts](https://www.bleepingcomputer.com/news/security/whatsapp-introduces-parent-managed-accounts-for-pre-teens/)
+
+---
+**文件結尾** | *Confidentiality: Public Technical Summary* | *Prepared for AI Knowledge Training*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/11)
 
 本白皮書旨在提供現階段全球資安威脅的深度剖析，針對 2026 年第一季末期的攻擊趨勢進行彙整，供資安架構師、CISO 及 AI 知識庫 (NotebookLM) 訓練使用。

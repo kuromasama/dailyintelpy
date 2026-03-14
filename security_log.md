@@ -1,3 +1,133 @@
+# 🛡️ 資安戰情白皮書 (2026/03/15)
+
+本文件旨在彙整 2026 年第一季度末之關鍵資安威脅情資，專為 AI 知識庫 (NotebookLM) 訓練與企業資安決策者、架構師設計。內容涵蓋 AI Agent 漏洞、供應鏈攻擊、SDK 劫持及基礎設施可靠性分析。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年的威脅版圖中，我們正目睹從「傳統漏洞利用」轉向「複雜生態系統滲透」的結構性轉變。本週的核心風險集中在以下三大戰略維度：
+
+1.  **AI 代理安全危機 (AI Agent Insecurity)**：隨著企業導入 OpenClaw 等自動化 AI Agent，**間接提示注入 (Indirect Prompt Injection)** 已從理論轉為實戰攻擊。攻擊者不再直接與模型對話，而是透過污染 AI 讀取的外部資料來控制執行流程。
+2.  **供應鏈生態系之脆弱性**：從 VS Code 擴充功能 (Open VSX) 到第三方 Web SDK (AppsFlyer)，開發與行銷工具鏈成為最薄弱的環節。攻擊者利用開發者對工具的信任，繞過傳統邊界防護。
+3.  **基礎設施的彈性考驗**：當主流公有雲頻發「機瘟」時，具備高度分散式邊界架構的服務商展示了防禦深度。這提醒架構師：**「單一雲端策略」的風險在 2026 年已不容忽視。**
+
+**建議行動：** 立即審查企業內部的 SBOM (軟體清單)、強化對 AI 模型的輸入驗證 (Input Sanitization)，並針對關鍵開發工具實施嚴格的許可清單制度。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 日期 | 威脅標題 (中/英) | 影響範疇 | 嚴重性 |
+| :--- | :--- | :--- | :--- |
+| 2026/03/15 | **OpenClaw AI 代理漏洞：提示注入與數據外洩風險**<br>OpenClaw AI Agent Flaws Could Enable Prompt Injection and Data Exfiltration | AI 應用/自動化流程 | 🔴 高 |
+| 2026/03/15 | **GlassWorm 供應鏈攻擊：濫用 72 個 Open VSX 擴充功能針對開發者**<br>GlassWorm Supply-Chain Attack Abuses 72 Open VSX Extensions | 開發者環境/IDE | 🔴 高 |
+| 2026/03/15 | **AppsFlyer Web SDK 被劫持以傳播加密貨幣竊取代碼**<br>AppsFlyer Web SDK hijacked to spread crypto-stealing JavaScript code | 行動與網頁應用/廣告追蹤 | 🟠 中高 |
+| 2026/03/15 | **微軟確認：Windows 11 使用者在部分三星 PC 上無法存取 C 槽**<br>Microsoft: Windows 11 users can't access C: drive on some Samsung PCs | 終端運作/可用性 | 🟠 中 |
+| 2026/03/15 | **Akamai 連續 4 年在公有雲「機瘟」中維持高可靠度**<br>Akamai Maintains Reliability Despite Public Cloud Outages | 雲端基礎設施/邊界安全 | 🟢 優化 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 OpenClaw AI Agent 安全缺陷分析
+
+*   **🔍 技術原理**：
+    OpenClaw 作為開源 AI 代理框架，允許 LLM 執行程式碼並存取檔案系統。漏洞核心在於其**「權限邊界模糊」**。當 OpenClaw 讀取一個受污染的外部網頁或文件時，攻擊者可嵌入特殊的惡意指令（提示注入）。由於 OpenClaw 預設信任其獲取的內容並將其轉發給 LLM 處理，導致 LLM 誤將「外部資料」視為「系統指令」。
+*   **⚔️ 攻擊向量**：
+    1.  **間接提示注入 (Indirect Prompt Injection)**：攻擊者在公共論壇或文件中隱藏指令，當 AI Agent 自動摘要該頁面時觸發。
+    2.  **數據外洩 (Data Exfiltration)**：指令引導 AI 將敏感環境變數（如 API Keys）編碼後，透過 Markdown 圖片解析請求傳送到攻擊者伺服器。
+*   **🛡️ 防禦緩解**：
+    *   實施 **LLM 輸出後置過濾**，監控異常的外聯請求。
+    *   採用 **隔離沙盒 (Sandboxing)** 執行 AI 觸發的代碼。
+    *   限制 AI Agent 對敏感檔案系統的唯讀權限。
+*   **🧠 名詞定義**：
+    *   **Prompt Injection**：透過輸入惡意提示語來劫持大型語言模型 (LLM) 的輸出或行為。
+
+---
+
+### 3.2 GlassWorm 供應鏈攻擊 (VS Code / Open VSX)
+
+*   **🔍 技術原理**：
+    攻擊者在 Open VSX 註冊中心（VS Code、VSCodium 的開源擴充庫）發布了 72 個偽裝成熱門工具（如 Prettier, ESLint 仿冒版）的擴充功能。這些擴充功能包含高度混淆的 JavaScript 腳本，在開發者安裝後自動執行。
+*   **⚔️ 攻擊向量**：
+    *   **名稱相似性攻擊 (Typosquatting)**：利用開發者拼錯字或搜尋熱門名稱下載。
+    *   **反向 Shell 植入**：一旦安裝，擴充功能會開啟後門，讓攻擊者遠端控制開發者的工作站，進而竊取原始碼或 SSH 密鑰。
+*   **🛡️ 防禦緩解**：
+    *   強制使用企業內部私有擴充功能倉庫。
+    *   啟用 **SBOM (Software Bill of Materials)** 監控開發工具鏈。
+    *   檢查擴充功能的發布者驗證標章（Verified Publisher）。
+*   **🧠 名詞定義**：
+    *   **Open VSX Registry**：一個獨立於 Microsoft Visual Studio Marketplace 的開源擴充功能平台。
+
+---
+
+### 3.3 AppsFlyer Web SDK 劫持事件
+
+*   **🔍 技術原理**：
+    攻擊者成功入侵了 AppsFlyer SDK 的託管伺服器或其分發網路 (CDN)，在合法的 `appsflyer-web-sdk.js` 檔案中注入了額外的惡意代碼片段。
+*   **⚔️ 攻擊向量**：
+    *   **JavaScript 注入**：代碼會在瀏覽器載入 SDK 時搜尋特定特徵（如加密貨幣錢包擴充功能、交易輸入框）。
+    *   **錢包地址替換**：當使用者嘗試發送虛擬貨幣時，JS 腳本會在地端即時竄改接收者地址，將資金轉移至攻擊者錢包。
+*   **🛡️ 防禦緩解**：
+    *   實施 **子資源完整性 (Subresource Integrity, SRI)**，檢查載入腳本的雜湊值是否變更。
+    *   配置嚴格的 **內容安全策略 (CSP)**，禁止腳本向未授權的網域發送數據。
+*   **🧠 名詞定義**：
+    *   **SDK (Software Development Kit)**：軟體開發套件，此處指用於網頁追蹤與歸因分析的工具。
+
+---
+
+### 3.4 Windows 11 與 Samsung PC 硬碟存取故障
+
+*   **🔍 技術原理**：
+    這是一起由驅動程式不相容或韌體更新衝突引起的**可用性 (Availability) 危機**。特定型號的三星 PC 在更新 Windows 11 後，導致檔案系統驅動無法正確掛載 C: 槽的分區表。
+*   **⚔️ 攻擊向量**：
+    非人為攻擊，屬「操作性風險」。但在資安視角中，這可能被利用於 **勒索軟體偽裝**，讓使用者誤以為硬碟被加密。
+*   **🛡️ 防禦緩解**：
+    *   企業端應暫停相關型號的 Windows 更新推送。
+    *   部署 WinPE 修復環境，備份關鍵數據。
+*   **🧠 名詞定義**：
+    *   **Mount Point (掛載點)**：作業系統存取磁碟空間的邏輯路徑，若失敗則無法開機或讀取數據。
+
+---
+
+### 3.5 Akamai 的高可用性策略分析
+
+*   **🔍 技術原理**：
+    面對主流雲端平台（如 AWS, Azure）因集中化 API 管理失效引發的故障，Akamai 憑藉其全球分佈的 Edge 節點架構，避免了單一故障點 (SPOF)。其架構核心在於「在地化決策」而非「全球統一控制」。
+*   **⚔️ 攻擊向量**：
+    針對大規模雲端業者的 **DDoS 攻擊** 或 **路由劫持**。
+*   **🛡️ 防禦緩解**：
+    *   **多雲冗餘策略**：將靜態資源與關鍵安全過濾放在邊界 (Edge)。
+    *   **自癒網路 (Self-healing Networks)**：自動繞過失效區域。
+*   **🧠 名詞定義**：
+    *   **Edge Computing (邊緣運算)**：將處理能力推向靠近使用者的網路邊緣，減少對中央數據中心的依賴。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI-to-AI 攻擊鏈**：我們預測 2026 年下半年將出現「自動化滲透測試 AI」攻擊「企業營運 AI Agent」的情況。防禦者需要開發針對 LLM 的專屬防火牆 (WAF for LLM)。
+2.  **供應鏈投毒的「細粒度化」**：攻擊者不再追求刪除數據，而是微調 (Fine-tuning) 軟體邏輯，例如在演算法中注入 0.001% 的誤差，導致金融交易或自動駕駛決策出錯。
+3.  **基礎設施的彈性競爭**：企業將從追求「功能完整性」轉向「極端可用性」。邊緣運算與去中心化架構將成為高風險產業（金融、能源）的首選。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [OpenClaw AI Agent Flaws - The Hacker News](https://thehackernews.com/2026/03/openclaw-ai-agent-flaws-could-enable.html)
+*   [GlassWorm Supply-Chain Attack - The Hacker News](https://thehackernews.com/2026/03/glassworm-supply-chain-attack-abuses-72.html)
+*   [AppsFlyer Web SDK Hijacked - BleepingComputer](https://www.bleepingcomputer.com/news/security/appsflyer-web-sdk-used-to-spread-crypto-stealer-javascript-code/)
+*   [Windows 11 Samsung PC C: Drive Issue - BleepingComputer](https://www.bleepingcomputer.com/news/microsoft/microsoft-windows-11-users-cant-access-c-drive-on-some-samsung-pcs/)
+*   [Akamai 平台可靠性報告 - iThome](https://www.ithome.com.tw/news/174399)
+
+---
+**文件狀態：** 內部發行 / AI 訓練專用
+**版本：** v1.0
+**簽署：** Cyber Security Intelligence Unit (2026)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/14)
 
 ---

@@ -1,3 +1,125 @@
+# 🛡️ 資安戰情白皮書 (2026/03/17)
+
+本白皮書旨在提供 2026 年 3 月中旬全球資安態勢的深度分析，彙整當前最具威脅性的攻擊手法、漏洞利用趨勢及防禦策略，供企業決策者與技術專家作為資安佈署之參考。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+當前的威脅環境正經歷**「技術降級與戰略升級」**的雙重變革。攻擊者不再單純依賴複雜的二進制惡意軟體，而是轉向利用合法工具（Living off the Land）與開發者生態系統（如 GitHub Tokens）進行滲透。
+
+**核心觀察與戰略建議：**
+*   **供應鏈信任崩潰**：GlassWorm 攻擊顯示，軟體倉庫不再是安全的避風港，身分驗證權限（Tokens）的洩漏已成為開發流程中最脆弱的一環。
+*   **無惡意軟體化（Malware-less）趨勢**：Stryker 攻擊證明，即便不植入傳統惡意代碼，僅透過濫用系統原生指令，亦能達成毀滅性的設備抹除。
+*   **防禦自主化（Agentic Security）**：隨著 AI 代理（AI Agents）進入攻防領域，傳統靜態驗證已失效，企業需轉向具備持續性、自動化且能自我調適的驗證架構。
+*   **端點硬核防禦**：Android 17 與 macOS 防禦機制的更新，顯示作業系統層級正透過限制高權限 API（如 Accessibility）來壓縮惡意軟體的生存空間。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 標題 (中/英) | 來源性質 |
+| :--- | :--- | :--- |
+| 01 | **GlassWorm 攻擊：利用遭竊 GitHub 令牌強制推送惡意軟體至 Python 倉庫**<br>GlassWorm Attack Uses Stolen GitHub Tokens to Force-Push Malware Into Python Repos | 供應鏈攻擊 |
+| 02 | **每週回顧：Chrome 零日漏洞、路由器殭屍網路、AWS 數據洩漏及惡意 AI 代理**<br>Weekly Recap: Chrome 0-Days, Router Botnets, AWS Breach, Rogue AI Agents & More | 綜合威脅 |
+| 03 | **為何資安驗證正邁向代理化（Agentic）時代**<br>Why Security Validation Is Becoming Agentic | 技術趨勢 |
+| 04 | **ClickFix 運動透過虛假 AI 工具安裝程序傳播 MacSync macOS 竊密軟體**<br>ClickFix Campaigns Spread MacSync macOS Infostealer via Fake AI Tool Installers | 社交工程 |
+| 05 | **DRILLAPP 後門鎖定烏克蘭：濫用 Microsoft Edge 除錯機制進行隱蔽間諜活動**<br>DRILLAPP Backdoor Targets Ukraine, Abuses Microsoft Edge Debugging for Stealth Espionage | 國家級 APT |
+| 06 | **Android 17 封鎖非輔助功能應用呼叫 Accessibility API 以防範惡意軟體濫用**<br>Android 17 Blocks Non-Accessibility Apps from Accessibility API to Prevent Malware Abuse | 作業系統防護 |
+| 07 | **Stryker 攻擊抹除數萬台設備：完全無需惡意軟體**<br>Stryker attack wiped tens of thousands of devices, no malware needed | 毀滅性攻擊 |
+| 08 | **CISA 警告 Wing FTP Server 漏洞正遭積極利用**<br>CISA flags Wing FTP Server flaw as actively exploited in attacks | 漏洞預警 |
+| 09 | **英國公司註冊處證實安全漏洞導致企業數據洩露**<br>UK’s Companies House confirms security flaw exposed business data | 資料隱私 |
+| 10 | **Microsoft Exchange Online 故障導致信箱存取中斷**<br>Microsoft Exchange Online outage blocks access to mailboxes | 基礎設施穩定 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 01. GlassWorm 供應鏈滲透分析
+*   **🔍 技術原理**：攻擊者透過掃描公開的開發環境或利用網路釣魚，獲取開發者的 GitHub Personal Access Tokens (PAT)。隨後利用 `git push --force` 指令，將惡意代碼覆蓋至受信任的 Python 倉庫。
+*   **⚔️ 攻擊向量**：軟體開發生命週期 (SDLC) 的憑證洩漏。
+*   **🛡️ 防禦緩解**：實施「分支保護規則」(Branch Protection Rules)，禁止直接對主分支 Force-Push；定期更換 PAT 並啟用細粒度權限 (Fine-grained tokens)；強制執行 2FA。
+*   **🧠 名詞定義**：**Force-Push**：一種 Git 操作，會忽略伺服器上的版本衝突，強行覆蓋遠端儲存庫的提交歷史。
+
+### 02. Chrome 與 AI 代理綜合威脅
+*   **🔍 技術原理**：Chrome 零日漏洞利用記憶體損壞（Memory Corruption）獲取遠端代碼執行（RCE）。惡意 AI 代理則能自動化執行偵察與憑證填充。
+*   **⚔️ 攻擊向量**：瀏覽器核心漏洞與自動化代理腳本。
+*   **🛡️ 防禦緩解**：實施快速補丁管理制度（24小時內更新）；針對 AI 工具進行 API 存取速率限制（Rate Limiting）。
+*   **🧠 名詞定義**：**Zero-Day (0-day)**：廠商尚未發現或尚未發布修補程式的漏洞。
+
+### 03. 代理化資安驗證 (Agentic Security Validation)
+*   **🔍 技術原理**：利用 LLM 驅動的自主代理程序，模擬攻擊者的決策路徑，持續性地對企業基礎設施進行滲透測試。
+*   **⚔️ 攻擊向量**：此為防禦技術，對抗的是「靜態配置」與「偵測盲點」。
+*   **🛡️ 防禦緩解**：將 Agentic 驗證整合進 CI/CD 流水線，從隨機測試轉向目標導向的持續驗證。
+*   **🧠 名詞定義**：**Agentic Security**：指具備自主推理能力、能獨立完成複雜安全任務的 AI 系統。
+
+### 04. ClickFix 與 MacSync 社交工程
+*   **🔍 技術原理**：攻擊者偽造「修復錯誤」或「更新 AI 工具」的網頁對話框，誘導用戶在終端機貼入 Base64 加密的惡意指令，進而下載 MacSync 竊密程式。
+*   **⚔️ 攻擊向量**：人類心理脆弱性（社交工程）與終端機權限濫用。
+*   **🛡️ 防禦緩解**：加強用戶意識培訓（不要複製貼上不明指令）；使用端點檢測與響應 (EDR) 監控終端機的可疑進程（如 curl 到不明域名）。
+*   **🧠 名詞定義**：**Infostealer**：專門蒐集瀏覽器儲存密碼、Cookie 及加密貨幣錢包的惡意程式。
+
+### 05. DRILLAPP 與 Edge 除錯機制濫用
+*   **🔍 技術原理**：惡意軟體啟動 Microsoft Edge 時附加 `--remote-debugging-port` 參數。這允許攻擊者透過 Chrome DevTools Protocol (CDP) 直接操控瀏覽器、讀取內存及攔截 HTTPS 流量。
+*   **⚔️ 攻擊向量**：合法軟體的功能濫用（Abusing Legitimate Features）。
+*   **🛡️ 防禦緩解**：監控啟動進程的參數列；限制非管理員權限開啟遠端除錯接口。
+*   **🧠 名詞定義**：**CDP (Chrome DevTools Protocol)**：開發者用來調試與監控 Chromium 系瀏覽器的底層協議。
+
+### 06. Android 17 輔助功能限制
+*   **🔍 技術原理**：Android 17 透過作業系統權限層級鎖定，僅允許通過官方審核的「輔助工具」存取 Accessibility Service，防止惡意軟體透過此 API 進行螢幕截圖或點擊劫持。
+*   **⚔️ 攻擊向量**：API 權限過度擴張。
+*   **🛡️ 防禦緩解**：升級至 Android 17 設備；開發者應重新評估應用程式對高權限 API 的依賴。
+*   **🧠 名詞定義**：**Accessibility API**：原意為協助殘障人士使用的介面輔助功能，但常被木馬用來監控用戶操作。
+
+### 07. Stryker 無惡意軟體設備抹除
+*   **🔍 技術原理**：攻擊者入侵後，不下載任何惡意檔案，而是直接調用作業系統內建的磁碟管理工具或 PowerShell 指令進行格式化與數據覆蓋。
+*   **⚔️ 攻擊向量**：Living off the Land (LotL)。
+*   **🛡️ 防禦緩解**：限制特權帳號對磁碟工具的存取權；實施行為審計（Behavioral Auditing）而非文件掃描。
+*   **🧠 名詞定義**：**Wiper**：一類旨在銷毀數據而非勒索贖金的破壞性軟體。
+
+### 08. Wing FTP Server RCE 漏洞
+*   **🔍 技術原理**：該漏洞允許攻擊者透過構造特殊的 HTTP 請求繞過身分驗證，進而在伺服器執行系統級指令。
+*   **⚔️ 攻擊向量**：邊界設備漏洞利用。
+*   **🛡️ 防禦緩解**：立即更新至最新版本；使用 WAF 阻斷針對 FTP Web 管理介面的異常流量。
+*   **🧠 名詞定義**：**CISA KEV**：美國資安局維護的「已知被積極利用漏洞名錄」。
+
+### 09. 英國 Companies House 數據外洩
+*   **🔍 技術原理**：由於系統後端接口（API）設計缺陷或配置不當，導致非公開的企業敏感數據可被越權存取。
+*   **⚔️ 攻擊向量**：失效的存取控制（Broken Access Control）。
+*   **🛡️ 防禦緩解**：實施 API 零信任認證；定期進行自動化漏洞掃描與滲透測試。
+*   **🧠 名詞定義**：**Broken Access Control**：OWASP Top 10 首位，指未正確限制用戶只能存取授權範圍內的資源。
+
+### 10. Microsoft Exchange Online 服務中斷
+*   **🔍 技術原理**：初步分析為身分驗證基礎設施（Azure AD/Entra ID）同步異常或配置更新導致的級聯故障，而非直接攻擊。
+*   **⚔️ 攻擊向量**：雲端供應商單點故障 (SPOF)。
+*   **🛡️ 防禦緩解**：建立多雲（Multi-cloud）或混合雲郵件備援機制；制定業務連續性計畫 (BCP)。
+*   **🧠 名詞定義**：**Cascading Failure**：一個組件的故障引發其他連鎖組件相繼失效的現象。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **「軟體倉庫投毒」將更具隱蔽性**：未來 GlassWorm 類型的攻擊將結合 AI 生成混淆代碼，使靜態代碼分析 (SAST) 更難偵測出 Force-push 後的惡意變更。
+2.  **跨平台竊密工具 (MacSync) 爆發**：隨著 macOS 在企業端的佔有率提升，針對 Apple 矽晶片架構的專用 Infostealer 將大幅增加。
+3.  **無文件攻擊成為破壞性行動首選**：Stryker 模式將被 APT 組織用於掩蓋足跡，在數據竊取後進行全盤抹除，讓數位鑑識 (DFIR) 難度倍增。
+4.  **防禦端進入 AI 代理戰爭**：企業將部署「防禦型 AI 代理」來對抗「攻擊型 AI 代理」，資安攻防將演變為算力與模型推理精準度的對決。
+
+---
+
+## 5. 🔗 參考文獻
+*   [GlassWorm Attack Analysis - The Hacker News](https://thehackernews.com/2026/03/glassworm-attack-uses-stolen-github.html)
+*   [Weekly Recap: Chrome & Botnets - The Hacker News](https://thehackernews.com/2026/03/weekly-recap-chrome-0-days-router.html)
+*   [Agentic Security Validation - The Hacker News](https://thehackernews.com/2026/03/why-security-validation-is-becoming.html)
+*   [ClickFix & MacSync Campaigns - The Hacker News](https://thehackernews.com/2026/03/clickfix-campaigns-spread-macsync-macos.html)
+*   [DRILLAPP Backdoor Technicals - The Hacker News](https://thehackernews.com/2026/03/drillapp-backdoor-targets-ukraine.html)
+*   [Android 17 Security Updates - The Hacker News](https://thehackernews.com/2026/03/android-17-blocks-non-accessibility.html)
+*   [Stryker Wiper Analysis - BleepingComputer](https://www.bleepingcomputer.com/news/security/stryker-attack-wiped-tens-of-thousands-of-devices-no-malware-needed/)
+*   [CISA Wing FTP Server Warning - BleepingComputer](https://www.bleepingcomputer.com/news/security/cisa-flags-wing-ftp-server-flaw-as-actively-exploited-in-attacks/)
+*   [UK Companies House Breach - BleepingComputer](https://www.bleepingcomputer.com/news/security/uks-companies-house-confirm-security-flaw-exposed-business-data/)
+*   [Microsoft Exchange Outage Report - BleepingComputer](https://www.bleepingcomputer.com/news/microsoft/microsoft-exchange-online-outage-blocks-access-to-mailboxes/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/16)
 
 本白皮書旨在為企業資安決策者（CISO）、架構師及資安維運團隊（SecOps）提供即時的技術分析與戰略導引。今日重點聚焦於**開發端機密資訊防護（Secrets Management）**的演進，以及**關鍵基礎設施遠端執行碼（RCE）**的緊急修補應對。

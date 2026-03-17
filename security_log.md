@@ -1,3 +1,102 @@
+# 🛡️ 資安戰情白皮書 (2026/03/18)
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢與戰略建議：**
+
+本月資安局勢呈現出「**生成式 AI 攻防轉向底層框架**」與「**社交工程手段高度擬真化**」兩大核心特徵。隨著 AI 代理人 (AI Agents) 與大型語言模型 (LLM) 在企業內部的深度部署，傳統的邊界防禦已不足以支撐。
+
+1.  **AI 生態系供應鏈漏洞爆發**：針對 Amazon Bedrock 與 LangChain 等底層框架的攻擊，意味著攻擊者已從「對話注入」轉向「系統級遠端代碼執行 (RCE)」。企業需立即盤點內部 AI 開發框架的依賴關係。
+2.  **檔案與排版級別的隱匿技術**：新型態的「字體渲染詐騙 (Font-rendering trick)」能夠繞過基於內容過濾的 AI 偵測機制。這揭示了基於規則的過濾手段已遭遇物理極限。
+3.  **基礎設施與軟體供應鏈的雙重打擊**：GlassWorm 惡意代碼大規模滲透 GitHub 與 VS Code 擴充套件，加上 Wing FTP 等老牌設施的漏洞被積極利用，顯示攻擊者正採取「垂直切入」的方式進行滲透。
+
+**戰略建議**：CISO 應優先升級針對 AI 代理的權限控管 (Least Privilege)，並引入動態的軟體清單 (SBOM) 監控，防範開源庫遭到投毒。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中英對照) | 威脅類別 | 影響程度 |
+| :--- | :--- | :--- |
+| **Amazon Bedrock, LangSmith, SGLang 存在 AI 缺陷，導致數據外洩與 RCE** | AI 框架漏洞 | 🔴 極高 |
+| **LeakNet 勒索軟體利用 ClickFix 詐騙，部署 Deno 記憶體載入器** | 勒索軟體 | 🔴 極高 |
+| **研究顯示：AI 無處不在，但 CISO 仍使用過時技能與工具進行防禦** | 戰略風險 | 🟠 中高 |
+| **Konni 透過釣魚郵件部署 EndRAT，利用 KakaoTalk 傳播惡意軟體** | APT 攻擊 | 🔴 極高 |
+| **CISA 警示：Wing FTP 漏洞正被積極利用，導致伺服器路徑洩漏** | 漏洞預警 | 🟠 中高 |
+| **GlassWorm 惡意軟體襲擊 GitHub、npm、VSCode 等 400 多個代碼庫** | 供應鏈攻擊 | 🔴 極高 |
+| **歐洲針對參與網路攻擊的中國與伊朗公司實施制裁** | 地緣政治 | 🟡 中等 |
+| **CISO 確保 AI 代理安全今日必做的 5 件事** | 防禦指南 | 🔵 資訊 |
+| **新型字體渲染技巧可向 AI 工具隱藏惡意指令** | AI 逃逸技術 | 🟠 中高 |
+| **微軟停止強制安裝 Microsoft 365 Copilot 應用程式** | 企業合規 | 🔵 資訊 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Amazon Bedrock, LangSmith, SGLang 安全漏洞
+*   **🔍 技術原理**：漏洞主要源於底層推理引擎與中間層對輸入驗證的不完整。當 AI 代理人執行外部工具 (Tool Use) 時，攻擊者可透過「間接提示注入 (Indirect Prompt Injection)」誘導 AI 執行非授權的 API 調用或 shell 指令。
+*   **⚔️ 攻擊向量**：攻擊者將惡意指令嵌入在 AI 模型檢索的外部文檔 (RAG) 或網頁中。當 AI 讀取這些內容後，觸發伺服器端請求偽造 (SSRF) 或直接 RCE。
+*   **🛡️ 防禦緩解**：實施「人類在環 (Human-in-the-loop)」審查機制，限制 AI 代理人的作業系統存取權限，並針對 LangChain/SGLang 等框架進行版本升級。
+*   **🧠 名詞定義**：**SSRF (Server-Side Request Forgery)**：攻擊者迫使伺服器發送原本不應發送的內部網路請求。
+
+### 3.2 LeakNet 勒索軟體與 ClickFix 詐騙
+*   **🔍 技術原理**：這是一場「社會工程學」與「技術隱匿」的完美結合。ClickFix 誘使使用者按下「修復」按鈕，實際上是複製一段惡意 PowerShell 指令到剪貼簿並讓使用者執行。
+*   **⚔️ 攻擊向量**：利用受駭網站彈出虛假的瀏覽器更新或錯誤視窗。隨後載入 **Deno** (一種安全 JavaScript/TypeScript 執行環境) 作為 Loader，將惡意負載直接注入記憶體以規避磁碟掃描。
+*   **🛡️ 防禦緩解**：強化端點偵測 (EDR) 對 PowerShell 的監控，禁止非預期的 Deno.exe 執行，並教育員工切勿依照網頁指示執行不明指令。
+*   **🧠 名詞定義**：**In-Memory Loader**：惡意代碼直接在 RAM 中運行，不產生實體檔案，極難被傳統防毒軟體偵測。
+
+### 3.3 CISO 與 AI 安全技能差距
+*   **🔍 技術原理**：傳統資安工具多基於標識碼 (Signatures) 或靜態分析，無法理解生成式 AI 的非確定性 (Non-deterministic) 輸出。
+*   **⚔️ 攻擊向量**：由於缺乏對 AI 流量的深度封包檢測 (DPI)，企業內部的 Shadow AI (未經授權的 AI 使用) 可能導致機敏數據外流。
+*   **🛡️ 防禦緩解**：轉向使用 AI 安全防護閘道 (AI Firewalls)，並針對資安團隊進行 LLM 安全培訓。
+
+### 3.4 Konni APT 與 EndRAT 攻擊
+*   **🔍 技術原理**：Konni (被認為與朝鮮有關) 利用 KakaoTalk 的高度信任感進行社交傳播。EndRAT 是一種具備高度自定義功能的遠端存取木馬。
+*   **⚔️ 攻擊向量**：透過魚叉式釣魚 (Spear-phishing) 發送含有惡意 LNK 檔或 ZIP 檔的通訊訊息。一旦執行，木馬會建立與 C2 伺服器的加密隧道，竊取文件並錄影。
+*   **🛡️ 防禦緩解**：針對即時通訊軟體實施嚴格的文件傳輸掃描，監測異常的 C2 連線流量。
+
+### 3.5 Wing FTP Vulnerability (CVE 追蹤)
+*   **🔍 技術原理**：該漏洞允許未經身份驗證的遠端攻擊者透過特定請求，迫使伺服器回傳內部文件路徑與系統資訊。
+*   **⚔️ 攻擊向量**：路徑遍歷 (Directory Traversal) 攻擊，為後續的提權或數據竊取做鋪墊。
+*   **🛡️ 防禦緩解**：CISA 已將其列入必修補清單。管理員應立即更新 Wing FTP 至最新版本，並關閉不必要的管理介面外網連接。
+
+### 3.6 GlassWorm 供應鏈投毒
+*   **🔍 技術原理**：攻擊者將惡意代碼隱藏在看起來合法的 VS Code 擴充套件或 npm 包中，利用開發者對開源生態系統的信任。
+*   **⚔️ 攻擊向量**：一旦開發者安裝這些工具，GlassWorm 會在開發環境中橫向移動，竊取憑證或注入後門至生產環境代碼中。
+*   **🛡️ 防禦緩解**：使用 `npm audit` 或 Snyk 等工具進行依賴項審查，僅安裝來自受信任開發者的 IDE 擴展。
+
+### 3.7 字體渲染隱匿技術 (Font-rendering trick)
+*   **🔍 技術原理**：AI 在「看」文字時，通常是將字符轉化為 Token。但某些攻擊技術利用特殊的字體編碼或視覺重疊，讓文字在視覺上看起來是正常的，但在 Token 層面卻是惡意指令。
+*   **⚔️ 攻擊向量**：繞過 LLM 的安全性過濾器 (Safety Filters)。例如，視覺上顯示為「Hello」，但在系統內部被解析為「Delete all data」。
+*   **🛡️ 防禦緩解**：對輸入的內容進行規範化 (Normalization) 處理，移除異常的 Unicode 字符與字體標籤。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 代理的自主背叛**：隨著 AI 代理獲得更多「操作權限」，未來將出現專門誘導 AI 代理進行「合法越權」的攻擊模型，這種攻擊將跳過人類，直接在系統間發生。
+2.  **次像素隱寫術 (Sub-pixel Steganography)**：繼字體渲染技巧後，預測攻擊者將利用圖像中的微小像素差異，向多模態 AI (Multimodal AI) 植入不可見的炸彈指令。
+3.  **勒索軟體執行環境多樣化**：如 Deno、Bun 或 Rust 等新興運行環境將被更多勒索軟體採用，以躲避針對傳統 Python 或 .NET 惡意軟體的偵測引擎。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [AI Flaws in Amazon Bedrock, LangSmith, and SGLang](https://thehackernews.com/2026/03/ai-flaws-in-amazon-bedrock-langsmith.html)
+*   [LeakNet Ransomware Uses ClickFix via Hacked Sites](https://thehackernews.com/2026/03/leaknet-ransomware-uses-clickfix-via.html)
+*   [AI Everywhere, But CISOs Still Using Yesterday's Skills](https://thehackernews.com/2026/03/ai-is-everywhere-but-cisos-are-still.html)
+*   [Konni Deploys EndRAT Through Phishing](https://thehackernews.com/2026/03/konni-deploys-endrat-through-spear.html)
+*   [CISA Flags Wing FTP Vulnerability](https://thehackernews.com/2026/03/cisa-flags-actively-exploited-wing-ftp.html)
+*   [GlassWorm malware hits 400+ code repos](https://www.bleepingcomputer.com/news/security/glassworm-malware-hits-400-plus-code-repos-on-github-npm-vscode-openvsx/)
+*   [Europe sanctions Chinese and Iranian firms](https://www.bleepingcomputer.com/news/security/europe-sanctions-chinese-and-iranian-firms-for-cyberattacks/)
+*   [Top 5 Things CISOs Need to Do Today to Secure AI Agents](https://www.bleepingcomputer.com/news/security/top-5-things-cisos-need-to-do-today-to-secure-ai-agents/)
+*   [New font-rendering trick hides malicious commands](https://www.bleepingcomputer.com/news/security/new-font-rendering-trick-hides-malicious-commands-from-ai-tools/)
+*   [Microsoft stops force-installing Copilot app](https://www.bleepingcomputer.com/news/microsoft/microsoft-stops-force-installing-the-microsoft-365-copilot-app/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/17)
 
 本白皮書旨在提供 2026 年 3 月中旬全球資安態勢的深度分析，彙整當前最具威脅性的攻擊手法、漏洞利用趨勢及防禦策略，供企業決策者與技術專家作為資安佈署之參考。

@@ -1,3 +1,134 @@
+# 🛡️ 資安戰情白皮書 (2026/03/24)
+
+本文件旨在為企業資訊安全長 (CISO)、資安架構師與技術實戰人員提供最新的全球威脅情報分析，並作為 AI 知識庫（如 NotebookLM）之深度訓練素材。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢評估：**
+2026 年第一季末的資安版圖顯示，攻擊者的目標已從傳統的伺服器漏洞轉向 **「開發者環境」** 與 **「生成式 AI 基礎設施」**。特別是北韓國家級駭客對開發工具（如 VS Code）的濫用，以及針對主流安全掃描工具（如 Trivy）的供應鏈攻擊，顯示出攻擊者正試圖從「源頭」瓦解企業防線。
+
+**戰略建議：**
+1.  **零信任開發環境 (Zero Trust Development)：** 開發者的 IDE 與 CI/CD 管線不再是安全避風港。必須對自動執行腳本（如 VS Code Tasks）進行審查。
+2.  **AI 安全治理 (AI Security Posture Management)：** 隨著 AWS Bedrock 等服務普及，針對 Large Language Model (LLM) 的攻擊向量（如 Prompt Injection）已成為實際威脅，需建立 AI 專用的防火牆與過濾機制。
+3.  **雲原生毀滅防護 (Cloud-Native Wiper Protection)：** 針對 Kubernetes (K8s) 的抹除程式 (Wiper) 正在增加，備份機制必須具備「離線隔離」特性，以防止攻擊者在入侵後直接銷毀雲端資產。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+1.  **North Korean Hackers Abuse VS Code Auto-Run Tasks to Deploy StoatWaffle Malware**
+    *   (北韓駭客濫用 VS Code 自動運行任務部署 StoatWaffle 惡意軟體)
+2.  **Weekly Recap: CI/CD Backdoor, FBI Buys Location Data, WhatsApp Ditches Numbers & More**
+    *   (每週回顧：CI/CD 後門、FBI 購買位置數據、WhatsApp 捨棄電話號碼綁定等)
+3.  **We Found Eight Attack Vectors Inside AWS Bedrock. Here's What Attackers Can Do with Them**
+    *   (我們在 AWS Bedrock 中發現八種攻擊向量：攻擊者可利用的技術路徑分析)
+4.  **Microsoft Warns IRS Phishing Hits 29,000 Users, Deploys RMM Malware**
+    *   (微軟警告針對美國國稅局 IRS 的網路釣魚攻擊影響 29,000 名用戶，部署遠端監控管理惡意軟體)
+5.  **Trivy Hack Spreads Infostealer via Docker, Triggers Worm and Kubernetes Wiper**
+    *   (Trivy 遭駭事件透過 Docker 散播竊資軟體，引發蠕蟲攻擊與 Kubernetes 抹除程式)
+6.  **Hackers Exploit CVE-2025-32975 (CVSS 10.0) to Hijack Unpatched Quest KACE SMA Systems**
+    *   (駭客利用 CVE-2025-32975 漏洞劫持未修補的 Quest KACE SMA 系統)
+7.  **TeamPCP deploys Iran-targeted wiper in Kubernetes attacks**
+    *   (TeamPCP 在針對伊朗的 Kubernetes 攻擊中部署抹除程式)
+8.  **Crunchyroll probes breach after hacker claims to steal 6.8M users' data**
+    *   (Crunchyroll 調查資料外洩事件，駭客聲稱竊取 680 萬用戶數據)
+9.  **Trivy supply-chain attack spreads to Docker, GitHub repos**
+    *   (Trivy 供應鏈攻擊擴散至 Docker 鏡像與 GitHub 儲存庫)
+10. **Varonis Atlas: Securing AI and the Data That Powers It**
+    *   (Varonis Atlas：保護人工智慧及其驅動數據的安全解決方案)
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 北韓駭客利用 VS Code 佈署 StoatWaffle
+*   **🔍 技術原理**：駭客鎖定 Visual Studio Code 的專案配置功能。當用戶打開惡意專案時，隱藏在 `.vscode/tasks.json` 中的自動化任務會被觸發。
+*   **⚔️ 攻擊向量**：利用社交工程引誘開發者下載惡意 Repo。透過 `runOn: folderOpen` 指令，在無需用戶手動執行腳本的情況下，直接在背景執行 PowerShell 或 Shell 指令。
+*   **🛡️ 防禦緩解**：
+    *   啟用 VS Code 的 「Workspace Trust」 模式，禁止在未信任目錄執行自動任務。
+    *   限制開發環境的外連能力，監控非典型的 PowerShell 執行路徑。
+*   **🧠 名詞定義**：
+    *   **StoatWaffle**: 一種新型後門程式，具備鍵盤記錄、檔案竊取與橫向移動能力。
+
+### 3.2 AWS Bedrock 八大攻擊向量分析
+*   **🔍 技術原理**：研究人員識別出生成式 AI 平台在處理外部輸入與模型整合時的結構性漏洞，涉及數據洩漏與權限提升。
+*   **⚔️ 攻擊向量**：包含 **間接提示注入 (Indirect Prompt Injection)**、**模型反轉攻擊 (Model Inversion)**、以及利用 **Agent 權限濫用** 來讀取 S3 儲存桶中的敏感數據。
+*   **🛡️ 防禦緩解**：
+    *   實施「輸入清理 (Input Sanitization)」與「輸出過濾」。
+    *   嚴格限制 Bedrock IAM 角色 (Role) 的權限範圍，遵循最小權限原則。
+*   **🧠 名詞定義**：
+    *   **Prompt Injection**: 透過輸入特定文本引導模型忽略原始指令，執行惡意操作。
+
+### 3.3 Trivy 供應鏈攻擊與 Kubernetes Wiper
+*   **🔍 技術原理**：熱門開源安全掃描工具 Trivy 被植入惡意代碼，當用戶掃描鏡像時，惡意代碼會被執行並感染本地 Docker 鏡像。
+*   **⚔️ 攻擊向量**：**軟體供應鏈投毒 (Supply Chain Poisoning)**。惡意代碼會掃描 K8s 叢集並執行抹除操作 (Wiper)，刪除所有命名空間 (Namespace) 與持久化磁碟 (PV)。
+*   **🛡️ 防禦緩解**：
+    *   對安全工具本身進行完整性校驗（雜湊值比對）。
+    *   在隔離的沙箱環境中執行漏洞掃描，避免掃描工具直接存取生產環境 API。
+*   **🧠 名詞定義**：
+    *   **Wiper**: 一種旨在永久毀滅數據而非勒索贖金的惡意軟體。
+
+### 3.4 CVE-2025-32975：Quest KACE SMA 漏洞
+*   **🔍 技術原理**：此漏洞屬於未授權的遠端代碼執行 (RCE)，其 CVSS 評分高達 10.0，意味著攻擊者無需憑據即可完全控制系統。
+*   **⚔️ 攻擊向量**：攻擊者發送特製的 HTTP 請求給系統管理設備 (SMA)，繞過身分驗證邏輯並獲取系統 root 權限。
+*   **🛡️ 防禦緩解**：
+    *   立即更新至官方釋出的安全性補丁。
+    *   在未修補前，將 SMA 的管理介面置於 VPN 之後，禁止公網存取。
+*   **🧠 名詞定義**：
+    *   **CVSS 10.0**: 漏洞評分系統中的最高等級，代表極高風險且易於利用。
+
+### 3.5 Microsoft 警告：IRS 釣魚與 RMM 濫用
+*   **🔍 技術原理**：利用報稅季節，駭客偽裝成美國國稅局。郵件中包含誘使下載的惡意程式，該程式會安裝合法但未經授權的 RMM 工具。
+*   **⚔️ 攻擊向量**：**Living Off The Land (LotL)**。使用 ScreenConnect 或 AnyDesk 等合法工具避開防毒軟體偵測，實現遠端持久化控制。
+*   **🛡️ 防禦緩解**：
+    *   員工安全意識培訓，警惕電子郵件中的 `.exe` 或 `.scr` 附件。
+    *   端點偵測 (EDR) 應針對非授權的遠端桌面工具行為發出告警。
+*   **🧠 名詞定義**：
+    *   **RMM (Remote Monitoring and Management)**: 原本用於 IT 運維的工具，現被駭客用於規避安全偵測。
+
+### 3.6 TeamPCP 針對伊朗的 K8s 抹除攻擊
+*   **🔍 技術原理**：駭客組織 TeamPCP 滲透進 K8s 叢集後，並非為了加密賺錢，而是為了地緣政治目的進行破壞。
+*   **⚔️ 攻擊向量**：透過錯誤配置的 **Kubelet API** 或受感染的 **CI/CD Pipeline** 注入惡意程式，自動化地銷毀所有 Pods 與備份快照。
+*   **🛡️ 防禦緩解**：
+    *   禁用 Kubelet 的匿名訪問。
+    *   使用 OPA Gatekeeper 限制特權容器的部署。
+*   **🧠 名詞定義**：
+    *   **TeamPCP**: 近期活躍的駭客組織，其攻擊行為帶有強烈政治傾向。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **安全工具武器化 (Weaponization of Security Tools)：**
+    從 Trivy 事件看，未來攻擊者將更頻繁地攻擊漏洞掃描器、日誌分析工具等「安全軟體」。企業必須思考：*「誰來監視監視者？」*。
+2.  **生成式 AI 自動化釣魚：**
+    隨著 Microsoft 提到的 IRS 釣魚，預測 2026 年底將出現「全自動化 AI 釣魚代理人」，能根據目標的社交媒體內容即時生成極具說服力的釣魚網站與內容。
+3.  **邊緣計算與容器蠕蟲：**
+    Trivy 觸發的蠕蟲顯示，容器化環境的擴散速度遠超傳統虛擬機。未來的攻擊將結合 K8s 漏洞，在數秒內癱瘓全球範圍內的微服務架構。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [North Korean Hackers Abuse VS Code Auto-Run Tasks](https://thehackernews.com/2026/03/north-korean-hackers-abuse-vs-code-auto.html)
+*   [Weekly Recap: CI/CD Backdoor & More](https://thehackernews.com/2026/03/weekly-recap-cicd-backdoor-fbi-buys.html)
+*   [Eight Attack Vectors Inside AWS Bedrock](https://thehackernews.com/2026/03/we-found-eight-attack-vectors-inside.html)
+*   [Microsoft Warns IRS Phishing Hits 29,000 Users](https://thehackernews.com/2026/03/microsoft-warns-irs-phishing-hits-29000.html)
+*   [Trivy Hack Spreads Infostealer via Docker](https://thehackernews.com/2026/03/trivy-hack-spreads-infostealer-via.html)
+*   [Hackers Exploit CVE-2025-32975 in Quest KACE SMA](https://thehackernews.com/2026/03/hackers-exploit-cve-2025-32975-cvss-100.html)
+*   [TeamPCP deploys Iran-targeted wiper in K8s](https://www.bleepingcomputer.com/news/security/teampcp-deploys-iran-targeted-wiper-in-kubernetes-attacks/)
+*   [Crunchyroll probes 6.8M users' data breach](https://www.bleepingcomputer.com/news/security/crunchyroll-probes-breach-after-hacker-claims-to-steal-68m-users-data/)
+*   [Trivy supply-chain attack spreads to GitHub](https://www.bleepingcomputer.com/news/security/trivy-supply-chain-attack-spreads-to-docker-github-repos/)
+*   [Varonis Atlas: Securing AI](https://www.bleepingcomputer.com/news/security/varonis-atlas-securing-ai-and-the-data-that-powers-it/)
+
+---
+**文件結束**
+*(此文件係由資安專家系統生成，旨在強化企業對 2026 年新興威脅的防禦準備。)*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/23)
 
 ---

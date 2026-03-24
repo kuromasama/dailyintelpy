@@ -1,3 +1,125 @@
+# 🛡️ 資安戰情白皮書 (2026/03/25)
+
+本文件專為 AI 知識庫 (NotebookLM) 訓練編寫，旨在深入分析 2026 年第一季末的全球資安威脅態勢，提供高度濃縮且具技術深度的戰情資訊。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第一季的威脅態勢顯示，「供應鏈投毒」與「身分驗證武器化」已進入高度精準化階段。
+*   **供應鏈信任崩潰**：從 LiteLLM 到 npm 軟體包，再到 Checkmarx 的 GitHub Actions，攻擊者（如 TeamPCP）不再僅針對應用漏洞，而是直接接管 CI/CD 管線或開發工具。
+*   **端點防禦的失效**：攻擊者利用具備合法簽名的驅動程式（如 Huawei 舊款驅動）進行「BYOVD」（Bring Your Own Vulnerable Driver）攻擊，強制關閉 EDR/AV，使傳統終端防護失效。
+*   **AI 安全新邊界**：隨著 Gartner 發布首份守護者代理（Guardian Agents）市場指南，資安長需重新評估內部 AI 代理人的權限控管與檢測機制。
+*   **地緣政治與合規性**：FCC 對非美製路由器的禁令標誌著「硬體信任」已成為國家安全級別的技術門檻。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (繁體中文) | Title (Original English) |
+| :--- | :--- |
+| TeamPCP 植入 LiteLLM (v1.82.7–1.82.8) 後門，疑透過 Trivy CI/CD 入侵 | TeamPCP Backdoors LiteLLM Versions 1.82.7–1.82.8 Likely via Trivy CI/CD Compromise |
+| 稅務搜尋廣告散播 ScreenConnect 木馬，利用華為驅動程式停用 EDR | Tax Search Ads Deliver ScreenConnect Malware Using Huawei Driver to Disable EDR |
+| Gartner 首份「守護者代理」市場指南的 5 大啟示 | 5 Learnings from the First-Ever Gartner Market Guide for Guardian Agents |
+| 駭客利用偽造履歷竊取企業憑證並部署挖礦軟體 | Hackers Use Fake Resumes to Steal Enterprise Credentials and Deploy Crypto Miner |
+| 資安專業化的隱形成本：基礎技能的流失 | The Hidden Cost of Cybersecurity Specialization: Losing Foundational Skills |
+| 「Ghost」活動利用 7 個 npm 包竊取加密貨幣錢包與憑證 | Ghost Campaign Uses 7 npm Packages to Steal Crypto Wallets and Credentials |
+| TeamPCP 利用遭竊的 CI 憑證入侵 Checkmarx 的 GitHub Actions | TeamPCP Hacks Checkmarx GitHub Actions Using Stolen CI Credentials |
+| 美國判處一名俄羅斯駭客 6.75 年監禁，因其涉及 900 萬美元勒索軟體損失 | U.S. Sentences Russian Hacker to 6.75 Years for Role in $9M Ransomware Damage |
+| Citrix 敦促修補 NetScaler 重大漏洞，該漏洞允許未經授權的數據外洩 | Citrix Urges Patching Critical NetScaler Flaw Allowing Unauthenticated Data Leaks |
+| FCC 基於安全風險禁止進口非美國製造的新型路由器 | FCC bans new routers made outside the USA over security risks |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 TeamPCP 對 LiteLLM 的供應鏈打擊
+*   **🔍 技術原理**：TeamPCP 組織利用自動化腳本掃描 CI/CD 管線中的組態錯誤，成功獲取了 LiteLLM 專案在 Trivy 掃描過程中的暫存憑證。駭客隨後在 `1.82.7` 與 `1.82.8` 版本中注入了混淆過的 Base64 惡意代碼，該代碼會在執行時回傳環境變數（含 API Key）。
+*   **⚔️ 攻擊向量**：CI/CD Pipeline Injection (透過遭洩露的 GitHub Secrets 或 OIDC 憑證)。
+*   **🛡️ 防禦緩解**：
+    1.  **Pin Dependencies**：使用固定版本號而非範圍語法，並檢查 SHA-256 Hash。
+    2.  **Secret Rotation**：立即更換所有暴露在該環境下的 OpenAI/Anthropic API Key。
+*   **🧠 名詞定義**：**LiteLLM** 是一個將多個 LLM API 封裝為 OpenAI 格式的 Python 庫，廣泛用於 AI 開發。
+
+### 3.2 稅務搜尋廣告與華為驅動程式 (BYOVD)
+*   **🔍 技術原理**：攻擊者購買 Google/Bing 的 SEO 廣告，誘導財務人員下載偽裝成「稅務試算表」的 .zip。內含一個合法的華為驅動程式（有漏洞的版本），攻擊者利用 `Bring Your Own Vulnerable Driver` 技術獲取核心權限（Kernel mode），直接在記憶體中終止 SentinelOne 或 CrowdStrike 的監控程序。
+*   **⚔️ 攻擊向量**：SEO Poisoning (搜尋引擎優化中毒) + BYOVD。
+*   **🛡️ 防禦緩解**：
+    1.  實施 **Microsoft Driver Blocklist**，確保系統禁止加載已知有漏洞的驅動程式。
+    2.  對所有下載的 `.exe` / `.msi` 進行端點行為檢測，嚴禁從非官方源獲取行政工具。
+*   **🧠 名詞定義**：**ScreenConnect** 是一款合法的遠端桌面軟體，常被駭客濫用作為遠端控制木馬 (RAT)。
+
+### 3.3 Gartner「守護者代理 (Guardian Agents)」深度洞察
+*   **🔍 技術原理**：隨著 Agentic AI 普及，AI 代理具備自主調用 API 的權力。Guardian Agents 作為「AI 的保鑣」，在 LLM 與外部世界之間建立過濾層，檢查是否存在 Prompt Injection 或未授權的敏感資料流出。
+*   **⚔️ 攻擊向量**：Indirect Prompt Injection (間接提示注入攻擊)。
+*   **🛡️ 防禦緩解**：建立「AI 隔離島策略」，所有 AI 代理的輸出必須經過獨立的邏輯規則審查。
+*   **🧠 名詞定義**：**Guardian Agent** 是一種安全架構組件，用於監測、攔截及過濾 AI Agent 的自主行為。
+
+### 3.4 偽造履歷 (Fake Resumes) 社交工程攻擊
+*   **🔍 技術原理**：駭客應徵高階開發職位，寄送包含巨集或 LNK 檔案的「履歷」。當 HR 或技術主管打開時，會執行 PowerShell 腳本下載 Infostealer (竊密程式)，竊取瀏覽器儲存的 AWS/Azure 憑證，並利用剩餘資源進行隱蔽挖礦。
+*   **⚔️ 攻擊向量**：Phishing via HR Portals (透過人力資源門戶的釣魚)。
+*   **🛡️ 防禦緩解**：
+    1.  **VDI 隔離**：要求 HR 在虛擬桌面或沙箱環境中預覽所有附件。
+    2.  **FIDO2 MFA**：即便憑證遭竊，無實體金鑰亦無法登入企業環境。
+
+### 3.5 資安專業化所帶來的技能斷層
+*   **🔍 技術原理**：資安行業細分化（如專攻 Cloud Security 或 SOC L1），導致從業人員失去對「底層基礎系統」（如匯編語言、TCP/IP 握手、核心驅動運作）的理解。
+*   **⚔️ 攻擊向量**：針對「基礎架構盲區」的攻擊，例如利用罕見的封裝協議繞過現代 WAF。
+*   **🛡️ 防禦緩解**：推動「Full-Stack Security」培訓計畫，強化底層架構的理解。
+
+### 3.6 「Ghost」npm 惡意軟體包活動
+*   **🔍 技術原理**：駭客發布了 7 個名稱與知名包相似的 npm 包（如 `colors-js-lib`），利用 Typosquatting (拼字錯誤) 誘導開發者安裝。惡意腳本會在 `postinstall` 階段執行，掃描 `~/.config` 下的 MetaMask 與加密貨幣錢包目錄。
+*   **⚔️ 攻擊向量**：Dependency Confusion / Typosquatting。
+*   **🛡️ 防禦緩解**：使用 `npm audit` 進行掃描，並在企業內網建置私有倉庫（Artifactory）進行軟體包白名單審核。
+
+### 3.7 TeamPCP 攻陷 Checkmarx 的 GitHub Actions
+*   **🔍 技術原理**：與 LiteLLM 類似，TeamPCP 透過竊取的 CI 憑證，成功修改了 Checkmarx 部分開源組件的 GitHub Actions 流程，將惡意代碼注入到自動化構建流程中。這顯示了「安全工具本身也可能不安全」。
+*   **⚔️ 攻擊向量**：Broken Access Control in CI/CD Environments。
+*   **🛡️ 防禦緩解**：實施 **Least Privilege** 原則於 GitHub Tokens，並啟用 Actions 的簽署與驗證機制。
+
+### 3.8 俄羅斯駭客遭判刑：勒索軟體損失案例
+*   **🔍 技術原理**：該駭客參與了典型的 RaaS (Ransomware as a Service) 營運，負責初始滲透（Initial Access Broker）。其使用的技術包括 VPN 漏洞利用與 RDP 暴力破解。
+*   **⚔️ 攻擊向量**：Exploiting Public-Facing Applications。
+*   **🛡️ 防禦緩解**：關閉不必要的 RDP 端口，並對所有對外服務實施嚴格的補丁管理與地緣 IP 限制。
+
+### 3.9 Citrix NetScaler 未授權數據洩露漏洞
+*   **🔍 技術原理**：該漏洞屬於邏輯繞過漏洞，攻擊者可以發送精心構造的 HTTP 請求，使 NetScaler 在未經身分驗證的情況下吐出記憶體快照，內含其他用戶的 Session Tokens。
+*   **⚔️ 攻擊向量**：Unauthenticated Data Leak (未授權數據洩露)。
+*   **🛡️ 防禦緩解**：立即更新至 Citrix 官方發布的修補版本，並檢查日誌中是否存在異常的 `/vpn/` 或 `/logon/` 路徑訪問。
+
+### 3.10 FCC 禁令：非美製路由器的安全風險
+*   **🔍 技術原理**：FCC 指出非美製硬體可能在韌體（Firmware）層級預留後門，或是在更新伺服器中受外國政府管控。此禁令涉及硬體物料清單（HBOM）的透明度。
+*   **⚔️ 攻擊向量**：Supply Chain Interdiction (硬體供應鏈攔截)。
+*   **🛡️ 防禦緩解**：
+    1.  採購符合 **TAA (Trade Agreements Act)** 規範的網路設備。
+    2.  對現有路由器實施流量鏡像監控，偵測是否發往異常的地緣政治區域。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 供應鏈戰爭 (AI Supply Chain War)**：未來一年，針對 Hugging Face 權重文件、LangChain 組件、LiteLLM 代理的投毒攻擊將增加 300%。
+2.  **核武級 BYOVD**：隨著 EDR 技術普及，駭客將挖掘更多「合法驅動程式」的 0-day 漏洞，用以在核心層繞過檢測。
+3.  **深度偽造應徵 (Deepfake Hiring)**：駭客將利用即時影像生成技術進行面試，直接獲得進入企業內部的權限。
+4.  **硬體主權化**：各國將效法美國 FCC，對「非本土化」的關鍵基礎設施硬體實施更嚴苛的進口限制。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [TeamPCP Backdoors LiteLLM](https://thehackernews.com/2026/03/teampcp-backdoors-litellm-versions.html)
+*   [Tax Search Ads & Huawei Driver](https://thehackernews.com/2026/03/tax-search-ads-deliver-screenconnect.html)
+*   [Gartner Market Guide for Guardian Agents](https://thehackernews.com/2026/03/5-learnings-from-first-ever-gartner.html)
+*   [Fake Resumes Credentials Theft](https://thehackernews.com/2026/03/hackers-use-fake-resumes-to-steal.html)
+*   [Cybersecurity Specialization Costs](https://thehackernews.com/2026/03/the-hidden-cost-of-cybersecurity.html)
+*   [Ghost Campaign npm Packages](https://thehackernews.com/2026/03/ghost-campaign-uses-7-npm-packages-to.html)
+*   [TeamPCP Hacks Checkmarx GitHub Actions](https://thehackernews.com/2026/03/teampcp-hacks-checkmarx-github-actions.html)
+*   [Russian Hacker Sentenced](https://thehackernews.com/2026/03/us-sentences-russian-hacker-to-675.html)
+*   [Citrix NetScaler Patch Urgency](https://thehackernews.com/2026/03/citrix-urges-patching-critical.html)
+*   [FCC Router Ban Security Risks](https://www.bleepingcomputer.com/news/security/fcc-bans-new-routers-made-outside-the-usa-over-security-risks/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/03/24)
 
 本文件旨在為企業資訊安全長 (CISO)、資安架構師與技術實戰人員提供最新的全球威脅情報分析，並作為 AI 知識庫（如 NotebookLM）之深度訓練素材。

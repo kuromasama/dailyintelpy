@@ -1,3 +1,136 @@
+# 🛡️ 資安戰情白皮書 (2026/04/02)
+
+本文件專為 AI 知識庫 (NotebookLM) 訓練設計，詳盡記錄了 2026 年 4 月初全球資安威脅的重大演變。當前威脅地景已從單純的漏洞利用，進化為高度精密的供應鏈滲透、受信工具武器化以及跨平台的社交工程攻擊。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年第一季末至第二季初，我們觀察到三個核心威脅趨勢：
+
+1.  **供應鏈攻擊的常態化與國家級參與**：從 `npm` 生態系到知名協作軟體 `TrueConf`，攻擊者不再僅僅攻擊目標企業，而是滲透開發者工具與軟體更新機制。尤其是北韓組織 (UNC1069) 對主流套件 `Axios` 的滲透，顯示出軟體清單 (SBOM) 管理的迫切性。
+2.  **信任媒介的崩潰**：攻擊者開始利用 WhatsApp、政府機構 (CERT-UA) 以及系統內建的「受信工具」(Living-off-the-Land) 來規避傳統的終端偵測與回應 (EDR) 系統。
+3.  **基礎建設漏洞的快速反應**：Chrome 與 iOS 的零日漏洞 (Zero-Day) 頻發，證明了攻擊者對核心作業系統層級的持續關注。企業必須從「防禦邊界」轉向「韌性復原」，並採用動態的資安提示策略（End of "Doctor No"），而非一味封鎖。
+
+**戰略建議**：
+*   **強化軟體供應鏈安全**：實施嚴格的開發依賴掃描與金鑰管理，防止類似 `Claude Code` 的洩漏事件。
+*   **零信任溝通架構**：不再信任來自即時通訊軟體 (WhatsApp) 的附件，即便是內部同仁發送。
+*   **動態安全教育**：轉向情境式的攔截與引導，降低員工因過度阻擋而產生的安全疲勞。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+1.  **CERT-UA 冒充攻擊大規模傳播 AGEWHEEZE 惡意軟體**
+    *   *CERT-UA Impersonation Campaign Spread AGEWHEEZE Malware to 1 Million Emails*
+2.  **微軟警告：WhatsApp 遞送之 VBS 惡意軟體透過 UAC 繞過劫持 Windows**
+    *   *Microsoft Warns of WhatsApp-Delivered VBS Malware Hijacking Windows via UAC Bypass*
+3.  **攔截提示而非阻斷工作：「不博士」時代的終結**
+    *   *Block the Prompt, Not the Work: The End of "Doctor No"*
+4.  **Casbaneiro 釣魚攻擊利用動態 PDF 誘餌鎖定拉美與歐洲**
+    *   *Casbaneiro Phishing Targets Latin America and Europe Using Dynamic PDF Lures*
+5.  **Chrome 零日漏洞 CVE-2026-5281 遭積極利用 — 已發布修補程式**
+    *   *New Chrome Zero-Day CVE-2026-5281 Under Active Exploitation — Patch Released*
+6.  **攻擊者利用受信工具攻擊你的三大理由（以及為何你防不勝防）**
+    *   *3 Reasons Attackers Are Using Your Trusted Tools Against You (And Why You Don’t See It Coming)*
+7.  **Google 將 Axios npm 供應鏈攻擊歸因於北韓組織 UNC1069**
+    *   *Google Attributes Axios npm Supply Chain Attack to North Korean Group UNC1069*
+8.  **Anthropic 證實：Claude Code 源碼因 npm 打包錯誤洩漏**
+    *   *Claude Code Source Leaked via npm Packaging Error, Anthropic Confirms*
+9.  **蘋果擴大 iOS 18 更新範圍至更多型號以阻擋 DarkSword 攻擊**
+    *   *Apple expands iOS 18 updates to more iPhones to block DarkSword attacks*
+10. **駭客利用 TrueConf 零日漏洞推送惡意軟體更新**
+    *   *Hackers exploit TrueConf zero-day to push malicious software updates*
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 CERT-UA 冒充攻擊與 AGEWHEEZE 惡意軟體
+*   **🔍 技術原理**：攻擊者偽造烏克蘭電腦應急響應小組 (CERT-UA) 的官方電子郵件，聲稱提供資安更新或威脅報告。附件中包含高度混淆的腳本，執行後會下載 **AGEWHEEZE** 竊密工具。
+*   **⚔️ 攻擊向量**：電子郵件社交工程 (Phishing) -> 惡意壓縮檔 -> PowerShell 執行載入器。
+*   **🛡️ 防禦緩解**：實施 SPF/DKIM/DMARC 驗證；針對政府機構發出的郵件進行二次帶外 (Out-of-band) 確認。
+*   **🧠 名詞定義**：**AGEWHEEZE** 是一種專門設計用於竊取瀏覽器憑證、加密貨幣錢包及系統資訊的資訊竊取程式 (Infostealer)。
+
+### 3.2 WhatsApp VBS 惡意軟體與 UAC 繞過
+*   **🔍 技術原理**：利用 WhatsApp Desktop 的文件傳輸功能發送 `.vbs` 腳本。該腳本利用特定的 Windows COM 介面漏洞來繞過使用者帳戶控制 (UAC)，實現無聲升權。
+*   **⚔️ 攻擊向量**：IM 即時通訊附件 -> VBScript 腳本執行 -> 權限提升 (Privilege Escalation)。
+*   **🛡️ 防禦緩解**：禁用非必要的 VBScript 執行環境；限制一般使用者在 IM 軟體上下載可執行檔或腳本。
+*   **🧠 名詞定義**：**UAC Bypass (使用者帳戶控制繞過)** 是指在不彈出管理員授權視窗的情況下，讓程式獲得高權限執行的技術。
+
+### 3.3 現代資安策略：終結 "Doctor No"
+*   **🔍 技術原理**：傳統資安團隊常因「安全性」而直接封鎖新工具（如 AI 工具）。此趨勢倡導「在提示中攔截」，即允許使用但監控輸入內容，若發現敏感資料傳輸則即時跳出提示導正。
+*   **⚔️ 攻擊向量**：內部威脅 (Insider Threat) 導因於員工為了工作效率繞過正式安全控制。
+*   **🛡️ 防禦緩解**：部署數據外洩防護 (DLP) 並整合即時使用者教育介面。
+*   **🧠 名詞定義**：**Doctor No** 指的是過度保守、對所有創新技術請求皆說 "No" 的資安長或部門。
+
+### 3.4 Casbaneiro 與動態 PDF 誘餌
+*   **🔍 技術原理**：Casbaneiro (又名 Metamorfo) 銀行木馬使用動態生成的 PDF 檔案。PDF 內含隱藏連結，點擊後會透過多層重新導向 (Redirect) 下載惡意 MSI 安裝包。
+*   **⚔️ 攻擊向量**：地理圍欄釣魚 (Geo-fencing) -> 動態連結 -> 銀行木馬植入。
+*   **🛡️ 防禦緩解**：加強對 MSI/EXE 下載的網域信譽過濾；使用沙箱技術拆解 PDF 內的動態 URL。
+*   **🧠 名詞定義**：**Dynamic PDF Lures** 是指 PDF 內容或其內嵌連結會根據使用者的 IP 地理位置或點擊時間動態改變，以規避靜態掃描。
+
+### 3.5 Chrome 零日漏洞 CVE-2026-5281
+*   **🔍 技術原理**：這是一個位於 Chrome V8 引擎中的記憶體損壞漏洞 (Memory Corruption)，允許遠端攻擊者在渲染進程中執行任意程式碼 (RCE)。
+*   **⚔️ 攻擊向量**：掛馬網頁 (Drive-by Download) -> 瀏覽器引擎渲染漏洞 -> 沙箱逃逸。
+*   **🛡️ 防禦緩解**：立即更新至最新版本；開啟 Chrome 的「加強型防護」。
+*   **🧠 名詞定義**：**V8 Engine** 是 Google 開源的高效能 JavaScript 與 WebAssembly 引擎。
+
+### 3.6 受信工具武器化 (Living-off-the-Land)
+*   **🔍 技術原理**：攻擊者不再上傳自己的惡意檔案，而是利用 Windows 內建的 `PowerShell`、`Certutil` 或 `WMI` 來執行攻擊動作。
+*   **⚔️ 攻擊向量**：合法二進位文件利用 (LoLBins) -> 規避簽署檢查 -> 持久化攻擊。
+*   **🛡️ 防禦緩解**：開啟 PowerShell Script Block Logging；監控系統進程樹的異常父子關係。
+*   **🧠 名詞定義**：**Living-off-the-Land (LotL)** 是一種利用受害者系統中已存在的合法工具來完成攻擊步驟的技術。
+
+### 3.7 北韓 UNC1069 攻擊 Axios 套件
+*   **🔍 技術原理**：UNC1069 透過社交工程獲取了個別開發者的 `npm` 帳號權限，隨後在廣泛使用的 `Axios` 庫中植入後門代碼。
+*   **⚔️ 攻擊向量**：供應鏈攻擊 (Supply Chain Attack) -> 套件依賴污染。
+*   **🛡️ 防禦緩解**：鎖定依賴版本 (Lockfiles)；使用 GitHub 依賴圖表與 Dependabot 進行監控。
+*   **🧠 名詞定義**：**UNC1069** 是一個被認為與北韓政府有關的威脅行為者組織。
+
+### 3.8 Claude Code 源碼洩漏事件
+*   **🔍 技術原理**：Anthropic 在發布 `Claude Code` 命令行工具時，因 CI/CD 腳本配置錯誤，不慎將包含核心邏輯的原始碼資料夾包含在 `npm` 發布包中。
+*   **⚔️ 攻擊向量**：意外洩漏 (Accidental Exposure) -> 競爭對手與攻擊者逆向工程。
+*   **🛡️ 防禦緩解**：在 `package.json` 中嚴格定義 `files` 欄位；在發布前實施自動化掃描以檢查機密資訊。
+*   **🧠 名詞定義**：**Claude Code** 是 Anthropic 開發的 AI 驅動開發工具。
+
+### 3.9 Apple iOS 18 與 DarkSword 攻擊
+*   **🔍 技術原理**：**DarkSword** 是一套利用多個 iOS 核心漏洞進行遠端監控的間諜軟體。Apple 發現舊款 iPhone 的舊版 iOS 18 存在被此類高度精密攻擊滲透的風險。
+*   **⚔️ 攻擊向量**：零點擊 (Zero-click) 簡訊/多媒體訊息漏洞 -> 內核特權執行。
+*   **🛡️ 防禦緩解**：所有符合條件的 iPhone 使用者必須立即更新至 iOS 18.x 最新補丁；高風險人士應開啟「封鎖模式」(Lockdown Mode)。
+*   **🧠 名詞定義**：**Zero-click Attack** 指的是不需要使用者進行任何點擊動作，僅需接收特定訊息即可觸發的攻擊方式。
+
+### 3.10 TrueConf 零日漏洞與惡意更新
+*   **🔍 技術原理**：攻擊者劫持了 TrueConf 伺服器的更新分發機制，將帶有惡意 Payload 的更新包推送到企業端，實現大規模的供應鏈控制。
+*   **⚔️ 攻擊向量**：更新伺服器入侵 -> 簽署機制繞過或私鑰失竊。
+*   **🛡️ 防禦緩解**：對所有軟體更新實施沙箱測試；監控伺服器向客戶端發送的異常二進位流量。
+*   **🧠 名詞定義**：**TrueConf** 是一款流行的視訊會議與協作解決方案。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 生成的動態惡意代碼**：未來如 AGEWHEEZE 等惡意軟體將整合 LLM APIs，根據感染環境即時修改代碼特徵，使傳統特徵碼偵測完全失效。
+2.  **IM 成為首選攻擊路徑**：隨著電子郵件過濾技術的成熟，WhatsApp、Telegram 等端到端加密通訊將成為分發惡意連結的主要渠道，企業需建立「非公事通訊」的安全界限。
+3.  **供應鏈攻擊將從「庫」轉向「開發工具」**：如 `Claude Code` 或 `GitHub Copilot` 插件將成為駭客重點關注的對象，一旦開發工具被污染，所有產出的代碼皆可能帶有後門。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [CERT-UA Impersonation Campaign - The Hacker News](https://thehackernews.com/2026/04/cert-ua-impersonation-campaign-spread.html)
+*   [Microsoft Warns of WhatsApp-Delivered VBS - The Hacker News](https://thehackernews.com/2026/04/microsoft-warns-of-whatsapp-delivered.html)
+*   [The End of "Doctor No" - The Hacker News](https://thehackernews.com/2026/04/block-prompt-not-work-end-of-doctor-no.html)
+*   [Casbaneiro Phishing Targets LatAm/EU - The Hacker News](https://thehackernews.com/2026/04/casbaneiro-phishing-targets-latin.html)
+*   [Chrome Zero-Day CVE-2026-5281 - The Hacker News](https://thehackernews.com/2026/04/new-chrome-zero-day-cve-2026-5281-under.html)
+*   [3 Reasons Attackers Use Trusted Tools - The Hacker News](https://thehackernews.com/2026/04/3-reasons-attackers-are-using-your.html)
+*   [Google Attributes Axios Attack to UNC1069 - The Hacker News](https://thehackernews.com/2026/04/google-attributes-axios-npm-supply.html)
+*   [Claude Code Source Leaked - The Hacker News](https://thehackernews.com/2026/04/claude-code-tleaked-via-npm-packaging.html)
+*   [Apple Expands iOS Updates for DarkSword - BleepingComputer](https://www.bleepingcomputer.com/news/security/apple-expands-ios-18-updates-to-more-iphones-to-block-darksword-attacks/)
+*   [TrueConf Zero-Day Exploit - BleepingComputer](https://www.bleepingcomputer.com/news/security/hackers-exploit-trueconf-zero-day-to-push-malicious-software-updates/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/04/01)
 
 本文件旨在為企業資安決策者、架構師及技術團隊提供當前全球威脅態勢的深度剖析。內容彙整自 2026 年 3 月至 4 月間之關鍵資安事件，聚焦於供應鏈攻擊、人工智慧漏洞及國家級威脅演進。

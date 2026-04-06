@@ -1,3 +1,124 @@
+# 🛡️ 資安戰情白皮書 (2026/04/07)
+
+本報告旨在為企業決策者、資安架構師及 SOC 營運團隊提供深入的威脅情報分析。內容涵蓋地緣政治攻擊、硬體底層漏洞、AI 供應鏈安全及勒索軟體演進趨勢，建議將此文檔匯入 AI 知識庫以進行進階的關聯性檢索。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢與戰略建議：**
+2026 年第一季的資安版圖呈現出「高對抗性」與「技術下沉」兩大特徵。
+*   **國家級威脅演進：** 伊朗與北韓（DPRK）持續利用合法雲端平台（M365, GitHub）進行隱蔽行動，這顯示傳統的 IP 黑名單已完全失效，行為偵測與身分驗證（Identity-first Security）成為唯一防線。
+*   **防禦體系的瓦解：** 勒索軟體（如 Qilin）透過「自帶漏洞驅動程式 (BYOVD)」直接在核心層級禁用 EDR，企業必須強化硬體層級的防護（如 VBS/HVCI）。
+*   **新興攻擊向量：** 針對 GPU 的 Rowhammer 攻擊（GPUBreach）以及 AI 開發工具（LiteLLM）的憑證管理缺陷，標誌著攻擊者已開始鎖定 AI 基礎設施。
+
+**戰略建議：**
+1.  **實施抗疲勞 MFA：** 針對密碼噴灑攻擊，應棄用簡單推送，改用數字匹配或 FIDO2 密鑰。
+2.  **供應鏈審核：** 針對 LiteLLM 等開源 AI 中間層工具，應進行嚴格的秘密掃描（Secret Scanning）。
+3.  **核心防護強化：** 開啟 Windows 核心隔離（Core Isolation），防止不安全驅動程式加載。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (Title) | 中文摘要 (Summary in Chinese) |
+| :--- | :--- |
+| **Iran-Linked Password-Spraying Campaign Targets 300+ Israeli M365 Orgs** | 伊朗背景駭客針對 300 多家以色列組織發動 M365 密碼噴灑攻擊。 |
+| **DPRK-Linked Hackers Use GitHub as C2 in Multi-Stage Attacks Targeting South Korea** | 北韓駭客利用 GitHub 作為 C2 伺服器，對南韓發動多階段攻擊。 |
+| **Multi-OS Cyberattacks: How SOCs Close a Critical Risk in 3 Steps** | 跨平台作業系統攻擊增長：SOC 關閉關鍵風險的三大步驟。 |
+| **Weekly Recap: Axios Hack, Chrome 0-Day, Fortinet Exploits, etc.** | 本週回顧：Axios 被駭、Chrome 零日漏洞、Fortinet 漏洞利用、Paragon 間諜軟體。 |
+| **How LiteLLM Turned Developer Machines Into Credential Vaults** | LiteLLM 如何意外地將開發者機器變成攻擊者的「憑證保險庫」。 |
+| **Qilin and Warlock Ransomware Use Vulnerable Drivers to Disable 300+ EDRs** | Qilin 與 Warlock 勒索軟體利用漏洞驅動程式禁用超過 300 種 EDR 工具。 |
+| **BKA Identifies REvil Leaders Behind 130 German Ransomware Attacks** | 德國聯邦刑事警察局 (BKA) 識別出涉及 130 起勒索攻擊的 REvil 首腦。 |
+| **New GPUBreach attack enables system takeover via GPU rowhammer** | 新型 GPUBreach 攻擊：透過 GPU Rowhammer 實現系統奪權。 |
+| **Disgruntled researcher leaks “BlueHammer” Windows zero-day exploit** | 不滿的研究員洩漏 "BlueHammer" Windows 零日漏洞利用代碼。 |
+| **Microsoft fixes Classic Outlook bug causing email delivery issues** | 微軟修復導致傳統版 Outlook 郵件傳遞異常的錯誤。 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 伊朗 M365 密碼噴灑行動 (Password-Spraying)
+*   **🔍 技術原理：** 攻擊者不針對單一帳號嘗試多組密碼，而是針對數百個組織的數千個帳號嘗試「少數幾個常用密碼」（如 `Spring2026!`），以規避帳號鎖定策略。
+*   **⚔️ 攻擊向量：** 利用 Microsoft 365 的身分驗證終端，結合自動化腳本繞過地理位置限制。
+*   **🛡️ 防禦緩解：** 實施條件式存取策略（Conditional Access）、禁止「已知易受攻擊密碼」、啟用 MFA 數字匹配。
+*   **🧠 名詞定義：** **Password Spraying (密碼噴灑)**：一種針對多個帳號嘗試少數密碼的暴力破解變體。
+
+### 3.2 北韓 GitHub C2 多階段攻擊
+*   **🔍 技術原理：** 惡意程式將指令隱藏在 GitHub 儲存庫的 Commit 紀錄或 Issue 評論中，透過 API 抓取指令。
+*   **⚔️ 攻擊向量：** 初期透過 Spear-phishing 植入 Loader，後續利用合法 GitHub 流量隱藏 C2 通訊，傳統防火牆難以偵測。
+*   **🛡️ 防禦緩解：** 監控異常的 GitHub API 呼叫、部署端點行為分析（EDR）以攔截多階段載荷載入。
+*   **🧠 名詞定義：** **C2 (Command and Control)**：攻擊者用來遠端操控受感染電腦的指令伺服器。
+
+### 3.3 跨平台 (Multi-OS) 攻擊與 SOC 流程
+*   **🔍 技術原理：** 攻擊者使用 Go 或 Rust 等跨平台語言開發惡意軟體，使其能同時感染 Windows, Linux 與 macOS。
+*   **⚔️ 攻擊向量：** 容器化環境滲透、雲端負載攻擊。
+*   **🛡️ 防禦緩解：** 建立統一的資安遙測數據模型、落實跨平台的自動化回應（SOAR）。
+*   **🧠 名詞定義：** **SOC (Security Operations Center)**：資安監控中心，負責即時偵測與應變資安事件。
+
+### 3.4 每週資安回顧 (Chrome 0-Day & Fortinet)
+*   **🔍 技術原理：** Chrome 0-Day (V8 引擎漏洞) 允許遠端代碼執行 (RCE)；Fortinet 漏洞涉及預設憑證或溢出攻擊。
+*   **⚔️ 攻擊向量：** 網頁掛馬（Chrome）及直接針對防火牆管理介面的掃描。
+*   **🛡️ 防禦緩解：** 24 小時內完成緊急補丁部署、關閉 Fortinet 外網管理介面。
+
+### 3.5 LiteLLM 憑證管理漏洞
+*   **🔍 技術原理：** LiteLLM 在本地儲存中以不安全的形式保留了 API Keys 與環境變數，攻擊者只要取得開發機器存取權即可獲取雲端 AI 模型存取權。
+*   **⚔️ 攻擊向量：** 供應鏈攻擊、開發者機器被滲透後的橫向移動。
+*   **🛡️ 防禦緩解：** 使用專門的 Secrets Management 工具（如 HashiCorp Vault），避免在設定檔中硬編碼憑證。
+*   **🧠 名詞定義：** **LLM Gateway**：如 LiteLLM，用於簡化調用多種 AI 模型的統一介面工具。
+
+### 3.6 Qilin/Warlock 驅動程式攻擊 (BYOVD)
+*   **🔍 技術原理：** 攻擊者攜帶帶有合法簽章但具已知漏洞的舊版驅動程式，加載到核心後利用其漏洞取得系統最高權限。
+*   **⚔️ 攻擊向量：** 核心層級（Kernel Level）操作，直接終止 EDR 行程或刪除其日誌。
+*   **🛡️ 防禦緩解：** 啟用微軟驅動程式區段清單（Driver Blocklist）、開啟 HVCI（記憶體完整性防護）。
+*   **🧠 名詞定義：** **BYOVD (Bring Your Own Vulnerable Driver)**：利用合法但有漏洞的驅動程式來繞過系統核心保護的技術。
+
+### 3.7 BKA 識別 REvil 首腦
+*   **🔍 技術原理：** 透過區塊鏈追蹤與跨國電信數據交叉比對，鎖定 RaaS 經營者的真實身分。
+*   **⚔️ 攻擊向量：** 勒索軟體服務化（RaaS）生態系。
+*   **🛡️ 防禦緩解：** 法律威懾與基礎設施查封（Takedown）。
+
+### 3.8 GPUBreach (GPU Rowhammer)
+*   **🔍 技術原理：** 透過大量且密集的 GPU 記憶體存取動作，引發相鄰記憶體單元的位元翻轉（Bit-flipping），進而修改權限數據。
+*   **⚔️ 攻擊向量：** WebGL 瀏覽器腳本或惡意計算負載。
+*   **🛡️ 防禦緩解：** 強化 GPU 記憶體隔離、實施 ECC 記憶體檢查。
+*   **🧠 名詞定義：** **Rowhammer**：一種硬體漏洞，透過重複訪問某一行記憶體，導致電磁干擾使鄰近行位元出錯。
+
+### 3.9 BlueHammer Windows 0-Day 洩漏
+*   **🔍 技術原理：** 涉及 Windows Kernel 處理特定異常時的邏輯缺陷，允許從低權限提升至 SYSTEM 權限。
+*   **⚔️ 攻擊向量：** 本地特權提升（LPE）。
+*   **🛡️ 防禦緩解：** 密切關注 MS-Patch-Tuesday 以外的帶外補丁（OOB Patch）。
+
+### 3.10 Outlook Bug 修復
+*   **🔍 技術原理：** 傳統版 Outlook 的索引與傳遞邏輯錯誤導致郵件卡在寄件夾。
+*   **⚔️ 攻擊向量：** 非惡意攻擊，屬可用性（Availability）風險。
+*   **🛡️ 防禦緩解：** 更新至最新的 Office 版本。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 供應鏈成為新戰場：** 未來一年，類似 LiteLLM 的中間層工具漏洞將激增，攻擊者將透過操縱 AI API Key 來盜取企業數據或消耗昂貴的算力資源。
+2.  **核心防護攻防戰：** 隨著 Qilin 成功展示了 BYOVD 的破壞力，預計會有更多勒索軟體整合「驅動程式殺手」模組。企業若不開啟硬體輔助資安（VBS），其 EDR 將形同虛設。
+3.  **側信道攻擊平民化：** GPUBreach 的出現顯示硬體漏洞不再僅限於實驗室。未來可能出現針對雲端 GPU 伺服器（A100/H100）的跨租戶攻擊。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Iran-Linked Password-Spraying Campaign Targets Israeli M365](https://thehackernews.com/2026/04/iran-linked-password-spraying-campaign.html)
+*   [DPRK-Linked Hackers Use GitHub as C2](https://thehackernews.com/2026/04/dprk-linked-hackers-use-github-as-c2-in.html)
+*   [Multi-OS Cyberattacks: SOC Steps](https://thehackernews.com/2026/04/multi-os-cyberattacks-how-socs-close.html)
+*   [Weekly Recap: Chrome 0-Day & Fortinet](https://thehackernews.com/2026/04/weekly-recap-axios-hack-chrome-0-day.html)
+*   [LiteLLM Credential Vault Issues](https://thehackernews.com/2026/04/how-litellm-turned-developer-machines.html)
+*   [Qilin/Warlock Disable EDR tools](https://thehackernews.com/2026/04/qilin-and-warlock-ransomware-use.html)
+*   [BKA Identifies REvil Leaders](https://thehackernews.com/2026/04/bka-identifies-revil-leaders-behind-130.html)
+*   [GPUBreach Attack Details](https://www.bleepingcomputer.com/news/security/new-gpubreach-attack-enables-system-takeover-via-gpu-rowhammer/)
+*   [BlueHammer Zero-Day Leak](https://www.bleepingcomputer.com/news/security/disgruntled-researcher-leaks-bluehammer-windows-zero-day-exploit/)
+*   [Microsoft Outlook Fix](https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-classic-outlook-bug-causing-email-delivery-issues/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/04/06)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在提供高度結構化、技術詳盡且具備前瞻性的資安威脅情報。

@@ -1,3 +1,115 @@
+# 🛡️ 資安戰情白皮書 (2026/04/13)
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年第二季伊始，全球資安威脅呈現出「信任鏈崩潰」與「基礎架構工具化」的雙重特徵。本次戰情分析顯示，攻擊者已不再滿足於外圍突破，而是精準打擊 IT 專業人員與開發者信任的基礎工具（如 CPUID）以及廣泛使用的內容平台（如 Adobe Acrobat）。
+
+**戰略建議：**
+1.  **實施零信任下載原則**：即使是來自官方或知名來源的二進位檔案，亦須經過內部沙箱（Sandbox）驗證與雜湊值（Hash）比對。
+2.  **加速漏洞修補週期**：對於「已遭積極利用（Actively Exploited）」的漏洞，修補時限（SLA）應縮短至 24 小時內。
+3.  **加強開發環境隔離**：針對如 Marimo 等數據科學與運算工具，必須限制其對外網路存取權限，防止預認證漏洞導致整個運算叢集淪陷。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中文) | 威脅標題 (英文) | 影響等級 |
+| :--- | :--- | :--- |
+| CPUID 官網遭入侵：偽裝 CPU-Z 與 HWMonitor 散布 STX 遠端存取木馬 | CPUID Breach Distributes STX RAT via Trojanized CPU-Z and HWMonitor Downloads | 🔴 緊急 (Critical) |
+| Adobe 緊急修補遭積極利用之 Acrobat Reader 漏洞 CVE-2026-34621 | Adobe Patches Actively Exploited Acrobat Reader Flaw CVE-2026-34621 | 🔴 緊急 (Critical) |
+| 嚴重 Marimo 預認證遠端程式碼執行 (RCE) 漏洞正遭大規模利用 | Critical Marimo pre-auth RCE flaw now under active exploitation | 🟠 高危 (High) |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ A. CPUID 供應鏈滲透與 STX RAT 威脅分析
+
+#### 🔍 技術原理
+攻擊者成功滲透了 **CPUID** 官方網站的軟體分發伺服器。這並非單純的網域劫持，而是將合法的安裝程式（如 `cpu-z_2.10-en.exe`）替換為惡意包裝的「特洛伊木馬化（Trojanized）」版本。
+*   **封裝機制**：惡意安裝包在執行時會釋放真實的 CPU-Z 檔案以降低使用者戒心，同時在背景釋放並執行 **STX RAT**。
+*   **持久化**：透過修改 Windows 登錄檔的 `Run` 鍵值或建立排程工作，確保重新開機後仍能存活。
+
+#### ⚔️ 攻擊向量
+*   **供應鏈投毒 (Supply Chain Poisoning)**：利用大眾對 CPUID 硬體監測工具的信任，誘使維運人員或超頻愛好者下載。
+*   **側載攻擊 (Sideloading)**：惡意程式碼可能利用合法檔案載入惡意 DLL，以規避傳統 AV（防毒軟體）的特徵碼偵測。
+
+#### 🛡️ 防禦緩解
+1.  **校驗數位簽章**：嚴格檢查下載檔案的數位簽章有效性，受汙染的檔案通常簽章異常或無簽章。
+2.  **EDR 行為監控**：監控 CPU-Z 等工具是否發起不正常的外部連線（C2 通訊）或寫入非預期的系統路徑。
+3.  **網路分段**：限制一般工作站下載執行檔的權限，僅允許透過內部受控 Repo 取得工具。
+
+#### 🧠 名詞定義
+*   **STX RAT**: 一種新興的遠端存取木馬，具備螢幕截圖、鍵盤側錄、檔案存取及加密貨幣錢包竊取功能。
+*   **Trojanized (特洛伊木馬化)**：指將惡意程式碼植入原本正常、合法的軟體中，使其外觀與功能看似無異，實則帶有破壞性。
+
+---
+
+### 🛡️ B. Adobe Acrobat Reader CVE-2026-34621 漏洞剖析
+
+#### 🔍 技術原理
+**CVE-2026-34621** 是一個存在於 Adobe Acrobat Reader 中的**釋放後使用（Use-After-Free, UAF）**漏洞。
+*   **漏洞觸發**：當軟體處理特定構造的 PDF 檔案（尤其是包含複雜 JavaScript 或 3D 對象的檔案）時，記憶體管理邏輯出現錯誤。
+*   **利用過程**：攻擊者可以藉由釋放特定記憶體區塊後再次引用該位址，進而操控指令指標（EIP/RIP），最終在使用者系統上執行任意指令。
+
+#### ⚔️ 攻擊向量
+*   **釣魚郵件 (Phishing)**：最常見的管道，透過主旨誘人的電子郵件夾帶惡意 PDF 附件。
+*   **網頁掛馬 (Drive-by Download)**：若瀏覽器配置為自動以 Acrobat 外掛開啟 PDF，使用者只需瀏覽特定惡意網頁即可中毒。
+
+#### 🛡️ 防禦緩解
+1.  **立即更新**：部署 Adobe 釋出的最新安全修補程式。
+2.  **啟用保護模式 (Protected Mode)**：利用 Adobe 的沙箱機制限制漏洞溢出後的系統存取權限。
+3.  **停用 JavaScript**：若非必要，應在 Acrobat 設定中停用 PDF JavaScript 功能，可阻斷大多數 UAF 漏洞的觸發路徑。
+
+#### 🧠 名詞定義
+*   **Use-After-Free (UAF)**：一種記憶體損壞漏洞，發生在程式釋放記憶體位置後未清除指標，導致該位置被重新利用於執行惡意代碼。
+*   **Actively Exploited (積極利用)**：指資安監控單位已在現實環境中觀察到攻擊者利用此漏洞進行攻擊，而不僅僅是理論上的風險。
+
+---
+
+### 🛡️ C. Marimo 數據科學平台 RCE 漏洞分析
+
+#### 🔍 技術原理
+**Marimo** 是一個新型態的 Python 響應式筆記本軟體。此漏洞（漏洞編號待定，指代 Pre-auth RCE）發生在其 API 處理邏輯中。
+*   **漏洞核心**：在身分驗證（Authentication）機制被觸發前，Marimo 的特定 Web 服務端點未能正確過濾傳入的 JSON Payload，導致攻擊者可以透過惡意的 Web 請求直接注入 Python 指令。
+*   **無須權限**：這是最嚴重的漏洞類型，因為攻擊者不需要帳號密碼即可遠端接管伺服器。
+
+#### ⚔️ 攻擊向量
+*   **公開介面掃描**：攻擊者利用 Shodan 或 Censys 掃描網路上曝露的 Marimo 預設埠（通常為 8080 或 8081）。
+*   **自動化攻擊指令碼**：攻擊者已開發出自動化 Exploit，能在數秒內於目標容器或伺服器內植入反向 Shell (Reverse Shell)。
+
+#### 🛡️ 防禦緩解
+1.  **強制更新版本**：升級至 Marimo 官方發布的安全修正版本。
+2.  **部署 WAF (網頁應用程式防火牆)**：過濾可疑的 API 請求與包含代碼注入特徵的 Payload。
+3.  **VPC 內部化**：絕對不要將數據科學工具（如 Jupyter, Marimo）直接曝露於公網，應置於 VPN 或 Zero Trust Gateway (如 Cloudflare Access) 之後。
+
+#### 🧠 名詞定義
+*   **Pre-auth RCE (預認證遠端程式碼執行)**：攻擊者在未登入、無任何憑證的情況下，即可在目標系統執行命令，危險等級最高。
+*   **Reactive Notebook (響應式筆記本)**：一種類似於 Jupyter 但具備狀態自動更新功能的運算環境，廣泛用於數據分析與 AI 開發。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **開發者工具成為新戰場**：隨著 CPU-Z 與 Marimo 相繼淪陷，預計未來會有更多針對系統工具（如 CrystalDiskInfo, GPU-Z）與數據科學框架的供應鏈攻擊。
+2.  **PDF 攻擊的復興**：CVE-2026-34621 的出現顯示，即便 PDF 防禦技術已久，攻擊者仍能透過更深層的記憶體管理缺陷繞過現代作業系統的防護（如 ASLR/DEP）。
+3.  **自動化漏洞武器化**：從漏洞公開到「積極利用」的時間窗口（Time-to-Exploit）將縮短至數小時內，這要求企業必須導入 AI 驅動的自動化修補解決方案。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [CPUID Breach Distributes STX RAT via Trojanized CPU-Z and HWMonitor Downloads](https://thehackernews.com/2026/04/cpuid-breach-distributes-stx-rat-via.html)
+*   [Adobe Patches Actively Exploited Acrobat Reader Flaw CVE-2026-34621](https://thehackernews.com/2026/04/adobe-patches-actively-exploited.html)
+*   [Critical Marimo pre-auth RCE flaw now under active exploitation](https://www.bleepingcomputer.com/news/security/critical-marimo-pre-auth-rce-flaw-now-under-active-exploitation/)
+
+---
+**文件結尾** - *本報告旨在提供資安決策參考，所有技術細節應納入內部知識庫進行比對演練。*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/04/12)
 
 本文件旨在提供網路安全決策者與技術專家關於當前威脅地景的深度分析。內容涵蓋廣告數據追蹤、跨國加密貨幣詐騙、人工智慧治理、以及關鍵軟體零時差漏洞。本文件之資訊密度經優化，適合導入 AI 知識庫 (如 NotebookLM) 進行後續分析。

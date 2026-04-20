@@ -1,3 +1,92 @@
+# 🛡️ 資安戰情白皮書 (2026/04/21)
+
+本文件旨在為企業資安決策者、架構師及資安運維團隊（SOC）提供深度技術分析，作為 AI 知識庫（如 NotebookLM）之核心訓練語料。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢分析：**
+2026 年 4 月的資安景觀呈現出顯著的「雙軌化」演進：一方面是 **AI 基礎設施 (AI Stack)** 的底層漏洞爆發（如 SGLang 與 Anthropic MCP），這顯示攻擊者已從單純的 Prompt Injection 轉向攻擊 AI 模型的加載與模型運作協議；另一方面，**關鍵基礎設施 (OT)** 與 **軟體供應鏈** 依舊是國家級駭客與犯罪組織的核心目標（如以色列水資源系統遭受 ZionSiphon 攻擊、Vercel 供應鏈洩露）。
+
+**戰略建議：**
+1.  **AI 模型零信任化**：不再信任外部或第三方 GGUF 模型文件，應建立「模型掃描與隔離環境 (Model Sandbox)」。
+2.  **供應鏈聯防**：重新評估 SaaS 與 PaaS（如 Vercel）的 API 權限管理，防範連鎖反應。
+3.  **身份驗證強化**：針對 Teams 冒名與 MFA 疲勞攻擊，應推動 FIDO2 無密碼認證以取代傳統簡訊與推播驗證。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (Title) | 來源連結 (Link) |
+| :--- | :--- |
+| **SGLang CVE-2026-5760 (CVSS 9.8) 允許透過惡意 GGUF 模型執行遠端程式碼 (RCE)** | [View](https://thehackernews.com/2026/04/sglang-cve-2026-5760-cvss-98-enables.html) |
+| **⚡ 每週回顧：Vercel 駭客事件、推播詐騙、QEMU 被濫用、新型 Android RAT 出現** | [View](https://thehackernews.com/2026/04/weekly-recap-vercel-hack-push-fraud.html) |
+| **為何大多數 AI 部署在 Demo 展示後便停滯不前？** | [View](https://thehackernews.com/2026/04/why-most-ai-deployments-stall-after-demo.html) |
+| **Anthropic MCP 設計漏洞導致 RCE，威脅 AI 供應鏈安全** | [View](https://thehackernews.com/2026/04/anthropic-mcp-design-vulnerability.html) |
+| **研究人員偵測到 ZionSiphon 惡意軟體鎖定以色列水務與海水淡化 OT 系統** | [View](https://thehackernews.com/2026/04/researchers-detect-zionsiphon-malware.html) |
+| **與 Context AI 駭客事件相關的 Vercel 破口導致部分客戶憑證外洩** | [View](https://thehackernews.com/2026/04/vercel-breach-tied-to-context-ai-hack.html) |
+| **中國 Apple App Store 滲入大量竊取加密貨幣的錢包應用程式** | [View](https://www.bleepingcomputer.com/news/security/chinas-apple-app-store-infiltrated-by-crypto-stealing-wallet-apps/) |
+| **The Gentlemen 勒索軟體現在利用 SystemBC 進行機器人驅動的攻擊** | [View](https://www.bleepingcomputer.com/news/security/the-gentlemen-ransomware-now-uses-systembc-for-bot-powered-attacks/) |
+| **精工美國 (Seiko USA) 網站遭竄改，駭客聲稱竊取客戶數據** | [View](https://www.bleepingcomputer.com/news/security/seiko-usa-website-defaced-as-hacker-claims-customer-data-theft/) |
+| **微軟警告：Teams 越來越多地被用於假冒技術支援 (Helpdesk) 的攻擊** | [View](https://www.bleepingcomputer.com/news/security/microsoft-teams-increasingly-abused-in-helpdesk-impersonation-attacks/) |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 SGLang CVE-2026-5760: 模型文件引發的 RCE
+*   **🔍 技術原理**：SGLang 是一個高效能的 LLM 推論引擎。該漏洞源於其在解析 GGUF (GPT-Generated Unified Format) 格式的模型文件時，缺乏嚴格的邊界檢查與類型驗證。攻擊者可構造包含惡意 Metadata 或張量數據的 GGUF 文件，利用緩衝區溢位 (Buffer Overflow) 覆蓋內存指針。
+*   **⚔️ 攻擊向量**：攻擊者將惡意的 GGUF 文件上傳至公共模型倉庫 (如 Hugging Face) 或透過釣魚手段誘導開發人員下載，當 SGLang 試圖加載該模型進行推論時，即觸發 RCE。
+*   **🛡️ 防禦緩解**：立即更新 SGLang 至最新補丁版本；在加載模型前，使用 `gguf-tools` 進行結構校驗；在受限的容器 (Sandbox) 中執行推論任務。
+*   **🧠 名詞定義**：**GGUF** 是由 llama.cpp 團隊推廣的一種二進位模型格式，優點是加載速度快並支援非 C++ 綁定。
+
+### 3.2 Vercel & Context AI 供應鏈連鎖破口
+*   **🔍 技術原理**：這是一起典型的供應鏈「信任傳遞」攻擊。駭客首先攻陷了 AI 監控平台 **Context AI**，進而獲取了該平台持有的 Vercel 整合憑證 (Integration Tokens)。
+*   **⚔️ 攻擊向量**：利用竊取的 API Token，攻擊者可以訪問 Vercel 部署環境，讀取環境變數 (Environment Variables)，其中包含生產資料庫的金鑰。
+*   **🛡️ 防禦緩解**：實施「最小權限原則」，定期更換第三方整合的 API Key；啟用 Vercel 的活動日誌監控，針對異常的 API 調用發出警報。
+*   **🧠 名詞定義**：**Supply Chain Attack** 是指透過攻擊目標信任的供應商或第三方工具，間接獲取目標系統權限的手段。
+
+### 3.3 Anthropic MCP (Model Context Protocol) 設計缺陷
+*   **🔍 技術原理**：MCP 旨在標準化 AI 模型與外部數據源/工具的互動。漏洞在於 MCP 的預設權限配置過於寬鬆，允許模型在未經二次確認的情況下，透過其 Server 執行本地 Shell 指令。
+*   **⚔️ 攻擊向量**：駭客透過 Prompt Injection 誘導 AI 使用惡意的 MCP Server 插件，該插件會觸發設計缺陷，直接在主機上執行惡意腳本。
+*   **🛡️ 防禦緩解**：強制開啟 MCP 的「執行前確認」模式；對 MCP Server 的通訊實施白名單過濾。
+*   **🧠 名詞定義**：**MCP** 是由 Anthropic 推出的開放協議，讓 AI 代理能更輕鬆地存取 Google Drive、Slack 等數據源。
+
+### 3.4 ZionSiphon: 針對 OT 基礎設施的精密打擊
+*   **🔍 技術原理**：ZionSiphon 是一款針對工業控制系統 (ICS) 編寫的惡意軟體。它能識別特定型號的 PLC (可程式化邏輯控制器)，並注入錯誤的指令來篡改水質數據或壓力參數。
+*   **⚔️ 攻擊向量**：初步跡象顯示攻擊者透過未修補的邊緣路由器進入 OT 網路，隨後在內網橫向移動至海水淡化系統的 SCADA 管理終端。
+*   **🛡️ 防禦緩解**：實施物理隔離 (Air-gapping) 或強大的微隔離 (Micro-segmentation)；部署 OT 專用的入侵檢測系統 (IDS)。
+*   **🧠 名詞定義**：**OT (Operational Technology)** 指的是用於監控和控制物理設備、流程和事件的硬體與軟體。
+
+### 3.5 The Gentlemen 勒索軟體與 SystemBC 的結合
+*   **🔍 技術原理**：The Gentlemen 勒索軟體集團現在採用 **SystemBC** 作為主要的 C2 (命令與控制) 代理。SystemBC 是一個基於 SOCKS5 的代理，能加密並隱匿惡意流量，使其看起來像合法的網路流量。
+*   **⚔️ 攻擊向量**：利用受感染的 Botnet 進行初始滲透，部署 SystemBC 以建立持久性通道，最後投放勒索軟體加密關鍵數據。
+*   **🛡️ 防禦緩解**：阻斷已知的 SystemBC C2 IP 地址；監控不尋常的 SOCKS5 代理流量。
+*   **🧠 名詞定義**：**SystemBC** 是一種惡意軟體工具，主要被用作代理，協助攻擊者繞過防火牆並隱藏真實 IP。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI Stack 漏洞成為新藍海**：隨著企業大量採用 RAG (檢索增強生成) 與 AI Agent，像 MCP 這樣的通訊協議將成為駭客攻擊的首選目標。預計 2026 下半年將出現更多針對向量資料庫 (Vector DB) 的注入攻擊。
+2.  **社交工程的自動化與精準化**：Microsoft Teams 的冒名攻擊顯示，駭客正利用 AI 生成的語音或高度模擬的文本來欺騙 IT Helpdesk。未來「深偽 (Deepfake) 即服務」將降低此類攻擊的門檻。
+3.  **國家級駭客轉向「軟性目標」**：如以色列水務事件所示，針對關鍵基礎設施的攻擊已不再僅限於能源，水資源、糧食供應鏈等與民生密切相關的 OT 系統將面臨更高頻率的威脅。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   SGLang RCE: [The Hacker News](https://thehackernews.com/2026/04/sglang-cve-2026-5760-cvss-98-enables.html)
+*   Anthropic MCP Risk: [The Hacker News](https://thehackernews.com/2026/04/anthropic-mcp-design-vulnerability.html)
+*   ZionSiphon OT Malware: [The Hacker News](https://thehackernews.com/2026/04/researchers-detect-zionsiphon-malware.html)
+*   Vercel Breach Details: [The Hacker News](https://thehackernews.com/2026/04/vercel-breach-tied-to-context-ai-hack.html)
+*   China App Store Crypto Theft: [Bleeping Computer](https://www.bleepingcomputer.com/news/security/chinas-apple-app-store-infiltrated-by-crypto-stealing-wallet-apps/)
+*   The Gentlemen Ransomware: [Bleeping Computer](https://www.bleepingcomputer.com/news/security/the-gentlemen-ransomware-now-uses-systembc-for-bot-powered-attacks/)
+*   Teams Helpdesk Attacks: [Bleeping Computer](https://www.bleepingcomputer.com/news/security/microsoft-teams-increasingly-abused-in-helpdesk-impersonation-attacks/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/04/20)
 
 ---

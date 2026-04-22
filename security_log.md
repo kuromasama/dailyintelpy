@@ -1,3 +1,138 @@
+# 🛡️ 資安戰情白皮書 (2026/04/23)
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年第二季的開端，全球資安態勢呈現出「**供應鏈深度侵蝕**」與「**基礎設施武器化**」的雙重特徵。根據今日的戰報分析，攻擊者不再僅僅滿足於竊取數據，而是將觸角伸向了開發生命週期（SDLC）的最底層——包括 IaC 掃描工具、套件管理員以及 AI 訓練沙箱。
+
+**核心戰略建議：**
+1.  **實施開發者環境隔離**：針對 IDE 擴充插件與 Docker 鏡像建立嚴格的白名單與行為審計制度。
+2.  **治理 SaaS 權限蔓延**：解決「毒性組合（Toxic Combinations）」風險，定期盤點跨應用程序的權限交集。
+3.  **加速 EoL 設備汰換**：Mirai 等殭屍網路正大規模收割過保固（End-of-Life）設備，企業應全面盤點邊緣網路設備。
+4.  **強化 AI 安全防護**：針對 AI 模型運行的沙箱環境（如 Terrarium）進行逃逸測試與邊界加固。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 (Chinese / English) | 影響對象 | 風險等級 |
+| :--- | :--- | :--- |
+| **惡意 KICS Docker 鏡像與 VS Code 插件侵入 Checkmarx 供應鏈**<br>Malicious KICS Docker Images and VS Code Extensions Hit Checkmarx Supply Chain | 開發者、DevOps 工程師 | 🔴 極高 |
+| **自我傳播型供應鏈蠕蟲劫持 npm 套件以竊取開發者憑證**<br>Self-Propagating Supply Chain Worm Hijacks npm Packages to Steal Developer Tokens | JavaScript 開發生態系 | 🔴 極高 |
+| **Harvester 組織於南亞佈署 Linux GoGra 後門，利用 Microsoft Graph API**<br>Harvester Deploys Linux GoGra Backdoor in South Asia Using Microsoft Graph API | 南亞政府與企業 (Linux 環境) | 🟠 高 |
+| **Lotus Wiper 惡意軟體針對委內瑞拉能源系統發動毀滅性攻擊**<br>Lotus Wiper Malware Targets Venezuelan Energy Systems in Destructive Attack | 能源基礎設施 (ICS/OT) | 🔴 極高 |
+| **毒性組合：跨應用權限堆疊形成的連鎖風險**<br>Toxic Combinations: When Cross-App Permissions Stack into Risk | 企業 SaaS 用戶、IAM 管理員 | 🟠 高 |
+| **微軟修補 ASP.NET Core 關鍵漏洞 CVE-2026-40372 (權限提升)**<br>Microsoft Patches Critical ASP.NET Core CVE-2026-40372 Privilege Escalation Bug | .NET 開發者、Web 服務端 | 🟠 高 |
+| **Mustang Panda 組織推出 LOTUSLITE 新變種針對印、韓金融政策圈**<br>Mustang Panda’s New LOTUSLITE Variant Targets India Banks, South Korea Policy Circles | 金融機構、外交政策智庫 | 🔴 極高 |
+| **Cohere AI Terrarium 沙箱缺陷導致 Root 權限代碼執行與容器逃逸**<br>Cohere AI Terrarium Sandbox Flaw Enables Root Code Execution, Container Escape | AI 研究人員、雲端 AI 平台 | 🔴 極高 |
+| **Apple 修補 iOS 殘留已刪除通知數據之錯誤**<br>Apple fixes iOS bug that retained deleted notification data | iOS 用戶 | 🟡 中 |
+| **新 Mirai 活動利用 D-Link EoL 路由器之 RCE 漏洞**<br>New Mirai campaign exploits RCE flaw in EoL D-Link routers | 物聯網設備、SOHO 用戶 | 🟠 高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 🏗️ 供應鏈毒化：KICS 與 VS Code 惡意組件
+*   **🔍 技術原理**：攻擊者偽造與 Checkmarx 開源工具「KICS (Keeping Infrastructure as Code Secure)」相似的名稱（Typosquatting），在 Docker Hub 與 VS Code Marketplace 上載帶有後門的映像檔與插件。
+*   **⚔️ 攻擊向量**：當開發者執行 IaC 掃描時，惡意代碼會隨之啟動，竊取系統環境變數（Environment Variables）與 SSH 金鑰。
+*   **🛡️ 防禦緩解**：
+    *   強制執行映像檔簽名驗證（Content Trust）。
+    *   使用私人插件倉庫，禁止開發者直接從公共市場下載未經審核的插件。
+*   **🧠 名詞定義**：**IaC (Infrastructure as Code)**：指透過代碼管理伺服器與網路架構，常見工具有 Terraform、CloudFormation。
+
+### 3.2 🐛 自我傳播型 npm 蠕蟲
+*   **🔍 技術原理**：此蠕蟲具備自動化能力，一旦感染開發者機器，會自動搜尋本地的 `.npmrc` 配置文件並提取 API Token，隨後自動將蠕蟲代碼植入該開發者有權限更新的所有 npm 套件中。
+*   **⚔️ 攻擊向量**：利用 npm 套件的 `postinstall` 腳本自動執行。
+*   **🛡️ 防禦緩解**：
+    *   啟用 npm 的 `--ignore-scripts` 選項以阻止安裝時自動執行腳本。
+    *   強制執行 npm 自動發佈的 2FA（雙因素認證）。
+*   **🧠 名詞定義**：**Wormable (蠕蟲性)**：指惡意軟體無需人為干預即可在網路上自動複製與傳播的特性。
+
+### 3.3 📡 Harvester 與 Microsoft Graph C2 通訊
+*   **🔍 技術原理**：後門程式 GoGra 捨棄了傳統的 C2 伺服器，轉而利用合法的 Microsoft Graph API 將通訊流量偽裝成一般的 Office 365 流量。
+*   **⚔️ 攻擊向量**：攻擊者獲取合法 App 註冊憑證後，透過 OneDrive 或 Outlook 的 API 進行命令發送與數據回傳。
+*   **🛡️ 防禦緩解**：
+    *   監控不尋常的 Microsoft Graph API 呼叫頻率。
+    *   限制伺服器端僅能與特定的雲端端點進行通訊（Egress Filtering）。
+*   **🧠 名詞定義**：**C2 (Command and Control)**：攻擊者用來向受害者受控機器發送指令的中心。
+
+### 3.4 💥 Lotus Wiper：破壞性電力系統打擊
+*   **🔍 技術原理**：針對 ICS/SCADA 環境，專門抹除儲存系統的主開機紀錄（MBR）與特定工業協議配置文件。
+*   **⚔️ 攻擊向量**：透過滲透企業 IT 網路後，橫向移動至 OT 網路，利用已知的漏洞或洩漏的憑證進行部署。
+*   **🛡️ 防禦緩解**：
+    *   實施 IT/OT 強隔離（Air-gap 或嚴格的防火牆原則）。
+    *   維持離線備份（Offline Backup）以便於災後重建。
+*   **🧠 名詞定義**：**Wiper (抹除軟體)**：一種旨在永久損毀目標硬碟數據而非勒索贖金的惡意軟體。
+
+### 3.5 🕸️ 毒性組合 (Toxic Combinations) 權限分析
+*   **🔍 技術原理**：單一權限看似無害（例如：讀取存儲），但當與另一個權限（例如：編輯 Lambda 函數）結合時，攻擊者可以獲得等同於管理員的權限。
+*   **⚔️ 攻擊向量**：利用 SaaS 平台（如 AWS, GitHub, Salesforce）之間的授權漏洞進行權限提升。
+*   **🛡️ 防禦緩解**：
+    *   採用 CIEM（雲端基礎設施權限管理）工具自動偵測權限交集。
+    *   落實最小權限原則（PoLP）。
+*   **🧠 名詞定義**：**SaaS Mesh**：指企業內部多個 SaaS 應用程序相互連結、交換數據的網狀結構。
+
+### 3.6 💻 ASP.NET Core CVE-2026-40372
+*   **🔍 技術原理**：存在於請求處理流程中的邏輯漏洞，允許未經授權的請求透過特定格式的 Header 繞過身分驗證過濾器。
+*   **⚔️ 攻擊向量**：攻擊者構造惡意的 HTTP 請求，將自己的 Session 提升為系統管理員層級。
+*   **🛡️ 防禦緩解**：
+    *   立即更新至 .NET 8.x 或 9.x 的最新修補版本。
+*   **🧠 名詞定義**：**Privilege Escalation (權限提升)**：攻擊者獲得超過其原本權限的過程。
+
+### 3.7 🐼 Mustang Panda: LOTUSLITE 變種
+*   **🔍 技術原理**：利用 DLL Side-loading 載入惡意 DLL。新變種增加了針對金融報表文件（PDF/XLS）的特定誘餌。
+*   **⚔️ 攻擊向量**：釣魚郵件附加帶有漏洞的合法應用程式執行檔，並配對惡意的 `.dll` 文件。
+*   **🛡️ 防禦緩解**：
+    *   實施應用程式白名單（AppLocker）。
+    *   針對已知 Mustang Panda 的 TTP（技術、手段、程序）進行威脅獵殺。
+*   **🧠 名詞定義**：**DLL Side-loading**：利用 Windows 載入動態連結庫的順序漏洞，讓合法程序加載惡意 DLL。
+
+### 3.8 🧪 Cohere AI Terrarium 沙箱逃逸
+*   **🔍 技術原理**：Terrarium 原本是為了安全執行 AI 生成的代碼而設計，但發現其資源限制機制不足，攻擊者可透過特定的 Python 代碼引發記憶體損壞。
+*   **⚔️ 攻擊向量**：向 LLM 發送提示，促使其生成能觸發沙箱內核漏洞的代碼，進而取得宿主機 Root 權限。
+*   **🛡️ 防禦緩解**：
+    *   升級沙箱底層容器技術（如使用 gVisor 或 Kata Containers）。
+*   **🧠 名詞定義**：**Sandbox Escape (沙箱逃逸)**：攻擊者打破隔離環境，獲得操作底層作業系統權限的行為。
+
+### 3.9 🍎 Apple iOS 通知數據殘留
+*   **🔍 技術原理**：iOS 的 SQLite 資料庫在刪除通知後，未能正確覆寫索引空間，導致取證工具能恢復歷史通知內容。
+*   **⚔️ 攻擊向量**：物理接觸設備後的取證分析（Forensics）。
+*   **🛡️ 防禦緩解**：
+    *   更新至 iOS 19.x（或最新安全修補版本）。
+*   **🧠 名詞定義**：**Data Retention (數據殘留)**：數據在被指令刪除後，依然物理存在於儲存介質上的現象。
+
+### 3.10 🤖 Mirai 鎖定 D-Link EoL 設備
+*   **🔍 技術原理**：針對已停止支持（End of Life）的 D-Link 路由器，利用其 Web 管理介面中的 RCE 漏洞自動佈署 Mirai 殭屍程式。
+*   **⚔️ 攻擊向量**：透過 Internet 掃描 TCP 80/443 連接埠。
+*   **🛡️ 防禦緩解**：
+    *   強制淘汰 EoL 設備。
+    *   若無法汰換，應將管理介面置於 VPN 之後。
+*   **🧠 名詞定義**：**EoL (End of Life)**：產品生命週期結束，廠商不再提供任何更新或修補程式。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 代碼生成的「毒性注入」**：隨著開發者大量依賴 AI 生成代碼，攻擊者將嘗試影響 AI 訓練數據，使 AI 生成帶有隱蔽漏洞的代碼。
+2.  **供應鏈蠕蟲 2.0**：未來蠕蟲可能不僅劫持 Token，還會結合 AI 進行偽裝，模仿開發者的提交風格（Coding Style），使惡意提交更難被發現。
+3.  **雲端權限武器化**：針對 AWS/Azure 的複雜權限路徑攻擊將成為主流，企業需要更強大的雲端原生防護（CNAPP）來因應。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [Checkmarx Supply Chain Attack - The Hacker News](https://thehackernews.com/2026/04/malicious-kics-docker-images-and-vs.html)
+- [npm Supply Chain Worm - The Hacker News](https://thehackernews.com/2026/04/self-propagating-supply-chain-worm.html)
+- [Harvester Linux GoGra Backdoor - The Hacker News](https://thehackernews.com/2026/04/harvester-deploys-linux-gogra-backdoor.html)
+- [Lotus Wiper Venezuelan Energy - The Hacker News](https://thehackernews.com/2026/04/lotus-wiper-malware-targets-venezuelan.html)
+- [Toxic Combinations in SaaS - The Hacker News](https://thehackernews.com/2026/04/toxic-combinations-when-cross-app.html)
+- [Microsoft ASP.NET Core CVE-2026-40372 - The Hacker News](https://thehackernews.com/2026/04/microsoft-patches-critical-aspnet-core.html)
+- [Mustang Panda LOTUSLITE - The Hacker News](https://thehackernews.com/2026/04/mustang-pandas-new-lotuslite-variant.html)
+- [Cohere AI Sandbox Flaw - The Hacker News](https://thehackernews.com/2026/04/cohere-ai-terrarium-sandbox-flaw.html)
+- [Apple iOS Notification Bug - BleepingComputer](https://www.bleepingcomputer.com/news/security/apple-fixes-ios-bug-that-retained-deleted-notification-data/)
+- [Mirai EoL D-Link Exploits - BleepingComputer](https://www.bleepingcomputer.com/news/security/new-mirai-campaign-exploits-rce-flaw-in-eol-d-link-routers/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/04/22)
 
 這是一份針對 2026 年 4 月全球資安威脅態勢的深度分析報告，旨在為企業決策者、資安架構師及技術團隊提供關鍵情報，並作為 AI 知識庫 (NotebookLM) 的核心訓練素材。

@@ -1,3 +1,96 @@
+# 🛡️ 資安戰情白皮書 (2026/04/28)
+
+本文件旨在彙整 2026 年 4 月下旬全球重大網路安全事件，分析技術細節與攻擊形態，作為資安決策者 (CISO) 與技術架構師之知識庫訓練素材。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年 4 月的資安態勢呈現出「**供應鏈深度穿透**」與「**自動化漏洞挖掘失衡**」兩大核心趨勢。
+
+首先，知名資安廠商 Checkmarx 遭 GitHub 倉庫數據洩漏事件，標誌著即便是專業資安業者亦難以完全免疫於供應鏈攻擊，這強化了「零信任 (Zero Trust)」在軟體開發生命週期 (SDLC) 中的必要性。其次，隨著 **Mythos** 等先進自動化漏洞發現技術的出現，業界發現漏洞的速度已遠超企業修補的速度（Remediation Gap），這要求防禦方必須從「全面修補」轉向「風險優先修補 (Risk-based Prioritization)」。
+
+此外，針對開發環境（如 VS Code 擴充功能）的「睡眠型 (Sleeper)」惡意軟體 GlassWorm v2 再次證明，開發者已成為 APT 組織進入企業內網的最短路徑。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中/英對照) | 來源與範疇 |
+| :--- | :--- |
+| **Checkmarx 確認 GitHub 倉庫數據在 3 月 23 日攻擊後被張貼於暗網**<br>Checkmarx Confirms GitHub Repository Data Posted on Dark Web After March 23 Attack | 全球 / 供應鏈攻擊 |
+| **每週回顧：Fast16 惡意軟體、XChat 發布、聯邦後門與 AI 員工追蹤**<br>Weekly Recap: Fast16 Malware, XChat Launch, Federal Backdoor, AI Employee Tracking | 全球 / 綜合威脅 |
+| **Mythos 改變了漏洞發現的運算邏輯，大多數團隊尚未準備好應對修補端**<br>Mythos Changed the Math on Vulnerability Discovery. Most Teams Aren't Ready | 技術趨勢 / 脆弱性管理 |
+| **PhantomCore 利用 TrueConf 漏洞滲透俄羅斯網路**<br>PhantomCore Exploits TrueConf Vulnerabilities to Breach Russian Networks | 區域性 / APT 攻擊 |
+| **研究人員揭露 73 個傳播 GlassWorm v2 惡意軟體的虛假 VS Code 擴充功能**<br>Researchers Uncover 73 Fake VS Code Extensions Delivering GlassWorm v2 | 全球 / 開發環境威脅 |
+| **虛假 CAPTCHA IRSF 詐騙與 120 個 Keitaro 活動推動全球 SMS 與加密貨幣詐欺**<br>Fake CAPTCHA IRSF Scam and 120 Keitaro Campaigns Drive Global Fraud | 全球 / 金融詐騙 |
+| **GlassWorm 惡意軟體透過 73 個 OpenVSX 「睡眠型」擴充功能回歸**<br>GlassWorm malware attacks return via 73 OpenVSX "sleeper" extensions | 全球 / 惡意套件 |
+| **加拿大逮捕三名在多倫多操作「SMS 噴射」裝置的嫌犯**<br>Canada arrests three for operating “SMS blaster” device in Toronto | 區域性 / 硬體犯罪 |
+| **涉嫌 Silk Typhoon 的駭客因網路間諜活動被引渡至美國**<br>Alleged Silk Typhoon hacker extradited to US for cyberespionage | 地緣政治 / APT |
+| **FTC：2025 年美國人因社群媒體詐騙損失超過 21 億美元**<br>FTC: Americans lost over $2.1 billion to social media scams in 2025 | 全球 / 犯罪統計 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Checkmarx GitHub 數據外洩事件分析
+*   **🔍 技術原理**：攻擊者利用受損的憑證或透過 OAuth 令牌劫持，繞過 GitHub 的身份驗證機制。這些數據包含原始碼、內部配置腳本及潛在的 API 金鑰。
+*   **⚔️ 攻擊向量**：憑證填充 (Credential Stuffing) 或針對開發人員的魚叉式網路釣魚，獲取 GitHub 存取權限後，進行大規模的內容克隆。
+*   **🛡️ 防禦緩解**：實施嚴格的開發者 MFA、限制 GitHub 個人存取令牌 (PAT) 的有效期、並使用掃描工具（如 GitGuardian）即時偵測洩漏的機密資訊。
+*   **🧠 名詞定義**：**Dark Web Leak (暗網洩漏)** 指非法獲取的數據被發布在僅能透過 Tor 等特殊軟體訪問的加密匿名網路空間。
+
+### 3.2 Mythos 與漏洞發現的「數學改變」
+*   **🔍 技術原理**：Mythos 是一種基於生成式 AI 與符號執行 (Symbolic Execution) 的自動化框架，能在大規模代碼庫中快速識別複雜的邏輯漏洞。
+*   **⚔️ 攻擊向量**：自動化掃描器能夠在數小時內產生數百個 0-Day 漏洞路徑，領先於開發者的手動審核。
+*   **🛡️ 防禦緩解**：企業必須引入「自動化修補 (Auto-Remediation)」與虛擬補丁 (Virtual Patching) 技術，以縮短漏洞暴露視窗。
+*   **🧠 名詞定義**：**Remediation Gap (修補差距)** 指漏洞被發現的速度與企業實際修補並部署更新的速度之間的時差。
+
+### 3.3 GlassWorm v2 與虛假 VS Code 擴充功能
+*   **🔍 技術原理**：利用「Sleeper (睡眠)」技術，惡意程式在安裝初期保持靜默，繞過 Marketplace 的自動化靜態掃描，並在特定時間或環境觸發下載 GlassWorm v2 載荷。
+*   **⚔️ 攻擊向量**：供應鏈投毒。攻擊者在 OpenVSX 或 VS Code Marketplace 上架名稱與正版極其相似的擴充功能（Typosquatting）。
+*   **🛡️ 防禦緩解**：限制企業內部 IDE 僅能安裝經過審核的白名單擴充功能，並監控 IDE 程序異常的對外網路連線。
+*   **🧠 名詞定義**：**OpenVSX** 是一個開源的 VS Code 擴充功能註冊表，常被用於非 VS Code 環境（如 VSCodium 或 Eclipse Theia）。
+
+### 3.4 PhantomCore 利用 TrueConf 漏洞進行滲透
+*   **🔍 技術原理**：針對俄羅斯廣泛使用的統一通訊 (UC) 平台 TrueConf，利用其視訊會議客戶端的遠端程式碼執行 (RCE) 漏洞進行入侵。
+*   **⚔️ 攻擊向量**：透過發送惡意的會議邀請或檔案分發請求，觸發目標客戶端的緩衝區溢位或不安全的反序列化漏洞。
+*   **🛡️ 防禦緩解**：對 UC 軟體進行嚴格的網路隔離，將通訊服務置於獨立的 VLAN 中，並即時更新伺服器與客戶端版本。
+*   **🧠 名詞定義**：**TrueConf** 是一款俄羅斯開發的協作通訊系統，常用於政府與國防相關機構。
+
+### 3.5 Fake CAPTCHA 與 IRSF 金融詐騙
+*   **🔍 技術原理**：攻擊者設計虛假的驗證碼頁面，引導用戶輸入手機號碼，隨後觸發國際營收共享欺詐 (IRSF)。
+*   **⚔️ 攻擊向量**：利用 Keitaro 流量分配系統 (TDS) 根據地理位置篩選受害者，並引導至釣魚網站進行加密貨幣錢包授權。
+*   **🛡️ 防範緩解**：部署威脅情報閘道以封鎖已知的 Keitaro 中轉節點，並教育用戶對要求輸入手機號碼的非正規 CAPTCHA 保持警惕。
+*   **🧠 名詞定義**：**IRSF (International Revenue Share Fraud)** 指攻擊者利用溢價率電話號碼獲取電信利潤分成的詐騙行為。
+
+### 3.6 加拿大「SMS Blaster」硬體犯罪
+*   **🔍 技術原理**：使用虛假基地台 (IMSI Catcher) 或 GSM 干擾裝置，強制周圍手機降級至不安全的 2G 協議，並大量群發詐騙簡訊。
+*   **⚔️ 攻擊向量**：地理圍欄攻擊。攻擊者攜帶裝置在人口密集區（如多倫多市中心）移動，繞過電信運營商的內容過濾機制。
+*   **🛡️ 防禦緩解**：手機作業系統應開啟「僅限 5G/4G (Disable 2G)」模式，防止降級攻擊。
+*   **🧠 名詞定義**：**SMS Blaster** 是一種非法無線電裝置，能模擬合法的蜂窩塔發送未經許可的簡訊。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 生成的零時差威脅 (AI-Generated 0-Days)**：隨著 Mythos 類型的工具普及，預計 2026 下半年將出現完全由 AI 撰寫並混淆的惡意程式，這將使傳統特徵碼偵測徹底失效。
+2.  **IDE 成為主要戰場**：VS Code、JetBrains 等開發環境將持續被作為進入企業核心開發層的跳板。攻擊者將開發更複雜的「動態執行」機制，僅在偵測到特定內部 Git 伺服器時才啟動惡意行為。
+3.  **身份與憑證的戰爭**：Checkmarx 事件顯示，無論基礎架構多堅固，只要一個開發者的 OAuth 令牌被盜，整個供應鏈就會崩潰。未來將強制推行「極短時效憑證 (Ephemeral Credentials)」。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [Checkmarx GitHub Breach - The Hacker News](https://thehackernews.com/2026/04/checkmarx-confirms-github-repository.html)
+- [Mythos Vulnerability Discovery - The Hacker News](https://thehackernews.com/2026/04/mythos-changed-math-on-vulnerability.html)
+- [PhantomCore TrueConf Exploit - The Hacker News](https://thehackernews.com/2026/04/phantomcore-exploits-trueconf.html)
+- [73 Fake VS Code Extensions - The Hacker News](https://thehackernews.com/2026/04/researchers-uncover-73-fake-vs-code.html)
+- [Canada SMS Blaster Arrests - BleepingComputer](https://www.bleepingcomputer.com/news/security/canada-arrests-three-for-operating-sms-blaster-device-in-toronto/)
+- [Silk Typhoon Hacker Extradition - BleepingComputer](https://www.bleepingcomputer.com/news/security/alleged-silk-typhoon-hacker-extradited-to-us-for-cyberespionage/)
+- [FTC Social Media Scam Losses - BleepingComputer](https://www.bleepingcomputer.com/news/security/ftc-americans-lost-over-21-billion-to-social-media-scams-in-2025/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/04/27)
 
 此文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在深入解析當前資安威脅態勢、技術防禦機制以及架構演進趨勢。

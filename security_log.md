@@ -1,3 +1,116 @@
+# 🛡️ 資安戰情白皮書 (2026/04/30)
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢與戰略建議：**
+
+在 2026 年第二季的開端，我們目睹了「**威脅自動化**」與「**供應鏈深度滲透**」的雙重夾擊。根據本期觀測，資安威脅已演進至以下三個核心戰略維度：
+
+1.  **AI 驅動的攻擊生命週期加速**：LiteLLM 的 SQL 注入漏洞在披露後僅 36 小時即遭到大規模利用，這證實了攻擊者已利用 AI 工具實現了從「漏洞發現」到「自動化武器化」的極速縮時。
+2.  **供應鏈攻擊的精準化**：針對 SAP 生態系統的 npm 惡意套件，顯示出攻擊者不再只是廣撒網，而是針對企業 ERP 等核心業務系統進行垂直滲透。
+3.  **地緣政治與經濟犯罪的合流**：北韓 (DPRK) 駭客組織透過 AI 生成的惡意代碼與偽造企業身份，結合傳統的 RAT 遠端存取木馬，展現了極高的隱蔽性。
+
+**戰略建議**：
+*   **從「漏洞掃描」轉向「暴露驗證 (Exposure Validation)」**：單純發現弱點已不足夠，企業必須引進自動化驗證機制，模擬攻擊路徑以確認風險的實質影響。
+*   **強化軟體供應鏈安全 (SBOM)**：針對開發環境中的 npm/PyPI 套件需執行靜態與動態分析，特別是針對關鍵業務（如 SAP/ERP）的整合套件。
+*   **零信任認證加固**：cPanel 與 WHM 的身分驗證繞過漏洞警示我們，即便是成熟的商用軟體，其認證邏輯仍是高價值攻擊目標，必須實施多層次的行為監控。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中/英對照) | 威脅類別 | 關鍵連結 |
+| :--- | :--- | :--- |
+| **SAP 相關 npm 套件遭供應鏈攻擊，旨在竊取憑證**<br>SAP-Related npm Packages Compromised in Credential-Stealing Supply Chain Attack | 供應鏈攻擊 / 憑證竊取 | [Link](https://thehackernews.com/2026/04/sap-npm-packages-compromised-by-mini.html) |
+| **北韓新一波攻擊利用 AI 植入惡意代碼、偽造公司與 RAT**<br>New Wave of DPRK Attacks Uses AI-Inserted npm Malware, Fake Firms, and RATs | APT 攻擊 / AI 威脅 | [Link](https://thehackernews.com/2026/04/new-wave-of-dprk-attacks-uses-ai.html) |
+| **研討會：如何自動化暴露驗證以追趕 AI 攻擊的速度**<br>Webinar: How to Automate Exposure Validation to Match the Speed of AI Attacks | 防禦策略 / 自動化 | [Link](https://thehackernews.com/2026/04/webinar-how-to-automate-exposure.html) |
+| **暴露管理平台的關鍵要素（以及多數平台的錯誤之處）**<br>What to Look for in an Exposure Management Platform | 安全框架 / 產品評析 | [Link](https://thehackernews.com/2026/04/what-to-look-for-in-exposure-management.html) |
+| **cPanel 身分驗證關鍵漏洞識別 — 請立即更新伺服器**<br>Critical cPanel Authentication Vulnerability Identified — Update Your Server Immediately | 漏洞利用 / 驗證繞過 | [Link](https://thehackernews.com/2026/04/critical-cpanel-authentication.html) |
+| **CISA 將 ConnectWise 與 Windows 已知漏洞加入 KEV 名單**<br>CISA Adds Actively Exploited ConnectWise and Windows Flaws to KEV | 漏洞管理 / 國家級警示 | [Link](https://thehackernews.com/2026/04/cisa-adds-actively-exploited.html) |
+| **LiteLLM SQL 注入漏洞 (CVE-2026-42208) 在披露 36 小時內遭利用**<br>LiteLLM CVE-2026-42208 SQL Injection Exploited within 36 Hours | AI 基礎架構 / SQLi | [Link](https://thehackernews.com/2026/04/litellm-cve-2026-42208-sql-injection.html) |
+| **駭客利用青龍 (Qinglong) 任務調度器 RCE 漏洞進行挖礦**<br>Hackers exploit RCE flaws in Qinglong task scheduler for cryptomining | RCE / 加密貨幣挖礦 | [Link](https://www.bleepingcomputer.com/news/security/hackers-exploit-rce-flaws-in-qinglong-task-scheduler-for-cryptomining/ ) |
+| **駭客因劫持並販售 61 萬個 Roblox 帳戶遭逮捕**<br>Hackers arrested for hijacking and selling 610,000 Roblox accounts | 帳戶劫持 / 網路犯罪 | [Link](https://www.bleepingcomputer.com/news/security/hackers-arrested-for-hijacking-and-selling-610-000-roblox-accounts/ ) |
+| **cPanel, WHM 緊急更新修復關鍵身分驗證繞過臭蟲**<br>cPanel, WHM emergency update fixes critical auth bypass bug | 漏洞修復 / 緊急更新 | [Link](https://www.bleepingcomputer.com/news/security/cpanel-whm-emergency-update-fixes-critical-auth-bypass-bug/ ) |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 SAP 相關 npm 套件供應鏈攻擊
+*   **🔍 技術原理**：攻擊者透過「域名搶註 (Typosquatting)」或「依賴混淆 (Dependency Confusion)」技術，上傳與 SAP 內部開發工具名稱極其相似的惡意 npm 套件。這些套件在安裝腳本 (`preinstall` 或 `postinstall`) 中嵌入了混淆過的 JavaScript 代碼。
+*   **⚔️ 攻擊向量**：開發者在執行 `npm install` 時觸發惡意腳本，該腳本會掃描環境變數 (`process.env`)，尋找包含 `SAP_`, `AWS_ACCESS_KEY`, `DB_PASSWORD` 等關鍵字的值，並透過 DNS 隧道或 HTTP POST 傳回攻擊者伺服器。
+*   **🛡️ 防禦緩解**：
+    1.  實施私有 npm 倉庫（如 Artifactory 或 Nexus），並鎖定上游來源。
+    2.  強制執行 `npm install --ignore-scripts` 以防止自動執行安裝腳本。
+    3.  使用 `npm audit` 與靜態分析工具監控套件來源。
+*   **🧠 名詞定義**：**Dependency Confusion (依賴混淆)** 是一種攻擊方式，駭客發布與內部私有套件同名的公有套件，利用套件管理器優先抓取高版本公有套件的特性進行滲透。
+
+### 3.2 北韓 (DPRK) AI 增強型攻擊
+*   **🔍 技術原理**：DPRK 駭客利用大型語言模型 (LLM) 生成極其自然的社交工程郵件，並編寫結構精良、難以被啟發式掃描偵測的惡意 npm 代碼。他們甚至創建虛假的 LinkedIn 獵頭帳號與空殼公司，邀請工程師參與「開源專案」。
+*   **⚔️ 攻擊向量**：透過社交平台提供包含惡意依賴的 GitHub 倉庫。一旦受害者在本地運行專案，RAT (遠端存取木馬) 就會被植入，實現持久化控制與內網橫向移動。
+*   **🛡️ 防禦緩解**：
+    1.  加強員工對「深偽 (Deepfake)」與 AI 生成內容的識讀能力。
+    2.  對外部協作代碼執行嚴格的沙箱運行環境 (Sandbox)。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)** 是一種能讓駭客遠端完全控制受感染系統的惡意軟體。
+
+### 3.3 自動化暴露驗證 (Exposure Validation)
+*   **🔍 技術原理**：傳統漏洞掃描僅能列出清單，暴露驗證則結合了「資產發現」、「漏洞掃描」與「攻擊模擬」。它利用自動化腳本嘗試執行非破壞性的 Exploitation，確認某個漏洞在特定環境下是否真正可被利用。
+*   **⚔️ 攻擊向量**：應對 AI 自動化掃描器，攻擊者能在一分鐘內完成數千個 IP 的漏洞探測。
+*   **🛡️ 防禦緩解**：部屬 **CTEM (Continuous Threat Exposure Management)** 框架，確保安全團隊專注於那些處於「關鍵攻擊路徑」上的高風險暴露點。
+*   **🧠 名詞定義**：**CTEM (持續威脅暴露管理)** 是 Gartner 提出的一套框架，旨在超越漏洞管理，循環執行診斷與修復。
+
+### 3.4 cPanel/WHM 身分驗證繞過 (Critical Auth Bypass)
+*   **🔍 技術原理**：漏洞存在於 cPanel 的雙重認證 (2FA) 邏輯處理中。當特定參數被傳遞至認證 API 時，系統未能正確校驗 Token 的有效性或執行順序，導致攻擊者可以跳過密碼驗證階段。
+*   **⚔️ 攻擊向量**：遠端攻擊者向 `cpsess` 會話發送特製請求，獲取管理員級別的訪問權限。
+*   **🛡️ 防禦緩解**：立即升級至 cPanel/WHM 11.109.x 或更新版本。實施 IP 白名單限制存取 WHM 管理介面。
+*   **🧠 名詞定義**：**cPanel/WHM** 是全球最流行的 Web 服務託管控制面板，WHM 用於管理伺服器，cPanel 用於管理個別帳戶。
+
+### 3.5 CISA KEV (ConnectWise & Windows Flaws)
+*   **🔍 技術原理**：ConnectWise ScreenConnect 漏洞涉及目錄遍歷與身分驗證弱點。Windows 漏洞則包含核心層級的提權 (Privilege Escalation)。
+*   **⚔️ 攻擊向量**：攻擊者利用 ConnectWise 漏洞在受害者電腦上執行任意代碼，進而透過 Windows 漏洞提升權限至 SYSTEM，執行勒索軟體。
+*   **🛡️ 防禦緩解**：遵循 CISA BOD 22-01 規定，在指定日期前完成修補。
+*   **🧠 名詞定義**：**KEV (Known Exploited Vulnerabilities Catalog)** 是 CISA 維護的清單，列出已證實正在被積極利用的漏洞。
+
+### 3.6 LiteLLM SQL 注入 (CVE-2026-42208)
+*   **🔍 技術原理**：LiteLLM 作為多種 LLM API 的中介層，在處理用戶輸入的 API Key 驗證或日誌查詢請求時，未對輸入進行充分參數化，導致 SQL 指令被惡意拼接。
+*   **⚔️ 攻擊向量**：攻擊者透過輸入 `'; DROP TABLE users; --` 等惡意代碼至 API 端點，可竊取所有儲存的 AI 模型 API 金鑰。
+*   **🛡️ 防禦緩解**：更新 LiteLLM 至修復版本，並對資料庫存取層執行 Web 應用程式防火牆 (WAF) 規則監控。
+*   **🧠 名詞定義**：**SQL Injection** 是一種注入攻擊，將惡意 SQL 語句插入到輸入欄位中，欺騙後端資料庫執行。
+
+### 3.7 青龍 (Qinglong) 調度器 RCE 挖礦攻擊
+*   **🔍 技術原理**：青龍面板是一個定時腳本運行平台。其特定版本存在遠端代碼執行 (RCE) 漏洞，攻擊者可透過 Web 介面注入 Python 腳本。
+*   **⚔️ 攻擊向量**：未經授權的駭客獲取權限後，部署加密貨幣挖礦腳本 (XMRig)，耗盡伺服器 CPU 資源。
+*   **🛡️ 防禦緩解**：嚴禁青龍面板公網存取，開啟身分驗證，並檢查異常的 CPU 使用率。
+*   **🧠 名詞定義**：**RCE (Remote Code Execution)** 允許攻擊者在目標機器上執行自定義命令。
+
+### 3.8 Roblox 61 萬帳戶劫持案
+*   **🔍 技術原理**：駭客利用「憑證填充 (Credential Stuffing)」與「會話劫持 (Session Hijacking)」，繞過多因素驗證，直接從瀏覽器中提取登入 Token。
+*   **⚔️ 攻擊向量**：駭客在地下論壇出售遭竊取的 Session Cookies，買家可無需密碼直接登入他人帳號。
+*   **🛡️ 防禦緩解**：帳號平台應實施 Session 綁定與異常地理位置登入阻斷。
+*   **🧠 名詞定義**：**Credential Stuffing** 是使用大量洩漏的帳號密碼自動化嘗試登入多個服務的攻擊行為。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 自主代理 (AI Agent) 漏洞**：隨著企業部署能「自主決策」的 AI Agent，未來將出現針對 Agent 邏輯決策層的「指令注入 (Prompt Injection)」攻擊，導致 AI 代理主動將敏感資料發送給外部駭客。
+2.  **供應鏈攻擊將轉向「AI 權重」**：攻擊者可能不再修改代碼，而是修改模型權重（Model Poisoning），使 AI 在特定情境下輸出錯誤建議或產生後端弱點。
+3.  **零日時效縮短至「小時」級別**：LiteLLM 的案例預示了未來。防禦者必須具備「虛擬補丁 (Virtual Patching)」能力，在官方補丁發布前即能透過 WAF 或微隔離機制防護。
+
+---
+
+## 🔗 5. 參考文獻
+*   [The Hacker News - SAP npm Compromise](https://thehackernews.com/2026/04/sap-npm-packages-compromised-by-mini.html)
+*   [The Hacker News - DPRK AI Attacks](https://thehackernews.com/2026/04/new-wave-of-dprk-attacks-uses-ai.html)
+*   [The Hacker News - Exposure Validation Webinar](https://thehackernews.com/2026/04/webinar-how-to-automate-exposure.html)
+*   [The Hacker News - cPanel Critical Flaw](https://thehackernews.com/2026/04/critical-cpanel-authentication.html)
+*   [CISA KEV Update](https://thehackernews.com/2026/04/cisa-adds-actively-exploited.html)
+*   [LiteLLM CVE Analysis](https://thehackernews.com/2026/04/litellm-cve-2026-42208-sql-injection.html)
+*   [BleepingComputer - Qinglong Miner](https://www.bleepingcomputer.com/news/security/hackers-exploit-rce-flaws-in-qinglong-task-scheduler-for-cryptomining/)
+*   [BleepingComputer - Roblox Hijacking](https://www.bleepingcomputer.com/news/security/hackers-arrested-for-hijacking-and-selling-610-000-roblox-accounts/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/04/29)
 
 這是一份針對 2026 年 4 月底全球網路安全威脅情勢的深度分析報告，旨在為 AI 知識庫（如 NotebookLM）提供高密度的訓練素材，涵蓋技術細節、防禦架構與戰略預測。

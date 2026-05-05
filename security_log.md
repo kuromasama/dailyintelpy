@@ -1,3 +1,128 @@
+# 🛡️ 資安戰情白皮書 (2026/05/06)
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在本週的資安態勢中，我們觀察到三個核心維度的威脅共振：**「基礎設施協議的深層缺陷」**、**「供應鏈信賴體系的瓦解」**以及**「AI 服務暴露帶來的治理危機」**。
+
+1.  **協議層級的脆弱性**：Apache HTTP/2 (CVE-2026-23918) 的出現提醒我們，即使是成熟的網頁協議實現，在處理複雜的多路復用（Multiplexing）與記憶體管理時仍存在高危漏洞，這足以動搖全球網頁伺服器的根基。
+2.  **供應鏈攻擊的高階化**：DAEMON Tools 官方安裝檔遭植入惡意軟體，顯示攻擊者已具備滲透高度信任軟體開發生命週期（SDLC）的能力。這類「投毒源頭」的策略，使傳統的特徵碼防禦幾乎失效。
+3.  **AI 治理的空白區**：針對 100 萬個公開 AI 服務的掃描結果顯示，開發者在追求效能的同時，嚴重忽略了模型接口（API）的存取控制與資料隱私保護。
+
+**戰略建議**：企業應立即啟動「零信任架構 (Zero Trust Architecture)」的深度實踐，不僅針對用戶，更應針對內部 API、軟體更新來源及 AI 模型服務進行嚴格的微隔離（Micro-segmentation）與持續驗證。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中英對照) | 威脅類型 | 影響範圍 |
+| :--- | :--- | :--- |
+| **Apache HTTP/2 嚴重漏洞 (CVE-2026-23918) 導致 DoS 與潛在 RCE**<br>Critical Apache HTTP/2 Flaw (CVE-2026-23918) Enables DoS and Potential RCE | 協議漏洞 / RCE | 全球 Apache 使用者 |
+| **DAEMON Tools 供應鏈攻擊：官方安裝程式遭植入惡意軟體**<br>DAEMON Tools Supply Chain Attack Compromises Official Installers | 供應鏈攻擊 | 一般用戶 / 企業工作站 |
+| **中國背景組織 UAT-8302 跨區域利用共享 APT 惡意軟體鎖定政府機構**<br>China-Linked UAT-8302 Targets Governments Using Shared APT Malware | 國家級 APT | 政府 / 外交機構 |
+| **攻擊者知曉但多數資安團隊尚未關閉的「後門」**<br>The Back Door Attackers Know About — and Most Security Teams Still Haven’t Closed | 曝險管理 | 全球企業資安架構 |
+| **MetInfo CMS CVE-2026-29014 漏洞遭利用於遠端代碼執行攻擊**<br>MetInfo CMS CVE-2026-29014 Exploited for Remote Code Execution Attacks | Web 漏洞 / RCE | MetInfo 使用者 |
+| **掃描 100 萬個公開 AI 服務：揭露安全現狀之惡劣**<br>We Scanned 1 Million Exposed AI Services. Here's How Bad the Security Actually Is | AI 安全 / 雲端曝險 | AI 開發者 / 企業 |
+| **ScarCruft 入侵遊戲平台，對 Android 與 Windows 部署 BirdCall 惡意軟體**<br>ScarCruft Hacks Gaming Platform to Deploy BirdCall Malware | 跨平台惡意軟體 | 遊戲玩家 / 跨平台用戶 |
+| **Weaver E-cology RCE 漏洞 (CVE-2026-22679) 透過 Debug API 遭積極利用**<br>Weaver E-cology RCE Flaw CVE-2026-22679 Actively Exploited via Debug API | OA 系統漏洞 | 企業辦公自動化系統 |
+| **微軟詳述針對 26 國 35,000 名用戶的網路釣魚活動**<br>Microsoft Details Phishing Campaign Targeting 35,000 Users Across 26 Countries | 網路釣魚 | 全球多國用戶 |
+| **新型隱蔽 Quasar Linux 惡意軟體鎖定軟體開發者**<br>New stealthy Quasar Linux malware targets software developers | 開發者安全 / Linux | Linux 開發者 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 1. Apache HTTP/2 Flaw (CVE-2026-23918)
+*   **🔍 技術原理**：該漏洞源於 Apache HTTP/2 模組在處理特定編碼的 HTTP/2 影格（Frames）時，記憶體分配邏輯存在競態條件（Race Condition）。當惡意建構的連續影格觸發記憶體重分配時，可能導致緩衝區溢位或 UAF（Use-After-Free）。
+*   **⚔️ 攻擊向量**：攻擊者透過發送一系列高度分片的 HTTP/2 SETTINGS 或 PRIORITY 影格，消耗伺服器 CPU 資源導致拒絕服務 (DoS)，或精確控制記憶體佈局以執行任意代碼 (RCE)。
+*   **🛡️ 防禦緩解**：立即更新至 Apache HTTP Server 最新修補版本；在邊緣設備（如 WAF）限制單一連線的 HTTP/2 影格頻率。
+*   **🧠 名詞定義**：**RCE (Remote Code Execution)** 指攻擊者能從遠端在受害伺服器上執行命令。**HTTP/2 Multiplexing** 允許單一 TCP 連線並行多個請求。
+
+### 2. DAEMON Tools Supply Chain Attack
+*   **🔍 技術原理**：攻擊者滲透了官方下載伺服器或 CI/CD 流水線，將惡意載荷（Payload）注入到經過數位簽署的合法安裝包中。這種攻擊利用了使用者對「官方來源」與「合法數位簽章」的盲目信任。
+*   **⚔️ 攻擊向量**：使用者從官網下載並執行 `DTLiteInstaller.exe`，安裝程式在背景靜默釋放名為 `libupdate.dll` 的惡意 DLL，實現 DLL 側載（Side-loading）。
+*   **🛡️ 防禦緩解**：實施應用程式白名單管制；對所有下載的安裝檔進行沙箱（Sandbox）行為分析；監測異常的對外網路連線。
+*   **🧠 名詞定義**：**Supply Chain Attack (供應鏈攻擊)** 攻擊軟體開發或分發過程中的環節，而非直接攻擊目標對象。
+
+### 3. China-Linked UAT-8302 APT Campaign
+*   **🔍 技術原理**：UAT-8302 使用高度模組化的惡意軟體家族，其特點是採用「共享代碼庫」。多個隸屬於特定區域的攻擊小組使用相同的加密混淆演算法和 C2（指令與控制）通訊協議，以混淆歸因分析。
+*   **⚔️ 攻擊向量**：利用目標國家的政府入口網站漏洞植入 WebShell，隨後橫向移動並部署專門設計用來竊取憑證的惡意軟體。
+*   **🛡️ 防禦緩解**：加強跨國界、跨部門的威脅情報共享；監控不尋常的資料外傳（Data Exfiltration）流量。
+*   **🧠 名詞定義**：**APT (Advanced Persistent Threat)** 指具有國家背景、長期且有組織的網路滲透行為。
+
+### 4. The Back Door Most Security Teams Haven’t Closed
+*   **🔍 技術原理**：此處所謂「後門」指企業網路中殘留的舊式協議（如 SMBv1）、未受管理的影視設備（IoT）或過期的 VPN 靜態憑證。攻擊者利用資安團隊「燈下黑」的盲點進行滲透。
+*   **⚔️ 攻擊向量**：透過暴力破解或已知漏洞攻擊這些被遺忘的邊際資產，獲取初始進入點，再透過內網弱點擴大權限。
+*   **🛡️ 防禦緩解**：執行全面的外部攻擊面管理 (EASM)；強制淘汰過時協議；實施定期資產盤點。
+*   **🧠 名詞定義**：**Attack Surface Management (攻擊面管理)** 持續發現、分析並修復企業數位資產中的漏洞。
+
+### 5. MetInfo CMS RCE (CVE-2026-29014)
+*   **🔍 技術原理**：MetInfo CMS 在處理檔案上傳或後台範本編輯功能時，未對輸入參數進行嚴格過濾，導致攻擊者可以透過目錄遍歷（Directory Traversal）結合檔案包含（File Inclusion）執行 PHP 代碼。
+*   **⚔️ 攻擊向量**：未經身份驗證的遠端攻擊者傳送特製的 HTTP POST 請求給 `upload_file.php`，繞過副檔名檢查並執行 shell。
+*   **🛡️ 防禦緩解**：停用不必要的 CMS 功能模組；將上傳目錄設為不可執行；部署網頁應用程式防火牆 (WAF)。
+*   **🧠 名詞定義**：**CMS (Content Management System)** 用於建立和管理網站內容的系統。
+
+### 6. Exposed AI Services Security Scan
+*   **🔍 技術原理**：許多 AI 服務（如基於 Gradio 或 Streamlit 的原型）直接暴露在公網，缺乏身分驗證，且底層模型 API Key 常以明文存儲於環境變數中，容易被掃描工具獲取。
+*   **⚔️ 攻擊向量**：攻擊者利用自動化腳本掃描特定的 7860/8501 埠位，進行 Prompt Injection 攻擊以獲取後端資料庫存取權或盜取 API 配額。
+*   **🛡️ 防禦緩解**：AI 原型工具必須置於 VPN 或身分驗證代理（Auth Proxy）後方；對 AI 輸入進行過濾（Input Sanitization）。
+*   **🧠 名詞定義**：**Prompt Injection** 透過精心設計的輸入誘導 AI 模型執行非預期指令的攻擊。
+
+### 7. ScarCruft BirdCall Malware
+*   **🔍 技術原理**：ScarCruft 結合了社交工程與多階段載荷。BirdCall 惡意軟體具備跨平台特性，能同時偵測主機作業系統環境並下載對應的 Windows PE 或 Android APK 模組。
+*   **⚔️ 攻擊向量**：透過偽造的遊戲論壇提供「外掛工具」，一旦下載執行，程式會收集系統資訊、截圖並攔截簡訊驗證碼（2FA）。
+*   **🛡️ 防禦緩解**：強化端點防護系統（EDR）對腳本行為的偵測；宣導使用者切勿從非官方途徑下載應用程式。
+*   **🧠 名詞定義**：**2FA (Two-Factor Authentication)** 雙重驗證，增加帳戶安全性的第二層機制。
+
+### 8. Weaver E-cology Debug API Exploitation (CVE-2026-22679)
+*   **🔍 技術原理**：Weaver E-cology (泛微 OA) 的 Debug API 在生產環境中未被正確關閉。該 API 允許具備權限（或繞過驗證）的用戶執行測試指令，其中包含直接調用系統 Java 反序列化的接口。
+*   **⚔️ 攻擊向量**：攻擊者構造惡意的序列化對象並發送至 `/api/debug/execute`，觸發遠端代碼執行。
+*   **🛡️ 防禦緩解**：徹底停用並刪除所有生產環境中的 Debug 相關類路徑（Classpath）；更新至官方補丁。
+*   **🧠 名詞定義**：**Deserialization Vulnerability (反序列化漏洞)** 將資料轉換回對象時，未驗證資料來源導致執行惡意代碼。
+
+### 9. Microsoft Phishing Campaign (35k Users)
+*   **🔍 技術原理**：這是一場大規模的「中間人攻擊」(AiTM) 釣魚。攻擊者使用代理伺服器攔截用戶與真實微軟登入頁面之間的流量，藉此竊取 Session Cookie 以繞過多因子驗證 (MFA)。
+*   **⚔️ 攻擊向量**：發送大量以「帳單逾期」或「安全性警告」為題的電子郵件，引導用戶跳轉至高度仿真的釣魚網站。
+*   **🛡️ 防禦緩解**：部署 FIDO2 基礎的硬體密鑰；實施條件式存取原則（Conditional Access），限制異常地理位置的登入。
+*   **🧠 名詞定義**：**AiTM (Adversary-in-the-Middle)** 攻擊者插入通訊雙方之間，能攔截並篡改所有訊息。
+
+### 10. Quasar Linux Malware targeting Developers
+*   **🔍 技術原理**：Quasar 的 Linux 變種採用 Go 語言開發，具有極強的跨發行版相容性。它使用了進階的加密技術隱藏其 C2 指令，並利用 `systemd` 服務實現持久化。
+*   **⚔️ 攻擊向量**：潛伏在開源專案的依賴包中（Typosquatting），開發者不慎安裝後，惡意軟體會掃描 `.ssh` 目錄與環境變數中的 AWS/GCP 憑證。
+*   **🛡️ 防禦緩解**：對開發環境進行嚴格審查；使用依賴項掃描工具檢查軟體清單 (SBOM)。
+*   **🧠 名詞定義**：**Typosquatting (拼字錯誤蹲點)** 註冊與熱門軟體名稱極為相似的惡意包名稱。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI-Enhanced Supply Chain Poisoning (AI 增強型供應鏈投毒)**：
+    預計未來攻擊者將使用生成式 AI 自動化產出大量具有微小差異的惡意代碼片段，這將使基於靜態特徵碼的防禦軟體幾乎無法偵測，因為每個樣本都是唯一的。
+
+2.  **OS-Agnostic APT (跨系統通用型 APT)**：
+    隨著 Go 與 Rust 語言的普及，惡意軟體將不再區分 Windows 或 Linux。攻擊者將開發一套源碼，能同時滲透伺服器、工作站與物聯網設備。
+
+3.  **The Rise of API Identity Theft (API 身分盜竊)**：
+    隨著企業將更多業務移往 AI API，攻擊重點將從「竊取帳密」轉移到「竊取長期有效的 API Token」，這將引發新型態的資源竊取與企業數據勒索。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Apache HTTP/2 Flaw (CVE-2026-23918)](https://thehackernews.com/2026/05/critical-apache-http2-flaw-cve-2026.html)
+*   [DAEMON Tools Supply Chain Attack](https://thehackernews.com/2026/05/daemon-tools-supply-chain-attack.html)
+*   [UAT-8302 Targets Governments](https://thehackernews.com/2026/05/china-linked-uat-8302-targets.html)
+*   [The Back Door Most Teams Haven’t Closed](https://thehackernews.com/2026/05/the-back-door-attackers-know-about-and.html)
+*   [MetInfo CMS CVE-2026-29014](https://thehackernews.com/2026/05/metinfo-cms-cve-2026-29014-exploited.html)
+*   [Scanning 1 Million Exposed AI Services](https://thehackernews.com/2026/05/we-scanned-1-million-exposed-ai.html)
+*   [ScarCruft Hacks Gaming Platform](https://thehackernews.com/2026/05/scarcruft-hacks-gaming-platform-to.html)
+*   [Weaver E-cology CVE-2026-22679](https://thehackernews.com/2026/05/weaver-e-cology-rce-flaw-cve-2026-22679.html)
+*   [Microsoft Phishing Campaign Details](https://thehackernews.com/2026/05/microsoft-details-phishing-campaign.html)
+*   [Quasar Linux Malware Targets Developers](https://www.bleepingcomputer.com/news/security/new-stealthy-quasar-linux-malware-targets-software-developers/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/05/05)
 
 本白皮書旨在彙整 2026 年 5 月初全球資安關鍵威脅趨勢，提供技術深度分析，供企業架構師、資安維運中心 (SOC) 及資安長 (CISO) 作為防禦戰略參考與 AI 知識庫訓練素材。

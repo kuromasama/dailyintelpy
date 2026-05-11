@@ -1,3 +1,107 @@
+# 🛡️ 資安戰情白皮書 (2026/05/12)
+
+本報告旨在為企業資安架構師與決策者提供 2026 年 5 月中旬的全球威脅態勢分析。當前威脅已從傳統的邊界防禦轉向**高度自動化的 AI 攻擊**與**深度的供應鏈投毒**。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年 5 月的資安態勢顯示出三個關鍵趨勢：
+1.  **供應鏈攻擊精確化**：針對 Checkmarx 等安全工具插件的攻擊，顯示駭客組織 (如 TeamPCP) 正致力於「污染水源」，透過安全工具本身來滲透目標環境。
+2.  **AI 驅動的自動化零日攻擊**：AI 不再僅用於生成釣魚郵件，而是具備了發現邏輯漏洞並自動化繞過 2FA (雙重驗證) 的能力。
+3.  **基礎設施與開發平台風險**：從 cPanel 的主動漏洞利用到 Hugging Face 的惡意模型倉庫，開源與管理平台的信任機制正遭受前所未有的挑戰。
+
+**戰略建議**：企業應立即實施「開發生命週期全流程驗證」(Full-Lifecycle Verification)，並針對 AI 生成的程式碼與第三方插件建立沙箱檢測機制。
+
+---
+
+## 2. 🌍 全球威脅深度列表 (中英對照)
+
+| 狀態 | 標題 (中/英) | 影響範圍 |
+| :--- | :--- | :--- |
+| 🔴 嚴重 | **TeamPCP 攻陷 Checkmarx Jenkins AST 插件** / TeamPCP Compromises Checkmarx Jenkins AST Plugin | CI/CD 管道、軟體供應鏈 |
+| 🔴 嚴重 | **cPanel CVE-2026-41940 漏洞正被用於部署後門** / cPanel CVE-2026-41940 Under Active Exploitation | Web 託管伺服器、SMB 企業 |
+| 🟣 極高 | **駭客利用 AI 開發首個 2FA 繞過零日漏洞** / Hackers Used AI to Develop First Known Zero-Day 2FA Bypass | 全球身分驗證體系、MFA 安全 |
+| 🟠 中高 | **Fake OpenAI 隱私過濾倉庫於 Hugging Face 獲 24 萬下載** / Fake OpenAI Privacy Filter Repo Hits #1 on Hugging Face | AI 開發者、數據科學社群 |
+| 🟠 中高 | **GhostLock 工具濫用 Windows API 封鎖檔案存取** / New GhostLock tool abuses Windows API to block file access | 端點安全、資料可用性 |
+| 🟡 中等 | **Instructure 證實駭客利用 Canvas 漏洞竄改入口網站** / Instructure confirms hackers used Canvas flaw to deface portals | 教育機構、LMS 平台 |
+| 🔵 資訊 | **每週摘要：Linux Rootkit、macOS 加密貨幣竊取程式** / Weekly Recap: Linux Rootkit, macOS Crypto Stealer | 全平台跨領域威脅 |
+| 🔵 資訊 | **為何更改密碼無法終結 Active Directory 入侵** / Why Changing Passwords Doesn’t End an Active Directory Breach | 內部網路、身分治理 |
+| 🔵 資訊 | **你的紫軍不是紫軍：只是紅藍軍待在同個房間** / Your Purple Team Isn't Purple — It's Just Red and Blue | 資安維運、團隊組織架構 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 TeamPCP 供應鏈攻擊：Checkmarx Jenkins AST 插件
+*   **🔍 技術原理**：TeamPCP 組織繼 KICS 供應鏈攻擊後，成功將惡意程式碼注入官方 Checkmarx Jenkins AST (Application Security Testing) 插件。該惡意代碼偽裝成正常的安全性掃描邏輯，實則在背景執行資訊竊取。
+*   **⚔️ 攻擊向量**：利用開發者對「安全掃描工具」的絕對信任。當 Jenkins 執行建置任務時，插件會獲取系統環境變數（Environment Variables），包括 GitHub Token、AWS Keys 及各類 API 憑證。
+*   **🛡️ 防禦緩解**：
+    1.  實施插件簽章強制驗證。
+    2.  利用網路微隔離 (Micro-segmentation) 限制建置伺服器的對外連線。
+    3.  定期稽核 Jenkins 服務帳戶的權限，採取最小特權原則 (PoLP)。
+*   **🧠 名詞定義**：**AST (Application Security Testing)** 是指在軟體開發過程中，透過自動化工具檢測原始碼或運行中應用程式漏洞的技術。
+
+### 3.2 cPanel CVE-2026-41940 漏洞利用
+*   **🔍 技術原理**：此漏洞存在於 cPanel 的檔案管理員 (Filemanager) 組件中，屬於路徑遍歷 (Path Traversal) 與遠端代碼執行 (RCE) 的組合。攻擊者可跳過身分驗證，直接在伺服器上寫入惡意腳本。
+*   **⚔️ 攻擊向量**：駭客掃描全球暴露在互聯網上的 cPanel 介面，發送特製的 HTTP POST 請求，觸發漏洞並部屬持久性後門 (Webshell)。
+*   **🛡️ 防禦緩解**：
+    1.  立即更新 cPanel 至最新補丁版本。
+    2.  對管理後台實施 IP 白名單限制。
+    3.  監控 Web 根目錄下異常的 `.php` 或 `.py` 檔案生成。
+
+### 3.3 AI 開發的 2FA 繞過零日漏洞
+*   **🔍 技術原理**：這是首次發現由 AI 模型輔助編寫的邏輯流漏洞。AI 分析了多個 OAuth 2.0 與 TOTP 的協議實作，發現了時間同步 (Time-drift) 與會話競爭 (Race Condition) 的瑕疵，從而達成自動化繞過。
+*   **⚔️ 攻擊向量**：攻擊者使用 AI 驅動的腳本進行大規模自動化登入嘗試，AI 會即時調整攻擊參數以規避速率限制 (Rate Limiting)，並在特定時間窗口內偽造有效的二次驗證令牌。
+*   **🛡️ 防禦緩解**：
+    1.  改用 FIDO2/WebAuthn 硬體金鑰替代簡訊或 App 驗證碼。
+    2.  實施基於行為的異常登入檢測 (User Behavior Analytics, UBA)。
+*   **🧠 名詞定義**：**Zero-Day (零日漏洞)** 指尚未有官方補丁的安全性瑕疵。
+
+### 3.4 Hugging Face 假冒 OpenAI 倉庫投毒
+*   **🔍 技術原理**：攻擊者利用「名稱仿冒」(Typosquatting) 技術，在 Hugging Face 建立名為 `openai-privacy-filter` 的倉庫。該倉庫聲稱能保護隱私，實則包含了一個 Infostealer (資訊竊取程式)，在使用者載入模型時執行。
+*   **⚔️ 攻擊向量**：利用開發者急於解決 AI 隱私問題的心理。該項目透過虛假的 Star 數量與下載量衝上排行榜首頁，吸引了 24 萬次下載。
+*   **🛡️ 防禦緩解**：
+    1.  在下載模型前進行代碼靜態分析 (SAST)。
+    2.  僅信任官方認證標誌的組織倉庫。
+
+### 3.5 GhostLock：濫用 Windows API 的封鎖工具
+*   **🔍 技術原理**：GhostLock 不使用傳統加密（如 Ransomware），而是濫用 Windows 檔案系統的鎖定 API（如 `CreateFile` 與特定的存取權限標誌），使其他程序（包括防毒軟體）無法開啟或讀取該檔案。
+*   **⚔️ 攻擊向量**：透過滲透腳本在核心系統檔案或關鍵資料上加鎖，造成系統服務崩潰或企業運作停擺，以達成勒索目的。
+*   **🛡️ 防禦緩解**：
+    1.  監控大量的 `Handle` 建立請求。
+    2.  部署 EDR (端點偵測與回應) 工具以偵測異常的 API 調用序列。
+
+### 3.6 Active Directory 滲透持久化分析
+*   **🔍 技術原理**：即使修改密碼，駭客若已取得 Golden Ticket 或修改了 Schema 屬性（如 `AdminSDHolder`），仍能保持最高權限存取。
+*   **⚔️ 攻擊向量**：利用 `Kerberoasting` 獲取票據加密雜湊，或在 AD 物件的 ACL (存取控制清單) 中植入隱蔽的後門條目。
+*   **🛡️ 防禦緩解**：
+    1.  定期進行 AD 森林級別的安全性稽核。
+    2.  使用專用工具偵測隱藏的 ACL 修改與影子管理員 (Shadow Admins)。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI vs. AI 的軍備競賽**：預計 2027 年前，企業必須部署「防禦型 AI」來對抗駭客的「攻擊型 AI」，傳統的基於特徵碼 (Signature-based) 的檢測將徹底失效。
+2.  **軟體材料表 (SBOM) 的強制化**：由於 TeamPCP 等組織頻繁攻擊開發工具，SBOM 將從「建議」轉向法規「強制」，無法證明其組件來源的軟體將無法進入市場。
+3.  **零信任架構的深度落地**：身分將成為新的邊界。未來攻擊將集中在劫持長期有效的「Session Token」而非密碼。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [TeamPCP Compromises Checkmarx Jenkins AST Plugin](https://thehackernews.com/2026/05/teampcp-compromises-checkmarx-jenkins.html)
+*   [cPanel CVE-2026-41940 Active Exploitation](https://thehackernews.com/2026/05/cpanel-cve-2026-41940-under-active.html)
+*   [AI-Developed 2FA Bypass Zero-Day](https://thehackernews.com/2026/05/hackers-used-ai-to-develop-first-known.html)
+*   [Fake OpenAI Privacy Filter on Hugging Face](https://thehackernews.com/2026/05/fake-openai-privacy-filter-repo-hits-1.html)
+*   [Official CheckMarx Jenkins Package Compromised](https://www.bleepingcomputer.com/news/security/official-checkmarx-jenkins-package-compromised-with-infostealer/)
+*   [GhostLock Tool Abuses Windows API](https://www.bleepingcomputer.com/news/security/new-ghostlock-tool-abuses-windows-api-to-block-file-access/)
+*   [Instructure Canvas Flaw Confirmation](https://www.bleepingcomputer.com/news/security/instructure-confirms-hackers-used-canvas-flaw-to-deface-portals/)
+*   [Why Changing Passwords Doesn't End AD Breach](https://www.bleepingcomputer.com/news/security/why-changing-passwords-doesnt-end-an-active-directory-breach/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/05/11)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在提供深度、高資訊密度的技術分析與戰略洞察。

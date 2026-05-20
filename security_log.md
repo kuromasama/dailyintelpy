@@ -1,3 +1,117 @@
+# 🛡️ 資安戰情白皮書 (2026/05/21)
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢評估：**
+2026 年 5 月的資安景觀顯示出一個極端的轉折點：**自動化人工智慧 (Agentic AI) 的崛起與軟體供應鏈的深度淪陷。** 隨著 Microsoft 開放 RAMPART 與 Clarity 等工具，業界正正式進入「AI 防禦 AI」的軍備競賽階段。然而，攻擊者並未落後，他們利用極其隱蔽的 C2 通道（如 Discord 與 MS Graph API）進行滲透，並透過攻擊開發人員的個人裝置直接攻破如 GitHub 與 Grafana 等核心資產。
+
+**核心戰略建議：**
+1.  **從「修補漏洞」轉向「修補過程」：** 針對 SonicWall 的 MFA 繞過與 GitHub 的員工裝置遭駭，企業必須意識到單純的 Patching 不夠，必須落實「設備身分驗證 (Device Identity)」與「開發環境零信任」。
+2.  **供應鏈防禦深度化：** Typosquatting 已演變為自動化攻擊，企業需在 CI/CD 流程中加入強制的軟體物料清單 (SBOM) 驗證與依賴項沙盒測試。
+3.  **預應 AI Agent 風險：** 隨著 Agent AI 普及，傳統的封包檢查已失效，應部署具備「語意理解能力」的流量監測工具。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中文) | 原文標題 (English) |
+| :--- | :--- |
+| **Microsoft 開源 RAMPART 與 Clarity 以保護開發中的 AI Agent** | Microsoft Open-Sources RAMPART and Clarity to Secure AI Agents During Development |
+| **Microsoft 搗毀勒索軟體攻擊背後的惡意程式簽章服務** | Microsoft Takes Down Malware-Signing Service Behind Ransomware Attacks |
+| **Webworm 部署使用 Discord 與 MS Graph API 的 EchoCreep 與 GraphWorm 後門** | Webworm Deploys EchoCreep and GraphWorm Backdoors Using Discord and MS Graph API |
+| **Agent AI 即將到來。你準備好了嗎？** | Agent AI is Coming. Are You Ready? |
+| **GitHub 遭入侵 — 員工裝置被駭導致 3,800+ 內部儲存庫外洩** | GitHub Breached — Employee Device Hack Led to Exfiltration of 3,800+ Internal Repos |
+| **誤打劫持不再是用戶問題。它是供應鏈問題** | Typosquatting Is No Longer a User Problem. It's a Supply Chain Problem |
+| **Microsoft 發布針對 YellowKey BitLocker 繞過漏洞 (CVE-2026-45585) 的緩解措施** | Microsoft Releases Mitigation for YellowKey BitLocker Bypass CVE-2026-45585 Exploit |
+| **Grafana GitHub 遭入侵，經由 TanStack npm 攻擊暴露原始碼** | Grafana GitHub Breach Exposes Source Code via TanStack npm Attack |
+| **烏克蘭識別出與 2.8 萬個遭竊帳號相關的資安竊取程式營運者** | Ukraine identifies infostealer operator tied to 28,000 stolen accounts |
+| **駭客因補丁不完全而繞過 SonicWall VPN 的 MFA 驗證** | Hackers bypass SonicWall VPN MFA due to incomplete patching |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Microsoft RAMPART & Clarity AI 安全工具
+*   **🔍 技術原理**：RAMPART (Red-teaming AI Models and Prompt Assessment Real-time Toolkit) 提供了一個自動化紅隊框架，模擬對 AI Agent 的提示注入 (Prompt Injection) 攻擊。Clarity 則側重於可解釋性，分析 AI 決策路徑以發現隱在的後門或偏見。
+*   **⚔️ 攻擊向量**：攻擊者透過間接提示注入 (Indirect Prompt Injection) 控制 AI Agent 執行非法操作，如竊取敏感資料或觸發外部 API 調用。
+*   **🛡️ 防禦緩解**：在開發階段整合 RAMPART 進行滲透測試；對 AI Agent 的輸出實施嚴格的沙盒化限制。
+*   **🧠 名詞定義**：**Agentic AI**：指具備自主決策與環境交互能力的人工智慧實體。
+
+### 3.2 惡意程式簽章服務 (Malware-Signing Service) 搗毀
+*   **🔍 技術原理**：攻擊者利用遭竊或非法獲取的數位憑證為惡意程式進行簽章，使其看起來像是來自受信任的開發商，進而繞過 Windows 的 SmartScreen 與 EDR 的靜態掃描。
+*   **⚔️ 攻擊向量**：利用受信任的簽章規避 UAC 提示與防毒軟體攔截，大幅提升勒索軟體的感染成功率。
+*   **🛡️ 防禦緩解**：強化端點的憑證撤銷列表 (CRL) 檢查速度；限制僅能執行來自特定已知發行者的應用程式。
+*   **🧠 名詞定義**：**Code Signing (程式碼簽章)**：使用數位簽章來驗證軟體作者的身分並確保程式碼未被篡改。
+
+### 3.3 Webworm: EchoCreep 與 GraphWorm 後門
+*   **🔍 技術原理**：這組後門利用合法雲端服務作為 C2 通道。EchoCreep 利用 Discord 的 Webhooks 發送心跳訊號；GraphWorm 則利用 Microsoft Graph API 將受害者的 OneDrive/Outlook 空間轉化為命令儲存庫。
+*   **⚔️ 攻擊向量**：躲避防火牆偵測，因為流量被視為正常的辦公雲端行為 (Living-off-the-Cloud)。
+*   **🛡️ 防禦緩解**：監控 Graph API 的異常存取行為；對內部員工設備發出的 Discord API 請求進行精細化管控。
+*   **🧠 名詞定義**：**C2 over SaaS**：利用合法的軟體即服務 (SaaS) 作為中繼，隱藏攻擊者的控制指令。
+
+### 3.4 Agent AI 的崛起威脅
+*   **🔍 技術原理**：當 AI 具備讀寫權限與操作系統權限時，微小的「提示偏移」可能演變成災難性的攻擊。Agent AI 可能被誘導自我複製或在內網橫向移動。
+*   **⚔️ 攻擊向量**：利用 AI Agent 的自主性，透過多輪對話繞過簡單的過濾器。
+*   **🛡️ 防禦緩解**：實施 AI 運行時監控 (Runtime Monitoring)；為 AI 設置最小權限原則。
+
+### 3.5 GitHub 3,800+ 內部儲存庫遭竊事件
+*   **🔍 技術原理**：TeamPCP 組織攻擊了 GitHub 內部員工的個人裝置，竊取了特權會話金鑰 (Session Token)，繞過了二次驗證。
+*   **⚔️ 攻擊向量**：端點攻擊導致內部程式碼外洩，攻擊者隨後在代碼中尋找 Hardcoded Secrets。
+*   **🛡️ 防禦緩解**：實施硬體安全金鑰 (FIDO2)；儲存庫強制進行 Secret Scanning 掃描。
+*   **🧠 名詞定義**：**Session Hijacking (會話劫持)**：竊取用戶有效的 Session ID 以假冒身分存取受保護資源。
+
+### 3.6 供應鏈中的 Typosquatting (誤打劫持)
+*   **🔍 技術原理**：駭客在 npm/PyPI 上傳與熱門套件極為相似的名稱（如 `tensenflow` vs `tensorflow`）。現代 CI/CD 自動拉取依賴項時，若名稱拼錯，腳本將自動執行惡意程式。
+*   **⚔️ 攻擊向量**：透過安裝腳本 (postinstall scripts) 在開發環境中植入挖礦程式或後門。
+*   **🛡️ 防禦緩解**：使用內部的私有套件鏡像站；實施依賴項鎖定檔 (Lockfiles) 驗證。
+*   **🧠 名詞定義**：**Dependency Confusion (依賴項混淆)**：一種利用套件管理器優先從公共庫拉取同名套件的攻擊方式。
+
+### 3.7 YellowKey BitLocker 繞過 (CVE-2026-45585)
+*   **🔍 技術原理**：此漏洞涉及 TPM (受信任平台模組) 與 CPU 之間的通訊，攻擊者可透過嗅探 LPC 匯流排上的明文金鑰來解鎖被 BitLocker 加密的硬碟。
+*   **⚔️ 攻擊向量**：實體接觸受害電腦，使用低成本硬體監測器竊取加密金鑰。
+*   **🛡️ 防禦緩解**：啟用 TPM+PIN 驗證模式；更新微碼以強制對 LPC 匯流排進行加密通訊。
+
+### 3.8 Grafana 遭 TanStack npm 攻擊影響
+*   **🔍 技術原理**：熱門前端套件 TanStack 被植入惡意程式碼，導致引用該套件的 Grafana 專案在編譯時洩露了 GitHub Access Tokens。
+*   **⚔️ 攻擊向量**：供應鏈污染導致下游開發者權限外洩。
+*   **🛡️ 防禦緩解**：對所有第三方庫進行內容安全雜湊驗證 (Integrity Check)。
+
+### 3.9 烏克蘭 Infostealer 營運者逮捕案
+*   **🔍 技術原理**：營運者利用 Redline/Vidar 等竊取程式，針對瀏覽器儲存的密碼、Cookies 與加密貨幣錢包進行大規模收割。
+*   **⚔️ 攻擊向量**：透過社交工程發送偽裝成商業發票的附件。
+*   **🛡️ 防禦緩解**：禁用瀏覽器儲存密碼功能；部署具備行為監測能力的端點防禦系統 (EDR)。
+
+### 3.10 SonicWall VPN MFA 繞過
+*   **🔍 技術原理**：SonicWall 先前的修補程式未能完全解決漏洞。駭客發現透過特定的請求序列，可以讓系統跳過二要素驗證邏輯，直接進入授權狀態。
+*   **⚔️ 攻擊向量**：對公開暴露的 VPN 閘道進行自動化掃描與滲透。
+*   **🛡️ 防禦緩解**：立即部署官方發布的第二版關鍵更新；實施網路分段限制。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI Worm (AI 蠕蟲) 現實化**：預計在 2026 年底前，將出現第一個能透過 AI Agent 自主傳播的惡意程式，它們將利用 LLM 進行社交工程誘導。
+2.  **硬體級身分認證戰爭**：隨著傳統 MFA 不斷被繞過，FIDO2 等基於硬體的 Passkey 將成為企業唯一可接受的登入標準。
+3.  **隱蔽通道的轉移**：攻擊者將更多地利用 AI 模型本身的推論 API 作為資料外洩的隱蔽通道，傳統 DPI (深層封包檢測) 將難以應對。
+
+---
+
+## 5. 🔗 參考文獻
+*   [Microsoft RAMPART and Clarity AI Security](https://thehackernews.com/2026/05/microsoft-open-sources-rampart-and.html)
+*   [Malware-Signing Service Takedown](https://thehackernews.com/2026/05/microsoft-takes-down-malware-signing.html)
+*   [Webworm EchoCreep & GraphWorm Analysis](https://thehackernews.com/2026/05/webworm-deploys-echocreep-and-graphworm.html)
+*   [Agent AI Readiness Report](https://thehackernews.com/2026/05/agent-ai-is-coming-are-you-ready.html)
+*   [GitHub Internal Breach Investigation](https://thehackernews.com/2026/05/github-investigating-teampcp-claimed.html)
+*   [The Future of Typosquatting in Supply Chains](https://thehackernews.com/2026/05/typosquatting-is-no-longer-user-problem.html)
+*   [Microsoft CVE-2026-45585 Mitigation Guide](https://thehackernews.com/2026/05/microsoft-releases-mitigation-for.html)
+*   [Grafana & TanStack Attack Details](https://thehackernews.com/2026/05/grafana-github-breach-exposes-source.html)
+*   [Ukraine Infostealer Takedown Report](https://www.bleepingcomputer.com/news/security/ukraine-identifies-infostealer-operator-tied-to-28-000-stolen-accounts/)
+*   [SonicWall MFA Bypass Critical Warning](https://www.bleepingcomputer.com/news/security/hackers-bypass-sonicwall-vpn-mfa-due-to-incomplete-patching/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/05/20)
 
 這份白皮書旨在深入解析 2026 年 5 月份關鍵的資安威脅態勢，為企業決策者、架構師與資安研究人員提供高密度的技術情資。本次報告聚焦於供應鏈攻擊的擴張、內核級漏洞的利用、以及規避多因素驗證 (MFA) 的新型釣魚技術。

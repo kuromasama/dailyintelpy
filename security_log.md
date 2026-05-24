@@ -1,3 +1,104 @@
+# 🛡️ 資安戰情白皮書 (2026/05/25)
+
+本白皮書旨在針對近期發生的重大資安事件進行深度技術解構，提供企業資安長 (CISO) 及資安架構師作為決策與技術防禦之參考。本文件已針對 AI 知識庫 (NotebookLM) 優化，確保資訊密度與技術深度。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+當前的威脅態勢已從單點漏洞攻擊轉向**「複合式供應鏈滲透」**與**「大規模自動化漏洞利用」**。2026 年的防禦重點在於：
+- **開發環境零信任 (Zero Trust for Dev)**：IDE 套件與開發工具已成為駭客進入企業內部的跳板。
+- **遺留系統的末日預警**：如 Drupal 等經典 CMS 的 SQL 注入漏洞（SQL Injection）再度被武器化，顯示舊有資產管理的重要性。
+- **前瞻性治理**：量子運算與 AI 的雙面刃效應要求企業必須從現在開始佈局後量子加密 (Post-Quantum Cryptography, PQC) 與 AI 安全護欄。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 | 關鍵內容摘要 | 來源 |
+| :--- | :--- | :--- |
+| **Ghost CMS SQL Injection** | Ghost CMS 漏洞遭 ClickFix 運動大規模利用。 | [BleepingComputer] |
+| **Drupal SQL Injection** | CISA 警告 Drupal 嚴重 SQL 注入漏洞已出現實際攻擊。 | [iThome] |
+| **AntV Library Compromise** | 駭客團體 TeamPCP 滲透圖形庫 AntV，波及逾 600 個套件。 | [iThome] |
+| **GitHub Data Leak Sale** | TeamPCP 於暗網兜售近 4,000 個 GitHub 儲存庫，索價 5 萬美元。 | [iThome] |
+| **AI & Quantum Governance** | 強化資安治理以應對 AI 與量子運算帶來的新挑戰。 | [iThome] |
+| **Nx Console Supply Chain** | GitHub 證實內部儲存庫遭駭，源於 Nx Console 供應鏈攻擊。 | [iThome] |
+| **VS Code Extension Malware** | Nx Console 的 VS Code 延伸套件遭植入竊資軟體 (Infostealer)。 | [iThome] |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Ghost CMS SQL 注入漏洞與 ClickFix 戰術
+- **🔍 技術原理**：Ghost CMS 在處理特定 API 請求或資料庫查詢時，未對使用者輸入進行嚴格的參數化過濾（Sanitization），導致攻擊者可透過惡意 SQL 語法改變查詢邏輯。
+- **⚔️ 攻擊向量**：駭客結合 **ClickFix 戰術**，透過偽造的瀏覽器更新頁面或系統錯誤視窗（Social Engineering），誘導使用者下載惡意載荷，並利用 Ghost CMS 的 SQL 漏洞取得管理員憑證。
+- **🛡️ 防禦緩解**：
+    1. 立即更新 Ghost CMS 至最新修補版本。
+    2. 實施 Web 應用程式防火牆 (WAF)，針對 SQL 語法關鍵字（如 `UNION SELECT`, `OR 1=1`）進行阻斷。
+- **🧠 名詞定義**：**ClickFix** 是一種新型態的社交工程技術，模擬作業系統或瀏覽器的原生通知視窗，誘導使用者執行 PowerShell 腳本。
+
+### 3.2 Drupal SQL 注入漏洞 (CVE 追蹤)
+- **🔍 技術原理**：這是一類典型的「二次注入」或「盲注」漏洞，發生在 Drupal 核心處理資料庫抽象層 (Database Abstraction Layer) 的過程中，攻擊者可藉此繞過身份驗證。
+- **⚔️ 攻擊向量**：攻擊者發送特製的 HTTP POST 請求至 Drupal 站點，利用漏洞提權為系統管理員，進而控制整個伺服器執行遠端代碼 (RCE)。
+- **🛡️ 防禦緩解**：
+    1. 遵循 CISA 指引，強制執行核心安全性更新。
+    2. 進行內部漏洞掃描，確認是否有殘留的過舊版本 (Legacy systems)。
+- **🧠 名詞定義**：**CISA (Cybersecurity and Infrastructure Security Agency)** 為美國國土安全部下屬機構，其發布的警告通常代表該漏洞具有高度威脅性。
+
+### 3.3 TeamPCP 針對 AntV 圖形庫的供應鏈攻擊
+- **🔍 技術原理**：駭客透過取得 AntV 開發者帳號權限或利用套件管理員 (NPM) 的漏洞，在原始碼中植入後門指令碼。
+- **⚔️ 攻擊向量**：由於 AntV 是廣泛使用的圖形化程式庫，一旦被污染，所有引用該庫的下游專案（超過 600 個）在構建 (Build) 時都會自動下載惡意代碼。
+- **🛡️ 防禦緩解**：
+    1. 使用 `npm audit` 或 `Snyk` 檢測依賴項安全。
+    2. 採用 **Software Bill of Materials (SBOM)** 監控所有第三方組件來源。
+- **🧠 名詞定義**：**AntV** 是螞蟻金服開發的一套數據可視化解決方案，廣泛應用於前端開發。
+
+### 3.4 GitHub 儲存庫資料洩漏與 TeamPCP 的商業化
+- **🔍 技術原理**：並非 GitHub 系統漏洞，而是透過竊取開發者的個人存取權杖 (Personal Access Tokens, PAT) 或透過 Session Hijacking 取得存取權。
+- **⚔️ 攻擊向量**：TeamPCP 大規模收集被盜憑證，自動化複製 (Clone) 私有儲存庫，並在地下論壇以 5 萬美元高價出售。
+- **🛡️ 防禦緩解**：
+    1. 強制執行多因素驗證 (MFA) 並限制 PAT 的有效期限。
+    2. 啟用 GitHub Secret Scanning，防止 API Key 與憑證殘留在儲存庫中。
+- **🧠 名詞定義**：**TeamPCP** 是一個活躍的網路犯罪組織，專長於竊取企業專有原始碼並進行勒索或販售。
+
+### 3.5 AI 與量子運算下的資安治理轉型
+- **🔍 技術原理**：量子運算中的 Shor 演算法理論上可在極短時間內破解現有的 RSA 與 ECC 加密體系；AI 則可自動生成零日漏洞攻擊程式。
+- **⚔️ 攻擊向量**：**「現在攔截，稍後解密」(Harvest Now, Decrypt Later)**。駭客現正大量攔截加密流量，等待量子電腦成熟後解密。
+- **🛡️ 防禦緩解**：
+    1. 開始評估 **後量子加密 (PQC)** 演算法（如 Crystal-Kyber）。
+    2. 建立 AI 安全審核機制，監測自動化攻擊流量。
+- **🧠 名詞定義**：**後量子加密 (Post-Quantum Cryptography, PQC)** 是指能夠抵抗量子電腦破解攻擊的加密演算法。
+
+### 3.6 Nx Console VS Code 延伸套件遭植入竊資軟體
+- **🔍 技術原理**：駭客透過供應鏈滲透方式，控制了 Nx Console 官方延伸套件的發布流程，並在 `extension.js` 中插入了惡意混淆代碼。
+- **⚔️ 攻擊向量**：開發者安裝或更新該延伸套件後，惡意程式會自動掃描本地端的 `.env` 文件、`.ssh` 金鑰以及瀏覽器存儲的 Cookie，並將其回傳至 C2 伺服器。
+- **🛡️ 防禦緩解**：
+    1. 立即解除安裝並重新安裝官方已修復版本的 Nx Console。
+    2. 清除開發環境中所有的 Session 與 Token，並更換所有受影響的 API Key。
+- **🧠 名詞定義**：**Nx Console** 是針對單一儲存庫 (Monorepo) 開發框架 Nx 的視覺化管理工具，受眾多企業級開發者使用。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **IDE 成為新的特權存取點**：未來一年，針對 VS Code, JetBrains 等開發工具插件的攻擊將呈爆炸式增長，駭客以此規避企業邊界防火牆。
+2.  **多層次供應鏈連鎖反應**：TeamPCP 此次攻擊 AntV 顯示，駭客不再只追求單一企業，而是攻擊「基礎設施級」的開源庫，達成「攻一破千」的自動化效益。
+3.  **AI 生成的多態性惡意代碼**：預計 2026 年底前，將出現能動態改變特徵碼以繞過端點偵測與回應 (EDR) 系統的 AI 惡意軟體。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [Ghost CMS SQL injection flaw exploited in large-scale ClickFix campaign](https://www.bleepingcomputer.com/news/security/ghost-cms-sql-injection-flaw-exploited-in-large-scale-clickfix-campaign/)
+- [CISA警示Drupal的SQL注入漏洞已被用於實際攻擊](https://www.ithome.com.tw/news/176073)
+- [TeamPCP滲透資料圖形化程式庫AntV，影響逾600個套件](https://www.ithome.com.tw/news/176072)
+- [駭客團體TeamPCP兜售GitHub近4千個儲存庫資料，底價為5萬美元](https://www.ithome.com.tw/news/176070)
+- [為AI與量子運算做好準備，全面強化資安治理已成當務之急](https://www.ithome.com.tw/news/176071)
+- [針對內部儲存庫遭駭事故，GitHub證實為受到Nx Console的供應鏈攻擊波及](https://www.ithome.com.tw/news/176069)
+- [Nx Console的VS Code延伸套件被植入竊資軟體](https://www.ithome.com.tw/news/176068)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/05/24)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練設計，詳盡記錄 2026 年 5 月底全球資安動態，分析供應鏈威脅、AI 驅動的漏洞挖掘以及基礎設施之漏洞利用趨勢。

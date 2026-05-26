@@ -1,3 +1,113 @@
+# 🛡️ 資安戰情白皮書 (2026/05/27)
+
+本白皮書旨在提供 2026 年 5 月底全球資安動態的深度剖析，專為資安架構師、CISO 及 AI 訓練知識庫設計。當前威脅環境呈現出「AI 武器化加速」與「零時差漏洞利用高頻化」兩大特徵。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年的今天，企業面臨的不再是單純的惡意軟體感染，而是**高精密度的自動化威脅生態系**。
+
+*   **戰略轉向：** 攻擊者（如 MuddyWater）正回歸經典但高度有效的「DLL Side-Loading」技術來規避現代 EDR。
+*   **反應時間極限化：** 印度 CERT-In 提出「12 小時內完成修補」的建議，這象徵著傳統以「天」為單位的修補週期（Patch Cycle）已無法應對 AI 輔助的攻擊。
+*   **身分驗證危機：** MFA 不再是萬靈丹，「MFA Prompt Bombing」利用人類心理弱點繞過強認證，顯示「人」依據是防線中最脆弱的環節。
+*   **AI 雙面刃：** DDoS 攻擊進入 AI 自動變更特徵的新時代，而企業則開始整合 Claude Compliance API 等工具來強化 AI 的合規治理（AI Governance）。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中/英對照) | 關鍵技術指標 (TTPs) |
+| :--- | :--- |
+| **MuddyWater 針對九國發動間諜活動，使用 DLL 側載技術**<br>MuddyWater Uses DLL Side-Loading in Espionage Campaign Targeting 9 Countries | DLL Side-Loading, Espionage, Spear Phishing |
+| **[THN 線上研討會] 新型 AI DDoS 攻擊更聰明：學習如何反擊**<br>New AI DDoS Attacks Are Smarter. Learn How to Fight Back | AI-driven Traffic Patterns, Layer 7 Flooding |
+| **微軟修補 SharePoint RCE 漏洞 CVE-2026-45659**<br>Microsoft Patches SharePoint RCE Flaw CVE-2026-45659 Across Server Versions | Remote Code Execution, SharePoint Server |
+| **MFA 提示轟炸：為什麼你的第二因素認證無法保護你**<br>MFA Prompt Bombing: Why Your Second Factor Isn't Saving You | Social Engineering, Fatigue Attack, Push Exhaustion |
+| **CERT-In 建議針對面向互聯網的漏洞在 12 小時內完成修補**<br>CERT-In Recommends 12-Hour Patching for Internet-Facing Flaws | Rapid Remediation, Threat Intelligence, Automation |
+| **伊朗駭客透過網路釣魚與 SEO 毒化部署 MiniFast 與 MiniJunk V2**<br>Iranian Hackers Deploy MiniFast and MiniJunk V2 via Phishing and SEO Poisoning | SEO Poisoning, Loader/Stealer, Infostealer |
+| **KnowledgeDeliver LMS 漏洞被利用以部署 Godzilla 與 Cobalt Strike**<br>KnowledgeDeliver LMS Flaw Exploited to Deploy Godzilla and Cobalt Strike | 0-day, Web Shell, Post-Exploitation |
+| **KnowledgeDeliver 漏洞作為零時差漏洞被利用以安裝 Web Shell**<br>KnowledgeDeliver flaw exploited as a zero-day to install web shells | Arbitrary File Upload, Persistence |
+| **Charter 通訊在 ShinyHunters 勒索威脅後證實資料外洩**<br>Charter confirms data breach after ShinyHunters extortion threat | Data Exfiltration, Third-party Risk, Extortion |
+| **Varonis Atlas 整合 Claude Compliance API 進行 AI 治理**<br>How Varonis Atlas integrates Claude Compliance API for AI governance | AI Governance, Data Security Platform (DSP), LLM Security |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 MuddyWater 側載間諜活動 (DLL Side-Loading)
+*   **🔍 技術原理**：攻擊者利用合法程式（Signed Executable）在啟動時搜尋 DLL 的特定路徑順序。駭客將惡意 DLL 命名為合法名稱並放置在同一目錄下，使程式誤載惡意程式碼。
+*   **⚔️ 攻擊向量**：針對政府與電信機構發送帶有惡意壓縮檔的釣魚郵件。
+*   **🛡️ 防禦緩解**：實施「動態 DLL 載入監控」，限制非標準路徑的庫載入，並使用 AppLocker 強制執行執行檔與庫的白名單。
+*   **🧠 名詞定義**：**DLL Side-Loading (側載)**：利用 Windows 載入 DLL 的搜索順序漏洞，使合法軟體執行非法程式碼。
+
+### 3.2 AI 驅動的 DDoS 攻擊 (AI DDoS)
+*   **🔍 技術原理**：利用機器學習演算法即時分析防禦方的清洗策略（Cleansing Rules），自動調整流量模式（如頻率、封包大小、標頭特徵），模擬正常用戶行為。
+*   **⚔️ 攻擊向量**：針對 Web 應用層（Layer 7）發動緩慢且隱蔽的請求。
+*   **🛡️ 防禦緩解**：導入具備 AI 自學習能力的 WAF 與 DDoS 防禦系統，進行行為基準線（Baseline）分析而非單純的特徵匹配。
+*   **🧠 名詞定義**：**Adaptive Rate Limiting (自適應限流)**：根據流量行為動態調整存取門檻的防禦技術。
+
+### 3.3 Microsoft SharePoint RCE (CVE-2026-45659)
+*   **🔍 技術原理**：該漏洞存在於 SharePoint Server 的物件反序列化（Deserialization）過程中。未經身份驗證的攻擊者可發送特製請求，在伺服器上下文中執行任意代碼。
+*   **⚔️ 攻擊向量**：透過公開的 SharePoint 門戶網站進行遠端利用。
+*   **🛡️ 防禦緩解**：立即套用微軟 2026 年 5 月更新，關閉不必要的 SharePoint API 服務，並對 Web 流量實施嚴格的反序列化檢核。
+
+### 3.4 MFA 提示轟炸 (MFA Prompt Bombing)
+*   **🔍 技術原理**：攻擊者掌握使用者帳密後，持續發送大量 MFA 推播請求（Push Notifications），直到使用者因煩躁、誤觸或疲勞而點擊「允許」。
+*   **⚔️ 攻擊向量**：社交工程手法，通常發生在深夜或非辦公時間。
+*   **🛡️ 防禦緩解**：改用「數字匹配 (Number Matching)」認證方式（要求使用者輸入螢幕顯示的數字），或使用 FIDO2 實體密鑰。
+*   **🧠 名詞定義**：**MFA Fatigue (身分驗證疲勞)**：一種心理戰術，利用重複的請求破壞使用者的警覺性。
+
+### 3.5 12 小時快速修補戰略 (CERT-In Mandate)
+*   **🔍 技術原理**：攻擊者利用 AI 掃描工具可在漏洞公開後數小時內自動產生 Exploiting Code。12 小時是為了搶在自動化掃描大規模鋪開前關閉窗口。
+*   **🛡️ 防禦緩解**：建立「自動化修補管道 (Automated Patch Pipeline)」，區分互聯網暴露面 (Facing) 與內部資產，優先處理前者。
+
+### 3.6 伊朗駭客 MiniFast/MiniJunk V2
+*   **🔍 技術原理**：結合 SEO 毒化（SEO Poisoning），讓使用者在搜尋專業工具（如 PDF 轉換、破解軟體）時，下載到含有惡意 Loader 的檔案。
+*   **⚔️ 攻擊向量**：搜尋引擎優化與釣魚網站。
+*   **🛡️ 防禦緩解**：終端 EDR 需具備行為分析，針對不尋常的 HTTP/HTTPS 對外連接（C2 回傳）進行攔截。
+*   **🧠 名詞定義**：**SEO Poisoning**：操縱搜尋引擎排名，使惡意網址出現在搜尋結果前列。
+
+### 3.7 KnowledgeDeliver LMS 漏洞 (Zero-day & Web Shell)
+*   **🔍 技術原理**：該 LMS 系統存在任意檔案上傳漏洞，攻擊者上傳 Godzilla Web Shell 並結合 Cobalt Strike 進行內網滲透（Lateral Movement）。
+*   **⚔️ 攻擊向量**：利用公開於互聯網的學習管理系統漏洞。
+*   **🛡️ 防禦緩解**：對上傳檔案類型實施嚴格檢查，並禁止 Web 目錄具備執行權限。
+*   **🧠 名詞定義**：**Godzilla Web Shell**：一種強大的腳本管理工具，常用於後門維持與內網管理。
+
+### 3.8 Charter 通訊資料外洩 (ShinyHunters)
+*   **🔍 技術原理**：ShinyHunters 通常利用雲端設定錯誤（Misconfigured S3 Buckets）或供應鏈憑證外洩進入環境，竊取資料後進行公開勒索。
+*   **⚔️ 攻擊向量**：雲端基礎架構存取控制弱點。
+*   **🛡️ 防禦緩解**：強化雲端安全姿態管理 (CSPM)，實施最小權限原則 (PoLP) 並對敏感資料進行加密儲存。
+
+### 3.9 Varonis Atlas & Claude API 治理
+*   **🔍 技術原理**：透過 Claude Compliance API，Varonis 能夠自動分類 LLM 使用過程中產生的敏感資訊，確保 AI 生成內容符合隱私法規（如 GDPR, CCPA）。
+*   **⚔️ 應用場景**：防止員工將公司機密原始碼或客戶個資餵給公共 AI。
+*   **🛡️ 防禦緩解**：部署 AI 分類引擎，對所有發往大模型的 Prompt 進行內容掃描。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **自治式攻擊代理 (Autonomous Attack Agents)：** 預計 2026 年底，我們將看到能自主決策、選擇攻擊路徑的惡意 AI Agent 出現，這將使傳統基於規則的防火牆徹底失效。
+2.  **供應鏈投毒的深度隱蔽化：** 攻擊者將不再直接攻擊大企業，而是針對企業內部 AI 模型的訓練數據集（Training Data）進行投毒，誘導 AI 產生錯誤的決策建議。
+3.  **零信任身分認證的標準化：** 因應 MFA 轟炸，密碼 (Password) 與簡單推播將正式過時，基於生物辨識與硬體安全模組 (HSM) 的無密碼認證將成為企業標配。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [MuddyWater DLL Side-Loading Espionage](https://thehackernews.com/2026/05/muddywater-uses-dll-side-loading-in.html)
+*   [AI DDoS Attacks Webinar](https://thehackernews.com/2026/05/new-ai-ddos-attacks-are-smarter-learn.html)
+*   [Microsoft SharePoint RCE CVE-2026-45659](https://thehackernews.com/2026/05/microsoft-patches-sharepoint-rce-flaw.html)
+*   [MFA Prompt Bombing Analysis](https://thehackernews.com/2026/05/mfa-prompt-bombing-why-your-second.html)
+*   [CERT-In 12-Hour Patching Recommendation](https://thehackernews.com/2026/05/cert-in-mandates-12-hour-patching-for.html)
+*   [Iranian Hackers: MiniFast and MiniJunk](https://thehackernews.com/2026/05/iranian-hackers-deploy-minifast-and.html)
+*   [KnowledgeDeliver Exploited for Cobalt Strike](https://thehackernews.com/2026/05/knowledgedeliver-lms-flaw-exploited-to.html)
+*   [KnowledgeDeliver Zero-day Web Shells (BleepingComputer)](https://www.bleepingcomputer.com/news/security/knowledgedeliver-flaw-exploited-as-a-zero-day-to-install-web-shells/)
+*   [Charter Data Breach & ShinyHunters](https://www.bleepingcomputer.com/news/security/charter-confirms-data-breach-after-shinyhunters-extortion-threat/)
+*   [Varonis Atlas & Claude AI Governance](https://www.bleepingcomputer.com/news/security/how-varonis-atlas-integrates-claude-compliance-api-for-ai-governance/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/05/26)
 
 本白皮書旨在針對 2026 年 5 月底發生的重大資安事件進行深度技術剖析，提供資安架構師、SOC 團隊以及技術決策者作為防禦基準與 AI 知識庫訓練素材。

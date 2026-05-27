@@ -1,3 +1,109 @@
+# 🛡️ 資安戰情白皮書 (2026/05/28)
+
+這是一份針對 2026 年 5 月底全球資安威脅態勢的深度分析報告。本文件旨在為企業資安架構師、SOC 團隊及 AI 知識庫（如 NotebookLM）提供高密度的技術情資。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年 5 月的威脅態勢顯示出**「三維攻擊演進」**：第一，**供應鏈攻擊與開發環境深度滲透**（GlassWorm, npm package）；第二，**AI 生態系統的武器化**（針對 Claude AI 的文件竊取、AI 機器人推薦惡意連結）；第三，**數位與實體界限的模糊**（FBI 警示實體接觸式數據盜竊）。
+
+**戰略建議：**
+- **零信任延伸至本地環境**：防範「實體入侵」導致的數據竊取，強化硬體加密與物理訪問控制。
+- **軟體清單 (SBOM) 動態監控**：不僅要掃描依賴項，更要針對開發者主機上的配置目錄（如 `~/.config`）進行行為監測。
+- **AI 交互安全檢查**：對 AI Chatbot 的輸出內容實施動態過濾，防止員工點擊由 AI 誤導的惡意連結。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 | 關鍵對象 | 影響範圍 |
+| :--- | :--- | :--- |
+| **Grandoreiro Malware & BTMOB RAT** | Windows / Android 用戶 | 金融憑證竊取、遠端存取控制 |
+| **Malicious npm (Claude AI Target)** | 開發者 / AI 使用者 | 敏感配置文件與目錄竊取 |
+| **GlassWorm (Earth Estries) Takedown** | 軟體開發商 / 政府 | 軟體供應鏈基礎設施滲透 |
+| **Gitea Vulnerability** | 容器化開發團隊 | 私有容器鏡像未經授權洩漏 |
+| **AI Chatbot SEO Poisoning** | 一般公眾 / GPU 資源 | GPU 挖掘惡意軟體、加密貨幣盜竊 |
+| **FBI: In-person Data Theft** | 企業機房 / 金融機構 | 實體勒索、硬體層級數據盜竊 |
+| **AD Password Rule Enforcement** | 企業內部網路 | 認證安全性與使用者體驗平衡 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Grandoreiro 與 BTMOB RAT 的跨平台協同攻擊
+*   **🔍 技術原理**：Grandoreiro 是一種歷史悠久的銀行木馬，2026 年變種強化了其對 DGA（網域產生演算法）的依賴，並結合 BTMOB Android RAT 實現雙因子驗證 (2FA) 的即時攔截。
+*   **⚔️ 攻擊向量**：透過包含惡意 PDF 或 Excel 巨集的網路釣魚信件觸發。一旦 Windows 受害，攻擊者會導引使用者下載偽裝的「安全插件」到 Android 手機。
+*   **🛡️ 防禦緩解**：實施基於行為的端點偵測 (EDR)；在 Android 端限制非 Google Play 來源安裝，並監控「無障礙服務 (Accessibility Services)」的異常權限請求。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：允許攻擊者像操作本機一樣操控遠端受害設備的惡意程式。
+
+### 3.2 惡意 npm 套件竊取 Claude AI 使用者目錄
+*   **🔍 技術原理**：攻擊者在 npm 倉庫上傳名為 `claude-ai-utils` 等誘騙性套件，利用 `postinstall` 腳本遍歷使用者的 `~/.anthropic/` 或 `~/.config/claude/` 目錄。
+*   **⚔️ 攻擊向量**：供應鏈攻擊。開發者在使用 AI 輔助開發工具時，不慎安裝了惡意的依賴包。
+*   **🛡️ 防禦緩解**：使用 `npm audit` 進行掃描；在 CI/CD 環境中使用 `npm install --ignore-scripts` 防止安裝腳本執行；對家目錄敏感文件設置嚴格權限。
+*   **🧠 名詞定義**：**Postinstall Script**：npm 安裝過程中的鉤子腳本，常用於自動化配置，但常被攻擊者利用執行惡意指令。
+
+### 3.3 GlassWorm (Earth Estries) 供應鏈基礎設施瓦解案
+*   **🔍 技術原理**：GlassWorm 利用高度複雜的 C2（指令與控制）結構，採用 DLL 側載 (Side-loading) 技術，將惡意代碼隱藏在合法的數位簽章程序中。
+*   **⚔️ 攻擊向量**：鎖定軟體更新伺服器，劫持更新包分發渠道。
+*   **🛡️ 防禦緩解**：實施二進制白名單管理；對所有下載的更新包進行二次雜湊值 (Hash) 比對；監控異常的 DNS 隧道行為。
+*   **🧠 名詞定義**：**C2 Infrastructure**：攻擊者用來向受感染電腦發送指令並接收數據的伺服器網絡。
+
+### 3.4 關閉事件風險的 SOC 三大關鍵步驟
+*   **🔍 技術原理**：這是一套優化 SOC (資安監控中心) 的方法論，強調：1. 全域可視化 (Full Visibility)；2. 自動化劇本 (Playbook Automation)；3. 持續威脅狩獵 (Threat Hunting)。
+*   **⚔️ 攻擊向量**：針對 SOC 因警報疲勞 (Alert Fatigue) 而遺漏的低頻率、長期潛伏攻擊 (APT)。
+*   **🛡️ 防禦緩解**：導入 SOAR (資安協調自動化及回應) 平台，減少 70% 的手動分析時間。
+*   **🧠 名詞定義**：**MTTD/MTTR**：平均偵測時間 / 平均回應時間，是衡量 SOC 效能的核心指標。
+
+### 3.5 Gitea 漏洞導致私有容器鏡像外洩
+*   **🔍 技術原理**：該漏洞源於 Gitea 在處理容器註冊表 (Container Registry) 時的邏輯錯誤，允許攻擊者透過構造特定 URL 繞過身份驗證檢查。
+*   **⚔️ 攻擊向量**：未經授權的遠端存取 (Broken Access Control)。
+*   **🛡️ 防禦緩解**：立即升級 Gitea 至修補版本；將 Container Registry 放置於內部網路或 VPN 後方；限制 Registry 的匿名讀取權限。
+*   **🧠 名詞定義**：**Container Image**：包含應用程序及其運行環境的輕量級、可執行軟體包。
+
+### 3.6 AI 聊天機器人與 SEO 毒化導致 GPU 挖礦
+*   **🔍 技術原理**：攻擊者利用 SEO Poisoning 將惡意站點排在搜尋結果前列，或利用 AI 聊天機器人的數據源汙染，使 AI 推薦含有惡意軟體的下載連結。
+*   **⚔️ 攻擊向量**：使用者搜尋「高效能運算工具」時，被引導下載被植入挖礦軟體的安裝檔，耗盡受害者 GPU 資源。
+*   **🛡️ 防禦緩解**：瀏覽器端安裝廣告與追蹤攔截器；企業層級執行網頁過濾 (Web Filtering)；監控系統端 GPU 利用率異常飆升。
+*   **🧠 名詞定義**：**Cryptojacking**：未經授權利用他人硬體資源進行加密貨幣挖礦的行為。
+
+### 3.7 Active Directory 強制密碼策略與使用者體驗
+*   **🔍 技術原理**：探討如何利用現代認證框架在不降低安全性的前提下，移除頻繁更換密碼的要求，轉而加強密碼複雜度與黑名單過濾。
+*   **⚔️ 攻擊向量**：暴力破解 (Brute-force) 與密碼噴灑 (Password Spraying)。
+*   **🛡️ 防禦緩解**：導入動態密碼字典過濾（禁止使用常見或已洩漏密碼）；部署多因素驗證 (MFA)。
+*   **🧠 名詞定義**：**Active Directory (AD)**：微軟開發的目錄服務，用於集中管理網路資源與身分驗證。
+
+### 3.8 FBI 警告：實體接觸式數據盜竊 (Silent Ransom Group)
+*   **🔍 技術原理**：攻擊者不再僅僅依賴網路，而是物理進入受害企業，使用硬體 Keylogger、USB 橡皮鴨 (Rubber Ducky) 或直接拆卸硬碟。
+*   **⚔️ 攻擊向量**：實體社會工程學（偽裝成維修人員、外送員）。
+*   **🛡️ 防禦緩解**：強化辦公室與機房的物理門禁；部署全碟加密 (BitLocker/LUKS)；禁用未授權的 USB 埠。
+*   **🧠 名詞定義**：**In-person Data Theft**：透過物理接觸設備進行的數據竊取行為。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 幻覺與建議漏洞化**：未來一年，攻擊者將更積極地「訓練」公開的 AI 模型，使其在特定的技術問答中推薦含有惡意代碼的 Library。
+2.  **物理與數位勒索結合**：勒索軟體組織將僱用當地代理人進行實體入侵，若網路滲透失敗，則改由實體裝置植入惡意軟體。
+3.  **GPU 資源成為首要目標**：隨著 AI 需求暴增，惡意軟體將從單純的 CPU 挖礦轉向大規模竊取企業雲端 GPU 算力。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [The Hacker News: Grandoreiro & BTMOB Campaigns](https://thehackernews.com/2026/05/grandoreiro-malware-and-btmob-rat.html)
+- [The Hacker News: npm Package Claude AI Theft](https://thehackernews.com/2026/05/malicious-npm-package-stole-files-from.html)
+- [The Hacker News: GlassWorm Takedown](https://thehackernews.com/2026/05/glassworm-malware-takedown-disrupts.html)
+- [The Hacker News: 3 SOC Steps](https://thehackernews.com/2026/05/3-soc-steps-that-shut-down-incident.html)
+- [The Hacker News: Gitea Vulnerability](https://thehackernews.com/2026/05/gitea-vulnerability-exposes-private.html)
+- [The Hacker News: AI Chatbot Cryptojacking](https://thehackernews.com/2026/05/ai-chatbot-recommendations-redirect.html)
+- [BleepingComputer: GPU Mining Malware via SEO/AI](https://www.bleepingcomputer.com/news/security/gpu-mining-malware-spreads-via-seo-poisoning-ai-chatbots/)
+- [BleepingComputer: AD Password Rules](https://www.bleepingcomputer.com/news/security/can-you-enforce-strong-active-directory-password-rules-without-frustrating-users/)
+- [BleepingComputer: Glassworm Botnet Disrupted](https://www.bleepingcomputer.com/news/security/glassworm-botnet-disrupted-after-resilient-c2-infrastructure-takedown/)
+- [BleepingComputer: FBI In-person Data Theft Warning](https://www.bleepingcomputer.com/news/security/fbi-warns-of-silent-ransom-group-in-person-data-theft-attacks/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/05/27)
 
 本白皮書旨在提供 2026 年 5 月底全球資安動態的深度剖析，專為資安架構師、CISO 及 AI 訓練知識庫設計。當前威脅環境呈現出「AI 武器化加速」與「零時差漏洞利用高頻化」兩大特徵。

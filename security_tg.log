@@ -12467,3 +12467,99 @@
 
 3. 部署網頁應用防火牆（WAF）：在伺服器前端部署 WAF，配置針對 RCE 攻擊特徵的過濾規則，攔截異常的輸入參數與惡意代碼片段。
 ==============================
+
+==============================
+[2026-05-28 06:49:22] SENT:
+🔥 🚨 Grandoreiro 惡意軟體與 BTMOB 遠端存取木馬針對 Windows 及 Android 用戶發動攻擊
+📅 事件背景：跨平台惡意軟體攻擊活動近期在全球多個地區顯著增加。
+🔗 https://thehackernews.com/2026/05/grandoreiro-malware-and-btmob-rat.html
+📝 摘要：攻擊者結合了專攻 Windows 的金融木馬與針對 Android 的遠端存取工具，顯示其攻擊手段正朝向跨平台多角化發展。
+
+🔥 📦 惡意 npm 套件利用 GitHub 竊取 Claude AI 用戶目錄文件
+📅 事件背景：開發者供應鏈攻擊威脅持續升高，駭客開始針對特定 AI 工具使用者下手。
+🔗 https://thehackernews.com/2026/05/malicious-npm-package-stole-files-from.html
+📝 摘要：駭客透過偽裝成實用工具的 npm 套件，專門鎖定使用 Claude AI 的開發者，從其本地電腦目錄中竊取機敏資料與設定檔。
+
+🔥 🛡️ GlassWorm 惡意軟體遭查封，開發者供應鏈攻擊基礎設施受挫
+📅 事件背景：執法行動成功阻斷了一個專門針對軟體開發者的全球攻擊網絡。
+🔗 https://thehackernews.com/2026/05/glassworm-malware-takedown-disrupts.html
+📝 摘要：此次行動針對 GlassWorm 惡意軟體，有效破壞了駭客用來滲透供應鏈與散布惡意代碼的關鍵基礎設施。
+
+🔥 ⚡ 提升 SOC 效率的三大關鍵步驟，助企業及早化解資安風險
+📅 事件背景：資安監控中心需要更有效率的標準化流程，以應對日益成長的網路威脅。
+🔗 https://thehackernews.com/2026/05/3-soc-steps-that-shut-down-incident.html
+📝 摘要：透過落實早期偵測、強化自動化回應以及標準化作業流程，企業能在安全事件擴大前將損害降至最低。
+
+🔥 🔓 Gitea 漏洞導致私人容器映像檔在未經授權下外洩
+📅 事件背景：熱門開源代碼代管平台 Gitea 被發現存在嚴重的權限驗證漏洞。
+🔗 https://thehackernews.com/2026/05/gitea-vulnerability-exposes-private.html
+📝 摘要：此漏洞允許攻擊者在無需登入的情況下存取私人容器映像檔，對於依賴該平台進行 CI/CD 的企業構成嚴重威脅。
+
+🔥 🤖 AI 聊天機器人的建議竟引導用戶前往挖礦木馬網站
+📅 事件背景：駭客開始操縱 AI 產生的內容與建議，將其作為傳播惡意軟體的新管道。
+🔗 https://thehackernews.com/2026/05/ai-chatbot-recommendations-redirect.html
+📝 摘要：攻擊者利用 AI 回覆的漏洞，將尋求協助的用戶導向含有加密貨幣挖礦程式的虛假網站，實現資安威脅的新型傳播。
+
+🔥 ⛏️ GPU 挖礦惡意軟體透過 SEO 污染與 AI 聊天機器人擴散
+📅 事件背景：駭客結合搜尋引擎優化技術與新興 AI 應用，大幅提高惡意軟體的感染率。
+🔗 https://www.bleepingcomputer.com/news/security/gpu-mining-malware-spreads-via-seo-poisoning-ai-chatbots/
+📝 摘要：這種攻擊手法利用用戶對搜尋結果與 AI 建議的信任，誘使受害者下載會耗盡系統資源的挖礦程式。
+
+🔥 🔑 如何在不惹惱用戶的情況下強化 Active Directory 密碼規則？
+📅 事件背景：密碼安全性與用戶使用體驗之間的平衡始終是企業 IT 管理的一大挑戰。
+🔗 https://www.bleepingcomputer.com/news/security/can-you-enforce-strong-active-directory-password-rules-without-frustrating-users/
+📝 摘要：本文探討了在 AD 環境下實施強密碼策略的最佳實踐，建議透過減少強制變更頻率並加強複雜度檢測來提升安全。
+
+🔥 🕸️ 具備高韌性的 C2 基礎設施遭瓦解，Glassworm 殭屍網路被擊潰
+📅 事件背景：多國網路安全機構聯手摧毀了一個極具恢復能力的指揮與控制中心。
+🔗 https://www.bleepingcomputer.com/news/security/glassworm-botnet-disrupted-after-resilient-c2-infrastructure-takedown/
+📝 摘要：Glassworm 殭屍網路以其複雜的架構聞名，此次查封行動對其跨國網路犯罪活動與供應鏈滲透能力造成毀滅性打擊。
+
+🔥 👥 FBI 警告：勒索集團正發動「面對面」實體數據竊取攻擊
+📅 事件背景：網路犯罪組織開始結合實體入侵手段，試圖規避企業的數位資安防線。
+🔗 https://www.bleepingcomputer.com/news/security/fbi-warns-of-silent-ransom-group-in-person-data-theft-attacks/
+📝 摘要：FBI 指出有勒索集團派遣人員直接進入目標企業實體地點進行設備竊取或數據導出，標誌著威脅手法的新進化。
+==============================
+
+==============================
+[2026-05-28 06:49:56] SENT:
+🎓 CISSP 實戰：Malicious npm Package Stole Files From Claude AI User Directory via GitHub
+
+📚 案例故事：
+想像你是一位忙碌的 AI 應用開發者，為了加速串接 Claude AI 的功能，你在 npm 倉庫中搜尋相關工具。你看到一個名稱看起來很專業、甚至還附上 GitHub 連結的套件，於是你輸入了 npm install 命令。沒想到，這個套件就像是一個深夜潛入你辦公室的間諜，它不僅僅是幫你寫代碼，還悄悄翻動你電腦裡隱藏的資料夾，把 Claude AI 的密鑰和敏感配置文件打包發送到黑客的伺服器。
+
+🧠 核心名詞解釋：
+1. 供應鏈攻擊（Supply Chain Attack）：這就像是一家連鎖餐廳使用的鮮奶來源被下毒了。雖然餐廳（開發者）本身沒有惡意，但因為信任了上游供應商（npm 套件），導致最終端出的每一道菜（開發環境或應用）都變成了威脅。
+2. 資訊外洩（Data Exfiltration）：這就像是一個竊賊進入博物館後，不是偷走沉重的金庫，而是用相機拍下所有秘密地圖，然後透過手機網絡傳出去。在數位世界中，這指的是惡意程式在不驚動系統的情況下，將敏感數據轉移到外部。
+
+⚔️ 紅隊技術解構：
+1. 社交工程誘導：攻擊者在 GitHub 上偽造高星數或官方感的專案，並發布同名的 npm 套件，利用開發者對開源社群的信任感進行釣魚。
+2. 利用安裝鉤子（Post-install Scripts）：npm 允許套件在安裝完成後自動執行腳本。攻擊者將惡意代碼藏在這裡，只要開發者一執行安裝指令，竊取行為就會立即啟動，無需開發者手動調用函數。
+3. 自動化路徑遍歷：腳本會預先掃描常見的 AI 配置文件路徑（如 .config 或 .aws 目錄），尋找特定的 API Token 或 Session Cookie，並利用簡單的 HTTP 請求將資料回傳給攻擊者。
+
+🛡️ 藍隊防禦策略：
+1. 實施軟體成分分析（SCA）：在開發環境中部署自動化工具，掃描所有引入的第三方套件，檢查其是否存在已知的惡意標籤或異常頻繁的更新記錄。
+2. 最小權限原則與容器化：不要在主機系統上直接運行 npm install。應在隔離的容器（如 Docker）中進行開發，並限制容器存取主機敏感目錄的權限。
+3. 網路流出監控（Egress Filtering）：配置防火牆或監控工具，限制開發環境只能與已知的官方域名通訊，一旦偵測到開發機器向不明 IP 發送大量數據，立即切斷連線。
+
+-------------------------
+
+🎓 CISSP 實戰：Gitea Vulnerability Exposes Private Container Images without Authentication
+
+📚 案例故事：
+想像你是公司的資訊安全長，公司使用 Gitea 搭建了私有的代碼與鏡像倉庫，這就像是一座存放公司核心機密設計圖的保險庫。你確信只有持有鑰匙的員工才能進入。然而，這座保險庫的後門鎖芯存在設計缺陷，任何路過的人只要推一推門，不需要任何鑰匙或密碼，就能大搖大擺地走進去，把你辛苦研發的容器鏡像（秘密配方）通通搬走。
+
+🧠 核心名詞解釋：
+1. 失效的存取控制（Broken Access Control）：這就像是一棟公寓的感應門，雖然門禁系統看似完好，但如果你快速連續按三次電鈴，門就會自動打開。這是一種邏輯錯誤，讓系統跳過了身分驗證的步驟。
+2. 容器鏡像（Container Image）：這可以比喻成「現成的行動廚房」。裡面裝載了應用程式運行所需的所有零件、工具和設定。如果鏡像外洩，競爭對手不僅能看到你的源代碼，還能分析出你的伺服器環境與潛在的安全漏洞。
+
+⚔️ 紅隊技術解構：
+1. 斷點探測：攻擊者針對 Gitea 的 OCI（Open Container Initiative）註冊表 API 進行掃描，尋找不需要 Token 就能回應的特定路徑。
+2. 繞過驗證邏輯：利用該漏洞，攻擊者發送特定的 API 請求，偽裝成內部服務或是利用系統對公共路徑的寬鬆處理，強行獲取私有倉庫的 Manifest 文件。
+3. 暴力拉取：一旦獲取了 Manifest 文件，攻擊者就能直接調用 docker pull 或類似指令，將私有的鏡像層一塊一塊地下載到本地進行逆向工程。
+
+🛡️ 藍隊防禦策略：
+1. 漏洞與補丁管理（Vulnerability Management）：一旦廠商發布安全更新（如 Gitea 的修復版本），應立即執行補丁更新。這是對抗已知漏洞最直接且有效的方法。
+2. 零信任架構（Zero Trust）：不要因為請求來自內部網路就給予信任。所有的 API 調用，特別是涉及敏感資源（如私有鏡像）的請求，都必須經過強制的身分驗證與授權檢查。
+3. 安全審計日誌監控：建立自動化告警機制，監控倉庫的下載流量。如果發現來自匿名 IP 或未授權帳戶的大流量拉取（Pull）紀錄，應第一時間觸發預警並封鎖來源。
+==============================

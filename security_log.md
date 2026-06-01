@@ -1,3 +1,126 @@
+# 🛡️ 資安戰情白皮書 (2026/06/02)
+
+本文件旨在為資安長 (CISO)、架構師及資安從業人員提供 2026 年 6 月初的全球威脅情報摘要，內容經深度解析，適合導入 NotebookLM 等 AI 知識庫進行檢索與訓練。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+根據本週（2026/06/02）的情資顯示，全球威脅態勢已從單純的漏洞利用，演進為**多層次、自動化且具有地緣政治色彩的複合式攻擊**。
+
+### 核心戰略建議：
+1.  **軟體供應鏈防禦再升級**：本週發生兩起重大 npm 供應鏈攻擊（Miasma 與 OpenAI Codex 憑證竊取）。開發團隊應嚴格執行 `npm audit`，並導入軟體物料清單 (SBOM) 監控，禁止在開發環境中使用未經審核的第三方套件。
+2.  **身分驗證（Identity）是新戰場**：Dashlane 遭遇的大規模暴力破解攻擊以及 OAuth 網路釣魚的盛行，顯示「憑證」已成為攻擊者最渴望的資產。應全面推動無密碼認證與硬體安全密鑰（Security Keys）。
+3.  **地緣政治風險評估**：針對 Dragon Weave 等中國背景組織的攻擊，企業應評估其在台灣、捷克等敏感地區的基礎設施暴露情況，並強化對關鍵基礎設施的監測。
+4.  **MSP 與 vCISO 的數位轉型**：託管服務供應商 (MSP) 正從單純的合規工具轉向「安全成長平台」，這意味著企業在選擇合作夥伴時，應更看重其自動化修復與持續性監測的能力。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (繁體中文) | Title (Original English) |
+| :--- | :--- |
+| **Miasma 供應鏈攻擊：Red Hat npm 套件遭植入憑證竊取蠕蟲** | Miasma Supply Chain Attack Compromises Red Hat npm Packages with Credential-Stealing Worm |
+| **週報：Linux 新漏洞、PAN-OS 漏洞利用與 AI 攻擊趨勢** | Weekly Recap: New Linux Flaw, PAN-OS Exploit, AI-Powered Attacks, OAuth Phishing and More |
+| **中國背景組織 Dragon Weave 加強攻勢：襲擊捷克與台灣** | China-Aligned Groups Ramp Up Attacks: Dragon Weave Hits Czech Republic & Taiwan |
+| **安全成長平台：為何 MSP 正在超越 vCISO 工具** | The Security Growth Platform: Why MSPs Are Moving Beyond vCISO Tools |
+| **codexui-android npm 攻擊：OpenAI Codex 驗證權杖遭竊** | OpenAI Codex Authentication Tokens Stolen in codexui-android npm Supply Chain Attack |
+| **WP Maps Pro 關鍵漏洞遭積極利用：用於創建管理員帳號** | Critical WP Maps Pro Flaw Actively Exploited to Create Admin Accounts |
+| **駭客挾持數千個網站進行 ClickFix 與 FakeUpdate 攻擊** | Hackers hijack thousands of sites for ClickFix and FakeUpdate attacks |
+| **Red Hat npm 套件受損：旨在盜取開發者憑證** | Red Hat npm packages compromised to steal developer credentials |
+| **西班牙逮捕洩露政府員工敏感數據的肉搜者 (Doxer)** | Spain arrests doxer leaking sensitive data of govt employees |
+| **Dashlane 密碼管理器用戶因暴力破解攻擊遭鎖定** | Dashlane password manager users locked out by brute force attacks |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ 案例一：Miasma 供應鏈攻擊 (Red Hat npm)
+*   **🔍 技術原理**：攻擊者透過「域名搶註 (Typosquatting)」或「依賴混淆 (Dependency Confusion)」，將含有惡意程式碼的 `Miasma` 蠕蟲植入與 Red Hat 相關的熱門 npm 套件中。該惡意程式碼在 `postinstall` 腳本中執行，具備自我複製與跨檔案傳播能力。
+*   **⚔️ 攻擊向量**：開發者在 `npm install` 時觸發惡意腳本。該蠕蟲會自動掃描本地 `.env`、`.ssh/id_rsa` 與 `.aws/credentials` 檔案。
+*   **🛡️ 防禦緩解**：
+    *   使用 `npm install --ignore-scripts` 防止腳本自動執行。
+    *   強制實施開發環境的網路隔離。
+*   **🧠 名詞定義**：**Worm (蠕蟲)** 指的是一種具備自我複製能力的惡意軟體，不需人為干預即可在系統或網路中擴散。
+
+---
+
+### 🛡️ 案例二：Dragon Weave 地緣政治攻擊
+*   **🔍 技術原理**：Dragon Weave 是一個與中國相關的進階持續性滲透攻擊 (APT) 組織。他們利用客製化的後門程式與開源工具（如 Cobalt Strike）滲透目標。
+*   **⚔️ 攻擊向量**：主要透過高度精準的魚叉式網路釣魚 (Spear Phishing)，鎖定捷克與台灣的政府機關與高科技產業。
+*   **🛡️ 防禦緩解**：
+    *   實施端點偵測與回應 (EDR) 監控異常進程。
+    *   針對來自特定地理區域的流量進行深度包檢測 (DPI)。
+*   **🧠 名詞定義**：**APT (Advanced Persistent Threat)** 是一種長期的、有組織的攻擊行為，通常由國家支持。
+
+---
+
+### 🛡️ 案例三：OpenAI Codex 權杖竊取 (codexui-android)
+*   **🔍 技術原理**：攻擊者發布名為 `codexui-android` 的假套件，模仿 OpenAI 的官方組件。該套件內部含有攔截攔截器，專門針對 `Bearer Tokens` 進行外傳。
+*   **⚔️ 攻擊向量**：利用開發者對「開源 AI 工具」的渴求，引誘其將套件整合進 Android 專案。
+*   **🛡️ 防禦緩解**：
+    *   對 AI 模型與 API Key 實施嚴格的權限控管與生命週期管理。
+    *   定期輪換 API Tokens。
+*   **🧠 名詞定義**：**Bearer Token** 是一種安全令牌，任何人持有該令牌即可訪問受保護的資源，不需額外證明身分。
+
+---
+
+### 🛡️ 案例四：WP Maps Pro 權限提升漏洞
+*   **🔍 技術原理**：WP Maps Pro 插件存在一個未經身分驗證的存取控制漏洞（Broken Access Control）。攻擊者可直接發送特定 REST API 請求來修改資料庫中的用戶權限。
+*   **⚔️ 攻擊向量**：向 `/wp-json/wpmaps/v1/register` 發送惡意 Payload，直接建立具有 `Administrator` 角色權限的帳號。
+*   **🛡️ 防禦緩解**：
+    *   立即更新至插件最新補丁版本。
+    *   禁用不必要的 WordPress REST API 端點。
+*   **🧠 名詞定義**：**Privilege Escalation (權限提升)** 是一種攻擊方式，使權限較低或無權限的用戶獲取系統管理權限。
+
+---
+
+### 🛡️ 案例五：ClickFix 與 FakeUpdate 網站挾持
+*   **🔍 技術原理**：駭客利用 WordPress 或其他 CMS 的已知漏洞（如 SQL Injection 或 XSS）入侵網站後，修改 HTML DOM。當用戶訪問時，頁面會跳出「瀏覽器需要更新」或「修復連接問題」的虛假對話框。
+*   **⚔️ 攻擊向量**：社會工程學 (Social Engineering)。用戶點擊「更新」後，下載並執行下載器（Downloader），隨後植入勒索軟體或竊密程式 (Infostealer)。
+*   **🛡️ 防禦緩解**：
+    *   強化網站內容安全政策 (CSP)，防止未經許可的腳本注入。
+    *   對員工進行定期的網路釣魚防範演練。
+*   **🧠 名詞定義**：**DOM Hijacking** 是指攻擊者篡改網頁的文檔對象模型，以改變頁面顯示內容或行為。
+
+---
+
+### 🛡️ 案例六：Dashlane 暴力破解導致帳號鎖定
+*   **🔍 技術原理**：攻擊者使用大量的自動化腳本，針對特定的 Dashlane 用戶電子郵件進行登入嘗試。雖然密碼管理器有加密保護，但頻繁的錯誤登入觸發了安全系統的帳號鎖定機制。
+*   **⚔️ 攻擊向量**：分散式暴力破解 (Distributed Brute Force)。這不是為了破解密碼，而是為了造成服務中斷 (DoS)，誘導用戶在慌亂中聯繫虛假客服。
+*   **🛡️ 防禦緩解**：
+    *   用戶應開啟 2FA (二階段驗證)。
+    *   企業端應監控異常的失敗登入頻率。
+*   **🧠 名詞定義**：**Brute Force Attack (暴力破解)** 是一種透過嘗試所有可能的密碼組合來破解帳戶的攻擊方法。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 蠕蟲的崛起**：隨著 Miasma 展現了自動化擴散的能力，預計 2026 下半年將出現結合大型語言模型 (LLM) 的「自我進化蠕蟲」，能根據環境自動修改惡意腳本以避開 EDR 偵測。
+2.  **身分識別代換攻擊 (ID Proxy)**：攻擊者將不再單純竊取密碼，而是專攻「Session Cookie」與「OAuth Tokens」，繞過 MFA 進行無感官式接管。
+3.  **地緣政治觸發的供應鏈封鎖**：Dragon Weave 等組織可能不再只是竊取資料，而是針對特定國家的基礎設施軟體依賴庫進行毀滅性打擊（如在開源碼中埋下定時炸彈）。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Miasma Supply Chain Attack - The Hacker News](https://thehackernews.com/2026/06/miasma-supply-chain-attack-compromises.html)
+*   [Weekly Recap: Linux & PAN-OS Flaws - The Hacker News](https://thehackernews.com/2026/06/weekly-recap-new-linux-flaw-pan-os.html)
+*   [Dragon Weave Targets Czech & Taiwan - The Hacker News](https://thehackernews.com/2026/06/china-aligned-groups-ramp-up-attacks.html)
+*   [The Security Growth Platform for MSPs - The Hacker News](https://thehackernews.com/2026/06/the-security-growth-platform-why-msps.html)
+*   [OpenAI Codex Token Theft - The Hacker News](https://thehackernews.com/2026/06/openai-codex-authentication-tokens.html)
+*   [WP Maps Pro Critical Flaw - The Hacker News](https://thehackernews.com/2026/06/critical-wp-maps-pro-flaw-actively.html)
+*   [ClickFix & FakeUpdate Attacks - BleepingComputer](https://www.bleepingcomputer.com/news/security/hackers-hijack-thousands-of-sites-for-clickfix-and-fakeupdate-attacks/)
+*   [Red Hat npm Credential Stealing - BleepingComputer](https://www.bleepingcomputer.com/news/security/red-hat-npm-packages-compromised-to-steal-developer-credentials/)
+*   [Spain Arrests Gov Doxer - BleepingComputer](https://www.bleepingcomputer.com/news/security/spain-arrests-doxer-leaking-sensitive-data-of-govt-employees/)
+*   [Dashlane Brute Force Lockouts - BleepingComputer](https://www.bleepingcomputer.com/news/security/dashlane-password-manager-users-locked-out-by-brute-force-attacks/)
+
+---
+*文件編制：2026/06/02 資安情資中心*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/06/01)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練與資安決策人員設計，深入分析 2026 年上半年度關鍵資安事件，涵蓋跨境執法、供應鏈漏洞、以及生成式 AI 引發的新興威脅模型。

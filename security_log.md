@@ -1,3 +1,127 @@
+# 🛡️ 資安戰情白皮書 (2026/06/04)
+
+本白皮書由資安情報中心彙整，旨在針對 2026 年 6 月初爆發的全球性資安威脅進行深度剖析。本次情資顯示，攻擊者正從傳統的漏洞利用轉向「AI 代理劫持」、「協定層級放大攻擊」以及「自動化 AI 偵察」。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢與戰略建議：**
+
+2026 年 6 月的資安景觀呈現出高度的「AI 對稱性」。我們觀察到 **Autonomous AI** 已具備自主挖掘過往人類或傳統 Fuzzing 工具難以偵測的 RCE 漏洞（如 Redis 案例）。與此同時，消費者端與企業端的 AI 助手（如 Google Gemini）正成為新的攻擊地表，透過訊息通知（WhatsApp/Slack）進行的「間接提示注入」已成為現實。
+
+**戰略建議：**
+1.  **AI 治理升級**：針對企業內部運行的 LLM 代理（Agent），必須實施「輸出過濾」與「輸入消毒」，防止外部通知內容干擾 AI 指令邏輯。
+2.  **身分識別可視化 (IVIP)**：隨著 GitHub OAuth 與 Microsoft 365 令牌竊取技術的演進，單純的 MFA 已不足夠，需引入「身分可視化與情報平台」來縮減 IAM 攻擊面。
+3.  **基礎設施加固**：針對新出現的 HTTP/2 Bomb 漏洞，必須即刻更新 NGINX、Apache 與邊緣運算節點（Cloudflare/Envoy）的韌體版本，防止遠端阻斷服務（DoS）攻擊造成營運中斷。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 威脅標題 (中英對照) | 威脅等級 |
+| :--- | :--- | :--- |
+| 01 | **WhatsApp 與 Slack 通知可能劫持 Android 上的 Google Gemini**<br>WhatsApp, Slack Notifications Could Hijack Google Gemini on Android | 🔴 高危 |
+| 02 | **Google DoubleClick 在新惡意郵件活動中被濫用以傳送 DesckVB RAT**<br>Google DoubleClick Abused in New Malspam Campaign to Deliver DesckVB RAT | 🟠 中高 |
+| 03 | **超越零日漏洞：像攻擊者一樣看你的網路（與 HD Moore 研討）**<br>Beyond the Zero-Day: See Your Network Like an Attacker | Webinar with HD Moore | 🔵 戰術 |
+| 04 | **Microsoft 365 Android 應用程式因殘留偵錯標記導致令牌遭竊**<br>Microsoft 365 Android Apps Let Any App Steal Account Tokens via Leftover Debug Flag | 🔴 高危 |
+| 05 | **自主 AI 工具發現 Redis 中隱藏 2 年的 RCE 漏洞 (CVE-2026-23479)**<br>Autonomous AI Tool Finds 2-Year-Old RCE Flaw in Redis (CVE-2026-23479) | 🔴 高危 |
+| 06 | **一鍵式 GitHub Dev 攻擊容許攻擊者竊取完整 GitHub OAuth 令牌**<br>One-Click GitHub Dev Attack Lets Attackers Steal Full GitHub OAuth Tokens | 🔴 高危 |
+| 07 | **透過身分可視化與情報平台 (IVIP) 縮減 IAM 攻擊面**<br>Shrinking the IAM Attack Surface through Identity Visibility and Intelligence Platforms (IVIP) | 🔵 戰略 |
+| 08 | **未修補的 Windows Search URI 漏洞允許攻擊者竊取 NTLMv2 哈希**<br>Unpatched Windows Search URI Vulnerability Lets Attackers Steal NTLMv2 Hashes | 🟠 中高 |
+| 09 | **新型 HTTP/2 Bomb 漏洞導致 NGINX、Apache、IIS、Envoy 及 Cloudflare 遠端 DoS**<br>New HTTP/2 Bomb Vulnerability Allows Remote DoS on NGINX, Apache, IIS, Envoy & Cloudflare | 🔴 高危 |
+| 10 | **Weedhack 攻擊 Minecraft 用戶、CountLoader 點擊量達 8.6 萬、挖礦軟體透過盜版內容傳播**<br>Weedhack Attacks Minecraft Users, CountLoader Hits 86K, Miners Spread via Pirated Content | 🟠 中高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 01. 🤖 AI 代理劫持：Gemini 通知漏洞分析
+*   **🔍 技術原理**：Android 上的 Google Gemini 會自動讀取系統通知以提供上下文服務。攻擊者透過發送精心設計的 WhatsApp 或 Slack 訊息（包含惡意 Prompt），利用「間接提示注入」(Indirect Prompt Injection) 技術。
+*   **⚔️ 攻擊向量**：當 Gemini 掃描到惡意通知時，該通知內的指令會覆蓋原始系統指令，誘導 AI 讀取私人電子郵件、傳送資料到外部伺服器或修改行事曆。
+*   **🛡️ 防禦緩解**：限制 AI 代理對敏感系統 API 的存取權限；實施「預處理過濾」，對第三方應用的輸入進行指令檢測。
+*   **🧠 名詞定義**：**Indirect Prompt Injection**：指攻擊者不直接輸入指令給 AI，而是將指令隱藏在 AI 會讀取的外部資料源（如網頁、郵件、通知）中。
+
+### 02. 📧 Google DoubleClick 廣告系統遭濫用案
+*   **🔍 技術原理**：攻擊者利用 Google DoubleClick 的重新導向機制（Open Redirect）來增加惡意連結的可信度，規避垃圾郵件過濾器的檢測。
+*   **⚔️ 攻擊向量**：發送大量帶有 Google 域名連結的電子郵件，引導用戶下載壓縮檔，解壓縮後執行 DesckVB 遠端存取特洛伊木馬 (RAT)。
+*   **🛡️ 防禦緩解**：實施嚴格的電子郵件附件過濾；使用 EDR (端點偵測與回應) 監控異常的 PowerShell 或 Script 執行行為。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：遠端存取特洛伊木馬，允許攻擊者完全控制受害者的電腦。
+
+### 03. 🛡️ 主動防禦：HD Moore 網路視角論點
+*   **🔍 技術原理**：強調資產發現（Asset Discovery）的重要性。許多攻擊並非利用零日漏洞，而是利用「影子 IT」(Shadow IT) 或未被列管的對外服務。
+*   **⚔️ 攻擊向量**：透過大規模掃描發現過時的韌體、配置錯誤的 S3 儲存桶或暴露的測試環境。
+*   **🛡️ 防禦緩解**：定期執行外部攻擊面管理 (EASM)；採用 HD Moore 提出的網路測繪技術進行自檢。
+*   **🧠 名詞定義**：**Attack Surface Management (ASM)**：攻擊面管理，持續識別、監控和管理企業所有對外暴露資產的過程。
+
+### 04. 📱 Microsoft 365 Android 權杖竊取漏洞
+*   **🔍 技術原理**：Microsoft 365 應用程式在正式發布版中錯誤地保留了偵錯標記（Debug Flag），導致其 Content Provider 暴露了敏感的身分驗證權杖。
+*   **⚔️ 攻擊向量**：在同一台 Android 設備上的惡意應用程式可以發送 Intent 請求，繞過沙箱限制直接提取 Microsoft 帳戶的 OAuth Tokens。
+*   **🛡️ 防禦緩解**：開發者必須在編譯時關閉 `android:debuggable` 標記；用戶應僅從官方渠道下載 App 並維持系統更新。
+*   **🧠 名詞定義**：**OAuth Token**：一種開放標準的授權權杖，允許第三方應用代表用戶存取伺服器資源，而無需暴露密碼。
+
+### 05. 🧠 自主 AI 發現 Redis RCE (CVE-2026-23479)
+*   **🔍 技術原理**：利用強大的自主 AI 模型進行靜態代碼分析與動態模擬，發現了 Redis 內存資料庫中隱藏兩年的邏輯漏洞，該漏洞可導致遠端代碼執行 (RCE)。
+*   **⚔️ 攻擊向量**：攻擊者發送特製的 Lua 腳本或集群指令，觸發緩衝區溢位或內存損壞。
+*   **🛡️ 防禦緩解**：立即升級 Redis 至最新補丁版本；限制 Redis 僅監聽內部網路。
+*   **🧠 名詞定義**：**Autonomous AI Vulnerability Research**：指利用 AI 代理自主搜尋軟體代碼中深層邏輯錯誤的過程。
+
+### 06. 💻 GitHub Dev 一鍵式攻擊
+*   **🔍 技術原理**：攻擊者利用 GitHub Dev (github.dev) 環境中的 URL 處理缺陷。當用戶點擊惡意連結時，環境會自動將其 OAuth 權杖發送至攻擊者控制的網域。
+*   **⚔️ 攻擊向量**：社交工程，透過 GitHub Issue 或 Pull Request 發送「查看代碼」的惡意連結。
+*   **🛡️ 防禦緩解**：加強 OAuth 重新導向白名單檢查；開發者應警惕不明來源的編輯器環境跳轉。
+
+### 07. 🔑 IVIP 與 IAM 攻擊面縮減
+*   **🔍 技術原理**：IVIP 平台透過深度整合身分供應商 (IdP)，識別過度授權的帳戶、長期未使用的權杖以及異常的身分關聯。
+*   **🛡️ 防禦緩解**：實施最小權限原則 (PoLP)；使用 IVIP 工具偵測身分層級的橫向移動。
+*   **🧠 名詞定義**：**IVIP (Identity Visibility and Intelligence Platforms)**：身分可視化與情報平台，專注於管理與監控複雜企業環境中的身分風險。
+
+### 08. 🔎 Windows Search URI 與 NTLMv2 竊取
+*   **🔍 技術原理**：Windows Search 協定處理程式對 `search-ms:` URI 的過濾不完全，可強制系統嘗試連接遠端 SMB 伺服器進行驗證。
+*   **⚔️ 攻擊向量**：網頁連結或 PDF 文件觸發該 URI，使受害者電腦自動發送 NTLMv2 哈希給攻擊者，隨後進行離線破解或中繼攻擊。
+*   **🛡️ 防禦緩解**：在防火牆端封鎖外連的 445 端口 (SMB)；配置策略禁用不必要的 URI 處理程式。
+*   **🧠 名詞定義**：**NTLMv2 Hash**：Windows 的身分驗證協定哈希，若被竊取可遭破解以取得原始密碼。
+
+### 09. 💥 HTTP/2 Bomb 遠端 DoS 攻擊
+*   **🔍 技術原理**：利用 HTTP/2 協定的「框架串流」特性，發送極小體積的請求，但在伺服器端會解壓或擴展成巨大的記憶體占用，導致資源耗盡。
+*   **⚔️ 攻擊向量**：單一攻擊者可透過少量頻寬癱瘓 NGINX、Apache 或 Cloudflare 等大型基礎設施。
+*   **🛡️ 防禦緩解**：調整伺服器的 `MAX_HEADER_LIST_SIZE` 配置；應用針對 HTTP/2 幀率限制的補丁。
+*   **🧠 名詞定義**：**DoS (Denial of Service)**：阻斷服務攻擊，旨在使電腦或網路資源無法提供給其預期用戶。
+
+### 10. 🎮 針對大眾的 Weedhack 與 CountLoader
+*   **🔍 技術原理**：Weedhack 針對 Minecraft 修改版 (Mods) 進行植入；CountLoader 則偽裝成盜版軟體破解器。
+*   **⚔️ 攻擊向量**：利用遊戲玩家尋找破解與 Mods 的心理，在 Reddit 或論壇散布惡意安裝包。
+*   **🛡️ 防禦緩解**：不下載來源不明的遊戲 Mods；安裝具備啟發式分析的防毒軟體。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 蠕蟲的誕生**：預測 2026 年底前，將出現能在不同 AI 代理之間自動複製的「AI 提示蠕蟲」(AI Prompt Worms)，利用 LLM 的自動執行能力跨系統傳播。
+2.  **身分中繼攻擊自動化**：隨著 NTLM 雖然老化但仍廣泛存在，結合 AI 的自動化哈希破解與身分中繼技術將使內部網路橫向移動的速度提升至分鐘級。
+3.  **協定層級的針對性破壞**：HTTP/2 Bomb 僅是開端，未來攻擊者將更深入挖掘 HTTP/3 (QUIC) 協定中的狀態管理缺陷，進行更難防禦的基礎設施攻擊。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [WhatsApp, Slack Notifications Could Hijack Google Gemini on Android](https://thehackernews.com/2026/06/whatsapp-slack-notifications-could.html)
+*   [Google DoubleClick Abused in New Malspam Campaign to Deliver DesckVB RAT](https://thehackernews.com/2026/06/google-doubleclick-abused-in-new.html)
+*   [Beyond the Zero-Day: See Your Network Like an Attacker](https://thehackernews.com/2026/06/beyond-zero-day-see-your-network-like.html)
+*   [Microsoft 365 Android Apps Let Any App Steal Account Tokens](https://thehackernews.com/2026/06/microsoft-365-android-apps-let-any-app.html)
+*   [Autonomous AI Tool Finds 2-Year-Old RCE Flaw in Redis](https://thehackernews.com/2026/06/autonomous-ai-tool-finds-2-year-old-rce.html)
+*   [One-Click GitHub Dev Attack Lets Attackers Steal Full OAuth Tokens](https://thehackernews.com/2026/06/one-click-github-dev-attack-lets.html)
+*   [Shrinking the IAM Attack Surface through IVIP](https://thehackernews.com/2026/06/shrinking-iam-attack-surface-through.html)
+*   [Unpatched Windows Search URI Vulnerability Lets Attackers Steal NTLMv2](https://thehackernews.com/2026/06/unpatched-windows-search-uri.html)
+*   [New HTTP/2 Bomb Vulnerability Allows Remote DoS](https://thehackernews.com/2026/06/new-http2-bomb-vulnerability-allows.html)
+*   [Weedhack Attacks Minecraft Users & CountLoader Hits 86K](https://thehackernews.com/2026/06/weedhack-attacks-minecraft-users.html)
+
+---
+*文件編號：SEC-INTEL-20260604-TW*
+*機密等級：公開技術白皮書*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/06/03)
 
 本白皮書旨在彙整 2026 年 6 月初之全球重大資安事件，透過技術深潛分析與戰略建議，提供企業決策者及資安架構師作為知識庫訓練與防禦佈署之基準。

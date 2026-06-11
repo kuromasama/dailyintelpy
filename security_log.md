@@ -1,3 +1,145 @@
+# 🛡️ 資安戰情白皮書 (2026/06/12)
+
+本文件旨在為企業資安架構師、資安長 (CISO) 及 AI 知識庫提供深度技術洞察，彙整當前最前線的攻擊威脅與技術防禦矩陣。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年中旬，資安態勢進入了 **「AI 代理威脅」與「基礎設施自動化蠕蟲」** 的交織期。
+*   **戰略威脅升級**：攻擊者如 ShinyHunters 已不再僅限於資料竊取，而是精確打擊 ERP 供應鏈（如 PeopleSoft）的零日漏洞；同時，AI 代理（AI Agent）已成為新型攻擊平面，傳統的「掃描-修補」模式（Vulnerability Management）已難以跟上 AI 產生的漏洞規模，迫使預算流向 **BAS (Breach and Attack Simulation, 突破與攻擊模擬)**。
+*   **防禦建議**：
+    1.  **AI 隔離化**：針對 OpenClaw 等 AI 代理實施執行沙盒化與工具調用（Tools/Functions）的嚴格授權。
+    2.  **供應鏈重構**：GitHub 禁用 npm install 腳本是里程碑，企業內部應同步實施嚴格的軟體清單（SBOM）驗證。
+    3.  **連續性防禦**：轉向 BAS，利用自動化攻擊模擬來驗證防禦有效性，而非僅依賴 CVE 漏洞清單。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+1.  **ShinyHunters 透過 Oracle PeopleSoft 零日漏洞 (CVE-2026-35273) 入侵大學**
+    *(ShinyHunters Exploits Oracle PeopleSoft Zero-Day (CVE-2026-35273) to Breach Universities)*
+2.  **新型攻擊誘騙 OpenClaw AI 代理執行惡意代碼並洩露機密**
+    *(New Attacks Trick OpenClaw AI Agent Into Running Code and Leaking Secrets)*
+3.  **全新 GreatXML 漏洞利用，透過恢復分割區 XML 文件繞過 Windows BitLocker**
+    *(New GreatXML Exploit Bypasses Windows BitLocker via Recovery Partition XML Files)*
+4.  **「Gentlemen」勒索軟體聲稱有 478 名受害者，具備蠕蟲擴散能力**
+    *(The Gentlemen Ransomware Claims 478 Victims, Can Spread Like a Worm)*
+5.  **2026 年資安之星獎：95 個類別獲獎者公佈**
+    *(Cybersecurity Stars Awards 2026: Winners Announced Across 95 Categories)*
+6.  **ThreatsDay 通報：蠕蟲代碼洩露、AI 代理遭網路釣魚、Claude Code 修補程式及 28 則新故事**
+    *(ThreatsDay Bulletin: Worm Code Leaked, AI Agent Phished, Claude Code Patch + 28 New Stories)*
+7.  **AI 破壞了漏洞管理，這就是為什麼 CISO 正將預算轉向 BAS**
+    *(AI Broke Vulnerability Management. That's Why CISOs Are Moving Budget to BAS.)*
+8.  **海蓮花 (OceanLotus) 在 FireAnt 攻擊中使用 SPECTRALVIPER 打擊越南投資者**
+    *(OceanLotus Hits Vietnam Investors With SPECTRALVIPER in FireAnt Attack)*
+9.  **GitHub 將預設禁用 npm install 腳本以阻止供應鏈攻擊**
+    *(GitHub to Disable npm Install Scripts by Default to Stop Supply Chain Attacks)*
+10. **緬因州洩露門戶遭濫用，發布虛假數據洩露披露**
+    *(Maine breach portal abused to publish fake data breach disclosures)*
+
+---
+
+## 3. 🎯 全全面技術攻防演練
+
+### A. Oracle PeopleSoft 供應鏈攻堅 (CVE-2026-35273)
+*   **🔍 技術原理**：此漏洞存在於 PeopleSoft 的 WebLogic Server 元件中，涉及未經身份驗證的遠端代碼執行 (RCE)。ShinyHunters 利用了處理序列化對象時的反序列化瑕疵，繞過了現有的過濾機制。
+*   **⚔️ 攻擊向量**：攻擊者向受害者門戶（大學入學或人事系統）發送特製的 T3/IIOP 協議封包，觸發記憶體溢位或邏輯跳轉。
+*   **🛡️ 防禦緩解**：
+    1.  立即套用 Oracle 2026 年 6 月緊急補丁。
+    2.  利用 WAF 封鎖非預期的 T3 流量。
+    3.  實施微隔離（Micro-segmentation），限制 ERP 伺服器訪問外部網際網路。
+*   **🧠 名詞定義**：**Zero-Day (零日漏洞)** 指尚未有官方補丁的漏洞；**反序列化攻擊** 是指將數據流轉換為對象時，強行插入惡意邏輯。
+
+### B. OpenClaw AI 代理誘導攻擊 (Prompt Injection 2.0)
+*   **🔍 技術原理**：攻擊者利用「間接提示注入」(Indirect Prompt Injection)。當 OpenClaw AI 讀取被污染的網頁或文檔時，隱藏的指令會覆蓋系統提示詞 (System Prompt)。
+*   **⚔️ 攻擊向量**：在 HTML 的透明文字中嵌入指令，誘使 AI 代理調用 `exec_shell()` 或 `send_email()` 函數，將環境變量（如 API Keys）傳送到攻擊者伺服器。
+*   **🛡️ 防禦緩解**：
+    1.  實施 **Human-in-the-loop (HITL)**，對於敏感函數調用需人工確認。
+    2.  對 AI 代理的輸出進行語義檢查。
+    3.  採用「最小權限原則」配置 AI 代理的 Token 權限。
+*   **🧠 名詞定義**：**AI Agent (AI 代理)** 是指能自主規劃並使用工具（如瀏覽器、終端）完成任務的 AI 系統。
+
+### C. GreatXML 繞過 BitLocker 磁碟加密
+*   **🔍 技術原理**：利用 Windows 安裝或修復過程中，對恢復分割區 (Recovery Partition) 內 XML 配置文件（如 `unattend.xml`）的解析信任瑕疵。
+*   **⚔️ 攻擊向量**：攻擊者若能物理接觸設備或透過提權指令修改恢復分割區，可植入惡意 XML，在 WinRE 環境啟動時強制載入惡意驅動，藉此攔截 BitLocker 密鑰或直接跳過加密驗證。
+*   **🛡️ 防禦緩解**：
+    1.  啟用 UEFI Secure Boot 並鎖定 BIOS 密碼。
+    2.  透過 Intune/GPO 禁用 WinRE 的非授權存取。
+    3.  實施硬體根信任 (TPM 2.0) 的嚴格完整性檢查。
+*   **🧠 名詞定義**：**BitLocker** 是 Windows 的全磁碟加密技術；**WinRE** 是 Windows 恢復環境。
+
+### D. The Gentlemen 自動化蠕蟲勒索
+*   **🔍 技術原理**：該勒索軟體整合了類似於 WannaCry 的 SMB 漏洞利用工具與 RDP 暴力破解模組，具備自我複製能力。
+*   **⚔️ 攻擊向量**：初次入侵後，勒索軟體會掃描內網的 `445` 與 `3389` 埠位，利用自動化腳本進行橫向移動 (Lateral Movement)，實現一處感染、全網癱瘓。
+*   **🛡️ 防禦緩解**：
+    1.  關閉過時的 SMBv1 協議。
+    2.  實施 RDP 雙重認證 (MFA)。
+    3.  部屬端點檢測與響應 (EDR) 的行為分析模式，攔截異常的批量加密行為。
+*   **🧠 名詞定義**：**Worm (蠕蟲)** 指不需人為干預即可在網路中自我傳播的惡意程式。
+
+### E. AI 管理失效與 BAS 的崛起
+*   **🔍 技術原理**：AI 生成代碼導致漏洞產量呈指數級增長，傳統漏洞管理 (Vulnerability Management) 的優先級排序已崩潰。BAS (Breach and Attack Simulation) 則透過模擬真實攻擊鏈來驗證防禦。
+*   **⚔️ 攻擊向量**：攻擊者利用 AI 持續生成多態惡意軟體 (Polymorphic Malware)，避開基於特徵碼的檢測。
+*   **🛡️ 防禦緩解**：
+    1.  從「靜態掃描」轉向「動態模擬」。
+    2.  部署持續威脅暴露管理 (CTEM)。
+*   **🧠 名詞定義**：**BAS** 是一種自動化技術，讓企業能安全地在生產環境模擬黑客攻擊手段。
+
+### F. OceanLotus (海蓮花) 的 SPECTRALVIPER 攻擊
+*   **🔍 技術原理**：這是一場針對金融投資者的 APT 攻擊。SPECTRALVIPER 是一種高度模組化的後門，具備強大的反偵測與隱藏能力。
+*   **⚔️ 攻擊向量**：透過「魚叉式網路釣魚」散佈名為 FireAnt 的加載器，隨後在記憶體中解壓縮並執行 SPECTRALVIPER，竊取加密貨幣錢包與敏感商業文件。
+*   **🛡️ 防禦緩解**：
+    1.  強化對 `.vbs`、`.js` 等腳本文件的限制。
+    2.  監控記憶體中的異常注入行為。
+*   **🧠 名詞定義**：**APT (進階持續性威脅)** 通常指受國家支持、目標明確且手段隱蔽的黑客組織。
+
+### G. GitHub 禁用 npm 安裝腳本
+*   **🔍 技術原理**：npm 套件中的 `preinstall` 與 `postinstall` 腳本常被用於執行惡意指令（如竊取 `.env` 文件）。
+*   **⚔️ 攻擊向量**：攻擊者發布看似正常的開源套件，在用戶 `npm install` 時自動執行惡意代碼（供應鏈投毒）。
+*   **🛡️ 防禦緩解**：
+    1.  GitHub 預設禁用此功能。
+    2.  企業應使用 `npm install --ignore-scripts`。
+*   **🧠 名詞定義**：**Supply Chain Attack (供應鏈攻擊)** 透過攻擊開發流程中的第三方工具或庫來入侵目標。
+
+### H. 緬因州數據門戶濫用事件 (偽造披露)
+*   **🔍 技術原理**：攻擊者並非破解系統，而是利用門戶的功能瑕疵，發布虛假的數據洩露聲明，旨在造成社會恐慌或打擊特定公司商譽。
+*   **⚔️ 攻擊向量**：利用身份驗證薄弱的提交表單進行資訊注入。
+*   **🛡️ 防禦緩解**：
+    1.  對公開提交內容實施嚴格的人工審核。
+    2.  增加數位簽名驗證披露來源。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 代理戰爭 (Agent-on-Agent Warfare)**：
+    預計 2026 年底將出現專門獵殺其他 AI Agent 的惡意 AI。企業需要為 AI 代理建立「道德與安全邊界儀表板」。
+2.  **硬體級 XML 漏洞將增多**：
+    GreatXML 只是開端。隨著韌體配置與 OS 初始化越來越依賴 XML/JSON 等標記語言，底層解析器的漏洞將成為繞過全磁碟加密的主戰場。
+3.  **無代碼供應鏈風險**：
+    GitHub 禁用腳本後，攻擊者將轉向利用 IDE 插件 (VS Code Extensions) 或 AI 編碼助手 (Copilot) 的推薦機制進行投毒。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [ShinyHunters PeopleSoft Zero-Day](https://thehackernews.com/2026/06/shinyhunters-exploits-oracle-peoplesoft.html)
+*   [OpenClaw AI Agent Attacks](https://thehackernews.com/2026/06/new-attacks-trick-openclaw-ai-agent.html)
+*   [GreatXML BitLocker Bypass](https://thehackernews.com/2026/06/new-greatxml-exploit-bypasses-windows.html)
+*   [The Gentlemen Ransomware](https://thehackernews.com/2026/06/the-gentlemen-ransomware-claims-478.html)
+*   [Cybersecurity Stars Awards 2026](https://thehackernews.com/2026/06/cybersecurity-stars-awards-2026-winners.html)
+*   [ThreatsDay Bulletin (Worm/Claude Code)](https://thehackernews.com/2026/06/threatsday-bulletin-worm-code-leaked-ai.html)
+*   [AI & Vulnerability Management vs BAS](https://thehackernews.com/2026/06/ai-broke-vulnerability-management-thats.html)
+*   [OceanLotus SPECTRALVIPER Attack](https://thehackernews.com/2026/06/oceanlotus-hits-vietnam-investors-with.html)
+*   [GitHub npm Install Scripts Change](https://thehackernews.com/2026/06/github-to-disable-npm-install-scripts.html)
+*   [Maine Breach Portal Abuse](https://www.bleepingcomputer.com/news/security/maine-breach-portal-abused-to-publish-fake-data-breach-disclosures/)
+
+---
+*本文件由資安戰情室自動生成，供 NotebookLM 深入學習使用。*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/06/11)
 
 本白皮書旨在彙整 2026 年 6 月份全球重大網路安全威脅、漏洞更新與技術趨勢。本文件經由資安架構師審閱，專為企業決策者、資安運維中心 (SOC) 與 AI 知識庫訓練所設計，提供高度詳細的技術洞察。

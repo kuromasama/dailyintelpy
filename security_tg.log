@@ -14846,3 +14846,99 @@
 2. 實施全站加密 (HTTPS)：雖然漏洞發生在代理層，但如果內部通訊全面採用加密連線（End-to-End Encryption），即使代理伺服器發生記憶體洩漏，攻擊者讀到的也會是加密後的亂碼，而非明文。
 3. 監控異常流量：利用 IDS/IPS 偵測異常的 HTTP 標頭行為，或監控 Squid 進程的記憶體使用異常狀況，提早發現偵察行為並進行自動化阻斷。
 ==============================
+
+==============================
+[2026-06-24 06:22:35] SENT:
+報告長官，今日資安情報彙整如下：
+
+🔥 FortiBleed 鎖定 FortiGate 防火牆，大規模竊取 1.1 億組憑據
+📅 事件背景：一場針對 Fortinet 設備的自動化憑據收集行動。
+🔗 https://thehackernews.com/2026/06/fortibleed-targeted-fortigate-firewalls.html
+📝 摘要：攻擊者利用漏洞大規模收刮設備內的帳密資訊，受影響帳號數驚人，建議管理者立即清查系統並強制重設憑據。
+
+🚨 虛假 AI 代理技能繞過安全掃描，影響範圍擴及 2.6 萬個代理
+📅 事件背景：駭客將惡意指令植入 AI 技能中並成功上架官方平台。
+🔗 https://thehackernews.com/2026/06/fake-ai-agent-skill-passed-security.html
+📝 摘要：該惡意技能具備高度隱蔽性，在被發現前已滲透數萬名用戶的 AI 環境，暴露了新型態的 AI 供應鏈風險。
+
+🛡️ 川普簽署行政命令，要求聯邦政府於 2030 年前完成後量子加密遷移
+📅 事件背景：因應量子計算對現有加密體系的威脅，美國政府設定了明確的轉型期限。
+🔗 https://thehackernews.com/2026/06/trump-order-sets-2030-deadline-for.html
+📝 摘要：此舉將加速全球企業跟進後量子加密（PQC）標準，以確保敏感數據在量子電腦問世後仍具備防禦能力。
+
+⚙️ GitHub 更新 actions/checkout 以阻斷常見的 Pwn Request 攻擊模式
+📅 事件背景：針對 GitHub Actions 工作流安全性的重要加固措施。
+🔗 https://thehackernews.com/2026/06/github-updates-actionscheckout-to-block.html
+📝 摘要：新版本預設阻斷可疑的 Pull Request 觸發行為，防止駭客藉由惡意代碼提交來盜取 Repository 的權限或機密資訊。
+
+⚠️ 自主代理 AI：不再需要操縱者的數位武器
+📅 事件背景：探討具備自主決策能力的 AI 對未來網路戰爭造成的本質改變。
+🔗 https://thehackernews.com/2026/06/agentic-ai-weapon-that-no-longer-needs.html
+📝 摘要：專家警告自主 AI 能在無人干預下持續發動滲透與攻擊，資安防禦體系必須朝向同樣高度自動化的方向演進。
+
+🦠 惡意 npm 套件偽裝成 PostCSS 工具，藉此散播 Windows 遠端存取木馬
+📅 事件背景：開源開發者生態系持續遭受供應鏈毒化攻擊。
+🔗 https://thehackernews.com/2026/06/malicious-npm-packages-pose-as-postcss.html
+📝 摘要：攻擊者利用名稱相近的包裝誤導開發者安裝，一旦運行便會植入 RAT 木馬，從而完全控制受害者的開發環境。
+
+📱 WhatsApp VBScript 攻擊活動利用虛假文件安裝遠端管理工具
+📅 事件背景：社群媒體平台成為傳遞惡意載荷的主要管道之一。
+🔗 https://thehackernews.com/2026/06/whatsapp-vbscript-campaign-uses-fake.html
+📝 摘要：駭客透過發送虛假公文誘騙用戶執行 VBScript 腳本，最終在後台安裝 ManageEngine RMM 工具以實施長期監控。
+
+🤖 OpenAI 擴展 Daybreak 計畫，推出 GPT-5.5-Cyber 輔助防禦者修復漏洞
+📅 事件背景：AI 龍頭推出專為資安防禦領域訓練的垂直化大型語言模型。
+🔗 https://thehackernews.com/2026/06/openai-expands-daybreak-with-gpt-55.html
+📝 摘要：該模型強化了代碼審計與自動化補丁生成能力，旨在協助防禦方在漏洞揭露後能更快速地進行漏洞修補與應對。
+
+🛑 Cisco Unified CM 漏洞 CVE-2026-20230 已遭駭客實際利用
+📅 事件背景：思科統一通訊平台的關鍵安全缺陷已出現現成的攻擊案例。
+🔗 https://www.bleepingcomputer.com/news/security/cisco-unified-cm-sme-flaw-cve-2026-20230-now-exploited-in-attacks/
+📝 摘要：官方強烈建議受影響的企業用戶儘速套用修補程式，以免通訊系統遭到劫持、監聽或導致服務中斷。
+
+🏢 塔塔電子證實遭受網路攻擊，駭客已外洩內部敏感數據
+📅 事件背景：印度製造巨擘遭遇資安事故，導致大量內部資料流向黑市。
+🔗 https://www.bleepingcomputer.com/news/security/tata-electronics-confirms-cyberattack-as-hackers-leak-data/
+📝 摘要：目前已有部分生產相關數據與內部文件在網路流竄，該公司正在評估損失範圍，並加強現有的數位防禦架構。
+==============================
+
+==============================
+[2026-06-24 06:27:25] SENT:
+🎓 CISSP 實戰：GitHub Updates actions/checkout to Block Common Pwn Request Attack Patterns
+
+📚 案例故事：想像你是一家跨國企業的開發者，在維護一個熱門的開源專案。某天，一位署名為熱心開發者的路人提交了一個 Pull Request，宣稱要幫你優化一段程式碼。你覺得很貼心，正準備測試時，卻不知道這個 PR 裡隱藏了一段惡意腳本。當你的 GitHub Actions 自動啟動測試流程時，這段腳本瞬間讀取了你伺服器上的機密金鑰並傳回攻擊者的伺服器。這就是經典的 Pwn Request 攻擊，利用你的信任流程來反噬你的安全防線。
+
+🧠 核心名詞解釋：
+1. 軟體供應鏈攻擊：這就像是你去超市買了一盒密封完整的鮮奶，回家喝了才發現裡面被下了毒。攻擊者不是直接攻破你的保險箱，而是在你每天都要用的工具、套件或自動化流程裡安插陷阱，讓你防不勝防。
+2. 權限提升：這好比一個拿著大樓清潔員識別證的人，透過刷卡機的漏洞，突然獲得了進入執行長辦公室並開啟保險箱的權限。在 GitHub 案例中，攻擊者試圖透過 PR 觸發的自動化腳本，獲取權限更高的 GITHUB_TOKEN。
+
+⚔️ 紅隊技術解構：
+1. 偽裝貢獻：攻擊者先 fork 原始專案，並在程式碼中修改 GitHub Actions 的工作流文件（YAML），插入惡意指令。
+2. 觸發自動化流程：提交 Pull Request 誘使目標專案的 CI/CD 流程自動執行。如果專案設定不當，惡意程式就會在具有讀取 secrets 權限的環境中運行。
+3. 外流機密：惡意腳本會掃描環境變數，將存放在裡面的雲端平台金鑰或 API Token 透過網路請求（如 curl）傳送到外部受控的伺服器。
+
+🛡️ 藍隊防禦策略：
+1. 嚴格控管權限：遵循最小權限原則（Least Privilege），將 GitHub Actions 的 GITHUB_TOKEN 預設設定為唯讀（read-all），禁止自動獲取寫入權限。
+2. 隔離執行環境：使用 pull_request_target 時要極度小心，確保任何來自外部 PR 的程式碼都在隔離且不具備敏感機密存取權的 Runner 中執行。
+3. 實施人工審核：對於所有外部提交的 PR，在觸發自動化測試流程前，必須經過具有寫入權限的專案維護者手動點選確認（Require approval for all outside collaborators）。
+
+-------------------------
+
+🎓 CISSP 實戰：Fake AI Agent Skill Passed Security Scans and Reportedly Reached 26,000 Agents
+
+📚 案例故事：想像你是公司的技術主管，為了提高團隊效率，你允許開發者使用最新的 AI Agent（人工智慧代理）來輔助編碼。一名工程師在市集中看到一個評價極高、且標註已通過安全掃描的 AI 擴充套件，於是放心地下載安裝。然而，這個套件是個特洛伊木馬，它在背景偷偷側錄螢幕，並搜尋電腦裡的帳號密碼。即使安全工具顯示綠燈，但因為惡意行為藏在 AI 指令的邏輯中，傳統的掃描器根本看不出來。
+
+🧠 核心名詞解釋：
+1. 靜態程式碼分析：這就像是海關只檢查行李的表面是否有違禁品標籤，卻沒有打開包裹檢查裡面的液體。安全掃描器通常只檢查已知的惡意特徵碼，對於偽裝成正常功能的 AI 邏輯往往無能為力。
+2. 社交工程攻擊：這就像是一個騙子穿著警察制服站在門口，讓你因為對制服的信任而直接開門。攻擊者利用 AI 代理市集的下載次數和安全標記來建立虛假的信任感，誘使專業人士受騙。
+
+⚔️ 紅隊技術解構：
+1. 混淆與隱蔽：攻擊者將惡意程式碼拆解並隱藏在 AI Agent 的技能描述或正常的邏輯函數中，躲過基於簽章（Signature-based）的安全掃描。
+2. 利用合法框架：惡意套件會調用系統原生的合法工具（如 Python 的 os 模組）執行動作，使其行為看起來像是 AI 在執行正常的資料處理工作。
+3. 延遲觸發：惡意行為不在安裝後立即發生，而是等待 AI Agent 獲取特定敏感檔案（如 .env 或 .ssh 檔案）後才啟動傳輸，增加溯源難度。
+
+🛡️ 藍隊防禦策略：
+1. 建立軟體清單（SBOM）：詳細記錄並稽核公司內部使用的所有 AI 元件與插件，不盲目信任第三方市集的安全認證標誌。
+2. 網路出口監控：實施嚴格的 Egress 流量過濾，監控開發環境是否有異常的對外連線，特別是當 AI 工具試圖將大量數據傳送到未知的海外 IP 時。
+3. 行為沙箱測試：在將 AI Agent 部署到正式生產環境前，應先在封閉的沙箱（Sandbox）環境中執行，觀察其系統調用與檔案讀寫行為是否符合其宣稱的功能。
+==============================

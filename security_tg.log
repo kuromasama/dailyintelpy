@@ -15302,3 +15302,58 @@
 
 3. 核心加固與運行時監控：使用核心完整性檢查工具，並監控可疑的系統調用（System Calls）。當發現非特權使用者試圖頻繁觸發異常的 Clone 或 Memory Mapping 行為時，自動觸發報警並阻斷該連線。
 ==============================
+
+==============================
+[2026-06-30 06:21:39] SENT:
+報告長官，以下是最新整理的資安情報摘要：
+
+🔥 惡意 Perplexity Chrome 擴充功能攔截搜尋與網址列輸入
+📅 事件背景：發現冒充 AI 搜尋工具的惡意瀏覽器套件對用戶進行監控。
+🔗 連結：https://thehackernews.com/2026/06/malicious-perplexity-chrome-extension.html
+📝 摘要：該擴充功能會竊取用戶在網址列輸入的機密資訊，並將搜尋行為傳送至攻擊者伺服器。用戶應立即檢查並移除來源不明的 AI 輔助工具。
+
+🛡️ WhatsApp 終於推出用戶名功能，提升電話號碼隱私保護
+📅 事件背景：Meta 旗下通訊軟體強化個人隱私防護機制。
+🔗 連結：https://thehackernews.com/2026/06/whatsapp-is-finally-getting-usernames.html
+📝 摘要：用戶未來可透過自訂 ID 進行溝通，無需向陌生人揭露真實手機號碼。此舉有助於減少針對手機號碼的社交工程攻擊。
+
+⚠️ 中國駭客組織 Mustang Panda 利用 Zoho WorkDrive 作為針對印度政府攻擊的指令頻道
+📅 事件背景：國家級 APT 組織濫用合法雲端儲存服務來規避偵測。
+🔗 連結：https://thehackernews.com/2026/06/mustang-panda-uses-zoho-workdrive-as.html
+📝 摘要：攻擊者將 Zoho 平台轉化為 C2 指令伺服器，用於滲透政府網路。這顯示利用「自帶雲端（BYOC）」的攻擊手法正日益盛行。
+
+⚡ 本週資安總回顧：Linux 核心漏洞、AI 惡意軟體技巧、Turla 後門與資訊竊取程式
+📅 事件背景：整理過去一週全球範圍內的重大資安威脅動態。
+🔗 連結：https://thehackernews.com/2026/06/weekly-recap-linux-kernel-flaws-ai.html
+📝 摘要：內容涵蓋多個 Linux 權限提升漏洞，以及俄羅斯 Turla 組織利用新型後門程序進行間諜活動的深度分析。
+
+🚨 超過 23 萬個 DCloud Uni-App 網站被用於加密貨幣詐騙與釣魚攻擊
+📅 事件背景：跨平台開發框架遭駭客大規模濫用。
+🔗 連結：https://thehackernews.com/2026/06/236000-dcloud-uni-app-sites-used-in.html
+📝 摘要：攻擊者利用該框架快速生成大量釣魚網站，意圖誘騙用戶連結錢包並竊取數位資產。受影響的站點規模極大。
+
+🔐 為什麼後量子加密應從數位憑證管理開始
+📅 事件背景：專家呼籲企業應提早準備應對量子計算對加密技術的威脅。
+🔗 連結：https://thehackernews.com/2026/06/why-post-quantum-cryptography-starts.html
+📝 摘要：身分驗證與憑證是防禦架構的核心，優先將憑證系統升級至抗量子演算法是確保未來通訊安全的關鍵步驟。
+
+🏹 Gamaredon 擴大對烏克蘭攻擊，使用新型惡意軟體並濫用雲端服務
+📅 事件背景：與俄羅斯相關的駭客組織在區域衝突中持續演進攻擊戰術。
+🔗 連結：https://thehackernews.com/2026/06/gamaredon-expands-ukraine-attacks-with.html
+📝 摘要：該組織使用更多自動化腳本並利用 Google Drive 等雲端基礎設施分發酬載，提高追蹤與溯源的難度。
+
+🛑 微軟移除 119 個將惡意代碼隱藏在圖片與字體中的 Edge 擴充功能
+📅 事件背景：Edge 官方商店進行大規模清理行動以移除隱藏威脅。
+🔗 連結：https://thehackernews.com/2026/06/microsoft-removes-119-edge-extensions.html
+📝 摘要：攻擊者使用隱寫術將惡意代碼藏在多媒體檔案中以躲避靜態掃描。目前微軟已強制將這批套件從使用者瀏覽器中禁用。
+
+💣 libssh2 關鍵漏洞 CVE-2026-55200 概念驗證程式已公開
+📅 事件背景：廣泛使用的 SSH 客戶端函式庫存在高風險漏洞。
+🔗 連結：https://thehackernews.com/2026/06/public-poc-released-for-critical.html
+📝 摘要：漏洞可能導致遠端代碼執行（RCE），隨著 PoC 的公開，攻擊風險大幅提升。開發人員應確保相關相依套件已更新至安全版本。
+
+📦 被劫持的 npm 與 Go 套件利用 VS Code 任務部署 Python 資訊竊取程式
+📅 事件背景：供應鏈攻擊鎖定開發者環境與自動化工作流。
+🔗 連結：https://thehackernews.com/2026/06/hijacked-npm-and-go-packages-use-vs.html
+📝 摘要：駭客在流行套件中植入惡意任務指令，當開發者開啟專案時，會自動觸發腳本植入資訊竊取軟體，竊取開發者的 API 金鑰與憑證。
+==============================

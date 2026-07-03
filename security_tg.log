@@ -15463,3 +15463,115 @@
 [2026-07-03 06:19:14] SENT:
 ⚠️ 內容生成失敗 (已達重試上限)。
 ==============================
+
+==============================
+[2026-07-04 06:15:07] SENT:
+我是資安情報官。以下是為您整理的今日資安情報摘要：
+
+🚨 🔥 數百萬嵌入式設備內置文件系統被爆存在未修復漏洞
+📅 事件背景：研究人員在廣泛應用於物聯網設備的文件系統中發現了嚴重安全漏洞。
+🔗 連結：https://thehackernews.com/2026/07/unpatched-flaws-disclosed-in-filesystem.html
+📝 摘要：這些漏洞尚未修復，攻擊者可能藉此在數百萬個嵌入式設備上執行惡意程式碼，對供應鏈安全構成重大威脅。
+
+🐧 🔥 Linux 核心爆發 Bad Epoll 新漏洞，普通用戶可獲取 Root 權限並波及 Android
+📅 事件背景：Linux Kernel 中的 epoll 機制被發現存在嚴重的權限提升漏洞。
+🔗 連結：https://thehackernews.com/2026/07/new-bad-epoll-linux-kernel-flaw-lets.html
+📝 摘要：該漏洞允許不具備權限的用戶提升至最高管理員權限，且已確認影響大量 Linux 伺服器與 Android 行動裝置。
+
+⚔️ 🔥 新型 Avalon 惡意軟體框架整合 CrownX 勒索軟體功能
+📅 事件背景：駭客界出現了一個功能強大的新型惡意程式開發框架。
+🔗 連結：https://thehackernews.com/2026/07/new-avalon-malware-framework-packs.html
+📝 摘要：Avalon 框架集成了多種滲透工具，特別是強化了 CrownX 的勒索加密技術，將大幅降低發動複雜攻擊的門檻。
+
+🇰🇵 🔥 北韓相關 npm 套件偽裝成 Rollup 填充工具以竊取開發者機密
+📅 事件背景：開源社群 npm 再次遭到惡意軟體攻擊，背後疑似為北韓國家級駭客。
+🔗 連結：https://thehackernews.com/2026/07/north-korea-linked-npm-packages-mimic.html
+📝 摘要：攻擊者利用相似名稱誘使開發者下載惡意套件，旨在自動竊取開發環境中的 API 金鑰與敏感憑證。
+
+🐍 🔥 Armored Likho 組織利用 BusySnake 竊資軟體鎖定政府機構與能源部門
+📅 事件背景：針對關鍵基礎設施的針對性攻擊正在增加。
+🔗 連結：https://thehackernews.com/2026/07/armored-likho-targets-government.html
+📝 摘要：該組織使用名為 BusySnake 的新型木馬，專門鎖定政府與電力部門，長期潛伏以竊取機密數據。
+
+🕵️ 🔥 調查間諜軟體的歐洲議會成員遭 Pegasus 間諜程式入侵
+📅 事件背景：一名正在調查數位監控行為的政界人士反而成為了被監控對象。
+🔗 連結：https://thehackernews.com/2026/07/european-parliament-member.html
+📝 摘要：研究發現其手機被植入了名為 Pegasus 的國家級間諜軟體，顯示針對政治決策者的網路監視活動依然猖獗。
+
+🍎 🔥 PamStealer 透過偽造 Maccy 網站與 PAM 檢查竊取 Mac 登入密碼
+📅 事件背景：macOS 用戶面臨新型態的憑證盜取威脅。
+🔗 連結：https://thehackernews.com/2026/07/pamstealer-uses-fake-maccy-sites-and.html
+📝 摘要：攻擊者利用偽裝的軟體官網進行釣魚，並透過攔截可插拔驗證模組（PAM）來獲取用戶的系統登入密碼。
+
+🕸️ 🔥 NetNut 代理網路遭瓦解，200 萬台受感染設備被強制切斷連線
+📅 事件背景：執法部門成功打擊了一個龐大的非法代理網路基礎設施。
+🔗 連結：https://www.bleepingcomputer.com/news/security/netnut-proxy-network-disrupted-2-million-infected-devices-cut-off/
+📝 摘要：該網路長期將受感染的受害者電腦轉化為跳板，此次行動有效切斷了駭客利用這些設備進行惡意流量轉發的管道。
+
+🛡️ 🔥 ARToken 釣魚平台揭露 EvilTokens 針對 Microsoft 365 的攻擊工具包
+📅 事件背景：研究人員分析了一種新興的釣魚即服務（PhaaS）營運模式。
+🔗 連結：https://www.bleepingcomputer.com/news/security/artoken-phaas-exposes-eviltokens-microsoft-365-phishing-toolkit/
+📝 摘要：該工具包專門設計用於繞過多因素驗證（MFA），能自動竊取 Microsoft 365 帳戶令牌，對企業雲端安全構成重大挑戰。
+
+🤖 🔥 Anthropic 澄清：Claude Fable 5 模型不會永久退出訂閱計畫
+📅 事件背景：針對 AI 服務模型調整的傳聞，官方發布了正式澄清。
+🔗 連結：https://www.bleepingcomputer.com/news/artificial-intelligence/claude-fable-5-isnt-permanently-leaving-subscriptions-anthropic-says/
+📝 摘要：Anthropic 表示雖然有模型更新與調整，但高效能模型仍會保留在訂閱服務中，確保用戶能持續取得先進的 AI 處理能力。
+==============================
+
+==============================
+[2026-07-04 06:17:56] SENT:
+🎓 CISSP 實戰：New "Bad Epoll" Linux Kernel Flaw Lets Unprivileged Users Gain Root
+
+📚 案例故事：
+
+想像你是一間頂級銀行的金庫管理員。你設計了一套精密的自動化通知系統（epoll），當客戶要把錢存入保險箱時，系統會自動通知櫃檯人員。然而，一名狡猾的竊賊發現了一個設計瑕疵：他先申請了一個臨時置物櫃，然後在櫃檯人員處理完畢並準備歸還鑰匙的「那一秒鐘」，竊賊快速地把置物櫃拆掉。因為系統邏輯反應不及，原本應該銷毀的鑰匙指引竟然指向了銀行的主金庫後門。這名沒有權限的竊賊，就這樣利用這個時間差，拿到了進入主金庫的最高通行證。
+
+🧠 核心名詞解釋：
+
+1. 釋放後使用 (Use-After-Free, UAF)：
+這就像是飯店的櫃檯人員把房門密碼給了你，但在你退房後，飯店忘記更改密碼，而你又偷偷溜回去使用那個房間。在電腦內存中，當程式釋放了一塊記憶體，但另一個程序卻還留著該地址的指針並繼續操作它，攻擊者就能藉此寫入惡意指令。
+
+2. 權限提升 (Privilege Escalation)：
+這就像是一個公司的實習生，利用公司電梯系統的漏洞，刷了自己的員工卡後，竟然能讓電梯直達只有執行長才能進入的 100 樓秘密辦公室。在 Linux 系統中，這代表從普通用戶變成擁有最高生殺大權的 root 用戶。
+
+⚔️ 紅隊技術解構：
+
+1. 觸發競態條件 (Race Condition)：攻擊者利用 epoll 系統調用在多執行緒環境下的處理邏輯漏洞，在特定時間點反覆操作文件描述符。
+2. 內存佈局操控 (Heap Spraying)：透過大量申請記憶體空間，精確地讓惡意代碼落在被釋放後的空隙中，等待系統誤用。
+3. 劫持內核控制流：一旦系統錯誤執行了惡意地址的指令，攻擊者即可繞過內核的安全防護，執行修改進程憑證 (Credentials) 的代碼，將自己的 UID 改為 0 (Root)。
+
+🛡️ 藍隊防禦策略：
+
+1. 即時補丁管理：針對 CVE-2024-41073，企業應優先更新 Linux 內核至已修復版本，特別是對外開放服務的伺服器與 Android 裝置。
+2. 內核強化技術：啟用 KASLR (內核位址空間隨機化) 與控制流完整性 (CFI) 保護，增加攻擊者預測內存位置與劫持執行流的難度。
+3. 最小權限原則與沙箱化：限制普通用戶執行不必要的系統調用，並利用 SELinux 或 AppArmor 限制進程的行為，即使漏洞被觸發也能將損害控制在局部。
+
+-------------------------
+
+🎓 CISSP 實戰：North Korea-Linked npm Packages Mimic Rollup Polyfills
+
+📚 案例故事：
+
+想像你是一家米其林餐廳的主廚，正準備做一道招牌菜。你平常都跟一家信譽良好的供應商訂購「頂級海鹽」。有一天，一個送貨員拿著一包包裝幾乎一模一樣、連標籤字體都維妙維肖的袋子過來，上面寫著「頂級海鹽（升級版）」。你沒多想就加進了鍋裡。沒想到，這包鹽裡面藏著極微小的竊聽器，當你在廚房裡跟同事討論餐廳的保險箱密碼與研發菜單時，所有的祕密都透過這包鹽，傳回到了競爭對手的耳朵裡。這就是供應鏈攻擊在軟體開發世界的真實縮影。
+
+🧠 核心名詞解釋：
+
+1. 供應鏈攻擊 (Supply Chain Attack)：
+這就像是超市賣的鮮奶在出廠前就被下毒了。攻擊者不是直接攻擊你的公司伺服器，而是攻擊你信任的軟體來源、開發工具或第三方函式庫。當你下載這些工具時，威脅就自動進入了你的內部防線。
+
+2. 字體綁架/名稱誘騙 (Typosquatting)：
+這就像是你想買「COCA-COLA」，但詐騙者做了一瓶叫「C0CA-C0LA」的飲料放在架上。在 npm 套件庫中，攻擊者會取一個跟知名套件非常相似的名字（例如把 rollup 換成稍微不同的拼法），賭開發者忙碌中會打錯字或看錯。
+
+⚔️ 紅隊技術解構：
+
+1. 社交工程與信任偽裝：北韓駭客組織（如 Jade Sleet）模仿知名的 Rollup 插件，利用開發者追求便利、快速集成的心理進行分發。
+2. 預安裝腳本 (Post-install Scripts)：惡意代碼通常藏在 package.json 的 scripts 欄位中，只要開發者執行 npm install，惡意腳本就會自動在後台啟動。
+3. 竊取環境變數與金鑰：腳本會掃描開發者電腦中的 .env 文件、AWS 密鑰或 SSH Keys，並將這些敏感資料發送到遠端攻擊者的伺服器 (C2)。
+
+🛡️ 藍隊防禦策略：
+
+1. 套件完整性驗證：強制使用 package-lock.json 或 yarn.lock，並利用 npm audit 或 Snyk 等工具定期掃描依賴項是否存在已知漏洞。
+2. 建立企業私有倉庫：禁止開發者直接從公網下載套件，所有第三方代碼必須經過安全部門審核後，才能放入企業內部的 Artifactory 或 Nexus 倉庫。
+3. 開發環境隔離：將開發作業放在受限的虛擬機或容器中，並限制開發機對外網的存取權限，防止敏感憑證在洩漏時能第一時間被傳回黑客手裡。
+==============================

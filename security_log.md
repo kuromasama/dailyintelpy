@@ -1,3 +1,124 @@
+# 🛡️ 資安戰情白皮書 (2026/07/10)
+
+這份白皮書旨在深入分析 2026 年 7 月份關鍵的資安威脅態勢，並為企業資安架構師（CISO）與技術團隊提供深度的技術洞察與應對策略。本文件特別針對 **AI 知識庫 (NotebookLM)** 優化，包含高密度的技術細節與結構化資訊。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+**當前威脅態勢與戰略建議：**
+
+2026 年中旬的威脅環境呈現出「**複合型攻擊**」與「**AI 速度化**」兩大特徵。攻擊者不再滿足於單一手段，而是將「破壞（Wiping）」、「勒索（Ransomware）」與「間諜活動（Spyware）」整合進單一酬載（Payload）。
+
+1.  **身份驗證與影子帳號（Shadow Accounts）**：利用休眠的 GitHub 帳號進行企業組織架構探測，顯示了供應鏈攻擊已從「代碼注入」轉向「社交與架構偵查」。
+2.  **供應鏈防禦自動化**：`npm 12` 預設禁用安裝腳本，標誌著開發者生態系進入「零信任腳本」時代。
+3.  **終端防禦的硬核挑戰**：驅動程式級別（BYOVD）的攻擊（如 PoisonX）與系統核心權限提升（RoguePlanet）依然是防禦難點。
+4.  **AI 的雙面刃**：AI 代理（AI Agents）在偵測惡意代碼的同時，正成為攻擊者的新型目標，利用提示詞注入（Prompt Injection）或邏輯誘導使其執行惡意代碼。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中英對照) | 威脅類別 | 影響程度 |
+| :--- | :--- | :--- |
+| **休眠 GitHub 帳號助攻擊者混入企業組織探測** (Dormant GitHub Accounts Help Attackers Blend In) | 社交工程 / 偵察 | 中高 |
+| **新款 GigaWiper 視窗後門整合磁碟抹除、偽勒索與間諜功能** (New GigaWiper Windows Backdoor) | 毀滅性惡意軟體 | 極高 |
+| **npm 12 預設禁用安裝腳本以降低供應鏈風險** (npm 12 Disables Install Scripts by Default) | 供應鏈安全 | 中 (防禦性) |
+| **ThreatsDay：雲端儲存桶劫持、Windows LPE 鏈與全球詐騙查緝** (ThreatsDay: Cloud Bucket Hijacking) | 綜合威脅 | 高 |
+| **AI 攻擊於數分鐘內發動：建立同步防禦戰線** (AI Attacks Move in Minutes) | AI 安全 | 高 |
+| **清算中心之夏：金融基礎設施威脅** (Summer of Clearinghouses) | 基礎設施 / 金融 | 高 |
+| **GodDamn 勒索軟體利用 PoisonX 驅動程式禁用終端防護** (GodDamn Ransomware Uses PoisonX Driver) | EDR 規避 / 勒索 | 極高 |
+| **微軟修復 RoguePlanet Defender 漏洞可授予 SYSTEM 權限** (Microsoft Patches RoguePlanet Defender Flaw) | 權限提升 | 極高 |
+| **Meta 新 AI 工具允許他人使用公開照片生成 AI 影像** (Meta's New AI Image Tool) | 隱私 / 資料主權 | 中 |
+| **頂尖 AI Agent 被誘騙執行惡意代碼** (Top AI Agents Tricked Into Running Malicious Code) | AI 模型安全 | 高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 休眠 GitHub 帳號之組織探測
+*   **🔍 技術原理**：攻擊者透過暗網購買或暴力破解長期未使用的 GitHub 個人帳號。由於這些帳號曾參與企業開源專案或具備過往的組織關聯，其行為（如 Fork, Star, Issue 評論）不易觸發異常偵測告警。
+*   **⚔️ 攻擊向量**：利用 GitHub API 爬取企業私有組織的成員關係、內部使用的套件名稱與技術棧，為後續的精準魚叉式網路釣魚（Spear Phishing）做準備。
+*   **🛡️ 防禦緩解**：實施嚴格的 **OAuth 應用程式審核**；定期清理組織中的「外部協作者」；強制要求所有關聯帳號啟動 **MFA (多因素驗證)**。
+*   **🧠 名詞定義**：**Dormant Account (休眠帳號)** 指長期無活動但仍保有存取權限的帳號。
+
+### 3.2 GigaWiper 複合式後門
+*   **🔍 技術原理**：這是一款高度模組化的 C++ 後門，採用三位一體策略。首先透過 Spyware 模組竊取憑證，隨後加密部分檔案偽裝成勒索軟體，最後觸發 Wiper 模組直接破壞 MBR（主開機紀錄）。
+*   **⚔️ 攻擊向量**：主要透過惡意電子郵件附件或受污染的盜版軟體散佈。
+*   **🛡️ 防禦緩解**：啟用 **UEFI Secure Boot**；實施離線備份策略；監控 `DeviceIoControl` 系統調用以防止磁碟底層寫入。
+*   **🧠 名詞定義**：**Wiper (抹除軟體)** 指以銷毀數據而非獲利為目的的惡意程式。
+
+### 3.3 npm 12 腳本策略變革
+*   **🔍 技術原理**：以往 `npm install` 會自動執行定義在 `package.json` 中的 `preinstall` 或 `postinstall` 腳本，攻擊者常藉此執行遠端代碼（RCE）。npm 12 預設將其設為禁用。
+*   **⚔️ 攻擊向量**：供應鏈投毒（Dependency Confusion 或 Typosquatting）。
+*   **🛡️ 防禦緩解**：若需執行腳本，須手動添加 `--ignore-scripts=false` 選項。建議在 CI/CD 環境中使用 `npm audit` 進行預掃描。
+*   **🧠 名詞定義**：**Supply Chain Attack (供應鏈攻擊)** 透過攻擊軟體開發流程中的第三方工具或庫來滲透最終目標。
+
+### 3.4 ThreatsDay：雲端與 LPE 鏈
+*   **🔍 技術原理**：涉及 AWS/Azure 儲存桶權限配置錯誤（Misconfiguration）與 Windows 本地權限提升（LPE）漏洞鏈的整合利用。
+*   **⚔️ 攻擊向量**：從一個公開的 S3 Bucket 獲取憑證，進入虛擬機後利用 LPE 取得最高權限。
+*   **🛡️ 防禦緩解**：落實 **CSPM (雲端安全態勢管理)** 工具；即時修補 Windows Kernel 漏洞。
+*   **🧠 名詞定義**：**LPE (Local Privilege Escalation)** 指已進入系統的低權限用戶提升至管理員或系統權限。
+
+### 3.5 AI 攻擊速度化
+*   **🔍 技術原理**：攻擊者利用 LLM 自動化生成變種代碼、掃描漏洞並在幾分鐘內完成從滲透到橫移的過程，遠超人類運維反應時間。
+*   **⚔️ 攻擊向量**：自動化漏洞利用框架（Exploit Frameworks）。
+*   **🛡️ 防禦緩解**：部署 **AI-driven SOC (AI 驅動資安維運)**，以 AI 對抗 AI，落實自動化阻斷（SOAR）。
+
+### 3.6 Summer of Clearinghouses (清算中心之夏)
+*   **🔍 技術原理**：鎖定金融清算系統（Clearinghouses）的數據交換標準（如 ISO 20022）進行邏輯注入。
+*   **⚔️ 攻擊向量**：針對 API 端點的 BOLA (失效的物件層級授權) 攻擊。
+*   **🛡️ 防禦緩解**：加強 API 流量的語義分析與異常交易行為建模。
+
+### 3.7 GodDamn 勒索軟體與 PoisonX 驅動
+*   **🔍 技術原理**：利用 **BYOVD (Bring Your Own Vulnerable Driver)** 技術，加載一個帶有合法簽章但存有漏洞的驅動程式（PoisonX），藉此進入內核層並強制結束 EDR/AV 進程。
+*   **⚔️ 攻擊向量**：具備管理員權限的初始進入後，提升至內核權限以禁用防禦軟體。
+*   **🛡️ 防禦緩解**：啟用微軟的 **VBS (虛擬化安全性)** 與 **HVCI (內核模式代碼完整性)**，並維護驅動程式黑名單（Blocklist）。
+*   **🧠 名詞定義**：**BYOVD** 是一種利用合法驅動漏洞繞過 Windows 核心保護的技術。
+
+### 3.8 Microsoft RoguePlanet Defender 漏洞
+*   **🔍 技術原理**：該漏洞位於 Windows Defender 的掃描引擎中，當掃描特定構造的惡意文件時，會觸發邏輯錯誤導致調用進程獲得 SYSTEM 權限。
+*   **⚔️ 攻擊向量**：向目標發送一個看似有害的文件，誘導 Defender 掃描。
+*   **🛡️ 防禦緩解**：立即安裝 2026 年 7 月累積更新；限制普通用戶觸發完整系統掃描。
+
+### 3.9 Meta AI 影像隱私衝突
+*   **🔍 技術原理**：Meta 利用公開貼文的圖片數據訓練其生成式 AI 模型，這涉及到非同步的數據採集與特徵提取。
+*   **⚔️ 攻擊向量**：隱私侵犯與身份偽造（Deepfake 基數據集）。
+*   **🛡️ 防禦緩解**：用戶需手動進入隱私設定調低數據共享權限；企業應禁止員工在社交平台發布敏感辦公環境照片。
+
+### 3.10 AI Agent 被誘騙執行惡意代碼
+*   **🔍 技術原理**：針對用於代碼審查或自動化運維的 AI Agent，攻擊者在代碼註釋中植入「間接提示注入（Indirect Prompt Injection）」，誘導 AI 忽略安全規則並執行 `rm -rf` 或下載後門。
+*   **⚔️ 攻擊向量**：受污然的開源代碼庫或 Pull Request。
+*   **🛡️ 防禦緩解**：為 AI Agent 設置 **沙箱（Sandbox）** 執行環境；限制其對系統 API 的直接存取權限。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **內核層對抗白熱化**：隨著 EDR 的普及，BYOVD 將成為勒索軟體的「標配」，企業必須從硬體層（Root of Trust）開始構建防禦。
+2.  **身分即邊界（Identity as the Perimeter）**：GitHub 休眠帳號的利用預示著未來「合法帳號」比「惡意代碼」更具威脅，行為分析（UBA）將是防禦重點。
+3.  **AI 代碼代理的淪陷**：預計 2027 年前，首個由 AI Agent 自動觸發的大規模供應鏈災難將會發生，企業需對「AI 產出的代碼」與「輔助開發的 AI」進行雙重稽核。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Dormant GitHub Accounts Help Attackers Blend In](https://thehackernews.com/2026/07/dormant-github-accounts-help-attackers.html)
+*   [New GigaWiper Windows Backdoor Bundles Wiping, Ransomware, Spyware](https://thehackernews.com/2026/07/new-gigawiper-windows-backdoor-bundles.html)
+*   [npm 12 Disables Install Scripts by Default](https://thehackernews.com/2026/07/npm-12-disables-install-scripts-by.html)
+*   [ThreatsDay: Cloud Bucket Hijacking & More](https://thehackernews.com/2026/07/threatsday-cloud-bucket-hijacking.html)
+*   [AI Attacks Move in Minutes - Webinar](https://thehackernews.com/2026/07/ai-attacks-move-in-minutes-join-this.html)
+*   [Summer of Clearinghouses Analysis](https://thehackernews.com/2026/07/summer-of-clearinghouses.html)
+*   [GodDamn Ransomware Uses PoisonX Driver](https://thehackernews.com/2026/07/goddamn-ransomware-uses-poisonx-driver.html)
+*   [Microsoft Patches RoguePlanet Defender Flaw](https://thehackernews.com/2026/07/microsoft-patches-rogueplanet-defender.html)
+*   [Meta's New AI Image Tool & Public Photos](https://thehackernews.com/2026/07/metas-new-ai-image-tool-lets-others-use.html)
+*   [AI Agents Tricked Into Running Malicious Code](https://thehackernews.com/2026/07/friendly-fire-ai-agents-built-to-catch.html)
+
+---
+*本報告由資安戰情室自動化生成，僅供內部技術研討使用。*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/07/09)
 
 本白皮書旨在針對 2026 年 7 月初期的全球網路安全態勢進行深度解析。當前環境下，AI 代理程式的普及、傳統協議的深層漏洞（GhostLock）以及針對身份驗證環節的新型攻擊已成為防禦者的核心挑戰。

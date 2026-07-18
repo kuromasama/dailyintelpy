@@ -1,3 +1,96 @@
+# 🛡️ 資安戰情白皮書 (2026/07/19)
+
+本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在深入分析當前全球資安威脅態勢、技術原理及對應防禦機制。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年中期的資安地圖中，我們觀察到三個核心維度的威脅演進：**基礎工具的漏洞化**、**AI 代理人的身分治理**以及**針對商務環境的高效能竊密工具**。
+
+*   **威脅態勢：** 傳統被視為「安全基礎設施」的工具（如 7-Zip、WordPress Core）正遭受高強度的 RCE（遠端代碼執行）漏洞打擊。隨著公用漏洞利用代碼（Public Exploits）的快速流出，攻擊者的門檻顯著降低，形成「零日漏洞後快速攻擊」的常態。
+*   **身分治理革命：** AI 代理人（AI Agents）如 Claude 已開始具備登入網站並執行任務的能力，這使得「機器人身分管理」成為企業邊界防禦的新課題。
+*   **戰略建議：** 企業應立即實施 **「版本一致性掃描」** 與 **「受控登入環境隔離」**。針對重要資產，應優先部署硬體密鑰與邊緣計算驗證方案，減少敏感數據離開終端的機會。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中文) | Original Title (English) | 威脅層級 |
+| :--- | :--- | :--- |
+| **7-Zip 修復可透過惡意壓縮檔觸發的 RCE 漏洞** | Update now: 7-Zip fixes RCE flaw exploitable with malicious archives | 🔴 極高 (Critical) |
+| **WordPress 核心 "wp2shell" RCE 漏洞已有公開攻擊工具** | WordPress Core "wp2shell" RCE flaws get public exploits, patch now | 🔴 極高 (Critical) |
+| **微軟警告針對客戶的 ACR Stealer 竊密程式攻擊浪潮** | Microsoft warns of surge in ACR Stealer attacks on customers | 🟠 高 (High) |
+| **年齡驗證的未來：人臉資訊永不離開裝置** | The Future of Age Verification: Your Face Never Leaves Your Device | 🟢 趨勢 (Info) |
+| **1Password 為 Claude 增加受控登入，AI 無法窺視密碼** | 1Password adds controlled login for Claude; AI agents can't see passwords | 🔵 創新 (Feature) |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 🧊 7-Zip 惡意壓縮檔 RCE 漏洞
+*   **🔍 技術原理**：此漏洞存在於 7-Zip 處理特定壓縮格式（如 RAR 或 7z）的解析引擎中。當軟體嘗試解壓縮包含畸形標頭（Malformed Headers）或非法位移量（Invalid Offsets）的檔案時，會導致記憶體緩衝區溢位（Buffer Overflow）或整數溢位，進而讓攻擊者在受害者系統中植入並執行惡意代碼。
+*   **⚔️ 攻擊向量**：攻擊者透過社交工程（電子郵件附件、即時通訊軟體）發送偽裝成重要文件的惡意壓縮檔。使用者僅需嘗試開啟或預覽檔案，無需執行內部程序，即可觸發漏洞。
+*   **🛡️ 防禦緩解**：
+    1.  **立即更新**：升級至 7-Zip 最新修復版本（如 v24.0x 以上）。
+    2.  **沙盒執行**：在隔離的沙盒環境中開啟來源不明的壓縮檔。
+    3.  **邊界過濾**：在郵件網關處阻斷包含高度壓縮比或異常標頭的檔案。
+*   **🧠 名詞定義**：**RCE (Remote Code Execution)**：遠端代碼執行，指攻擊者可以從遠端操控目標電腦執行任何指令。
+
+### 3.2 🛠️ WordPress Core "wp2shell" 漏洞
+*   **🔍 技術原理**：該漏洞涉及 WordPress 核心處理特定 REST API 請求或檔案管理邏輯的瑕疵，被稱為 "wp2shell"。攻擊者利用此漏洞繞過身分驗證，並將惡意 PHP 腳本注入伺服器目錄，最終獲得 Web Shell。
+*   **⚔️ 攻擊向量**：由於已有公開的 Exploits（攻擊代碼），黑客正使用自動化掃描器大規模偵測尚未修復的 WordPress 網站。攻擊者發送精心構造的 HTTP 請求，直接在伺服器上建立後門。
+*   **🛡️ 防禦緩解**：
+    1.  **核心更新**：強制更新 WordPress 至最新維護版本。
+    2.  **WAF 攔截**：配置 Web 應用程式防火牆，識別並攔截帶有 "wp2shell" 特徵碼的請求。
+    3.  **最小權限**：限制 Web 服務進程對檔案系統的寫入權限。
+*   **🧠 名詞定義**：**Web Shell**：一種安裝在伺服器上的惡意腳本，允許攻擊者透過網頁瀏覽器遠端控制伺服器。
+
+### 3.3 🕷️ ACR Stealer 竊密程式浪潮
+*   **🔍 技術原理**：ACR Stealer 是一款典型的 MaaS (Malware-as-a-Service) 工具。它採用輕量化設計，專門針對主流瀏覽器（Chrome, Edge）的密鑰鏈（Keychain）、加密貨幣錢包插件以及 MFA Session Cookies 進行掃描與竊取。
+*   **⚔️ 攻擊向量**：主要透過惡意廣告（Malvertising）或偽裝成破解軟體的下載鏈接進行分發。一旦執行，它會迅速將資料打包並透過 Telegram Bot API 或加密通道回傳至 C2 伺服器。
+*   **🛡️ 防禦緩解**：
+    1.  **硬體金鑰**：推廣使用 FIDO2/U2F 硬體金鑰，防止 Session 被盜用後即可登入。
+    2.  **EDR 監控**：部屬端點偵測系統，監控異常的瀏覽器設定目錄讀取行為。
+    3.  **條件式存取**：限制僅能從受信任且合規的設備存取公司資源。
+*   **🧠 名詞定義**：**Infostealer**：資訊竊取軟體，專門蒐集憑證、Cookie 及個人隱私數據的惡意程式。
+
+### 3.4 👤 隱私增強型年齡驗證技術
+*   **🔍 技術原理**：此技術基於「邊緣運算（Edge Computing）」與「零知識證明（Zero-Knowledge Proofs）」的概念。生物特徵（如臉部掃描）在本地設備的安全性存取區域（Secure Enclave）進行處理，僅向伺服器傳送「驗證通過/失敗」的布林值。
+*   **⚔️ 攻擊向量**：主要的威脅來自於「注入式偽造攻擊」，即攻擊者嘗試繞過相機硬體，直接將 AI 生成的 Deepfake 圖像餵入驗證邏輯中。
+*   **🛡️ 防禦緩解**：
+    1.  **活體檢測 (Liveness Detection)**：增加隨機性挑戰（如眨眼、轉頭）。
+    2.  **硬體信任根**：確保驗證過程鎖定在硬體級別的受信任執行環境 (TEE)。
+*   **🧠 名詞定義**：**On-device Processing**：裝置端處理，數據不需上傳雲端，降低資安外洩風險。
+
+### 3.5 🤖 1Password x Claude AI 受控登入
+*   **🔍 技術原理**：這是一種「代理式身分驗證」架構。1Password 為 AI 代理人提供一個受控的 Session 環境。AI 能夠與網頁表單互動並提交憑證，但該憑證對 AI 的大型語言模型 (LLM) 而言是「不可見」的黑箱數據，避免了 Prompt Injection 導致的密碼外洩。
+*   **⚔️ 攻擊向量**：若 AI 被惡意引導至攻擊者控制的釣魚網站，雖然 AI 看不到密碼，但仍可能被利用來執行「跨站請求偽造 (CSRF)」等動作。
+*   **🛡️ 防禦緩解**：
+    1.  **範圍限制 (Scoping)**：限制 AI 代理人僅能存取特定的網域。
+    2.  **審核日誌**：詳盡記錄 AI 執行的每一次自動登入與操作。
+*   **🧠 名詞定義**：**AI Agent**：AI 代理人，能自主理解目標並操作軟體工具完成任務的 AI 系統。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **Archive-as-an-Exploit**：壓縮軟體將成為 2026 年下半年的攻防主戰場，因為其處理邏輯複雜且廣泛存在於各類自動化後台，預期會有更多繞過傳統掃描的格式漏洞出現。
+2.  **AI-to-Identity Fraud**：隨著 1Password 等工具強化 AI 登入安全性，攻擊者將轉向攻擊「AI 決策邏輯」，誘導 AI 在合法登入後執行非法轉帳或資料搬移。
+3.  **無伺服器竊密 (Serverless Stealing)**：像 ACR Stealer 這樣的工具將更多地利用合法雲端服務（如 GitHub Actions, Vercel）作為中轉站，避開傳統的黑名單封鎖。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [7-Zip RCE Flaw - BleepingComputer](https://www.bleepingcomputer.com/news/security/update-now-7-zip-fixes-rce-flaw-exploitable-with-malicious-archives/)
+*   [WordPress "wp2shell" RCE - BleepingComputer](https://www.bleepingcomputer.com/news/security/wordpress-core-wp2shell-rce-flaws-get-public-exploits-patch-now/)
+*   [Microsoft: ACR Stealer Surge - BleepingComputer](https://www.bleepingcomputer.com/news/security/microsoft-warns-of-surge-in-acr-stealer-attacks-on-customers/)
+*   [The Future of Age Verification - BleepingComputer](https://www.bleepingcomputer.com/news/security/the-future-of-age-verification-your-face-never-leaves-your-device/)
+*   [1Password Claude 受控登入功能 - iThome](https://www.ithome.com.tw/news/177407)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/07/18)
 
 ## 1. 👨‍💼 CISO 架構師總結

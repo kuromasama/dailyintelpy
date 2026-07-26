@@ -1,3 +1,99 @@
+# 🛡️ 資安戰情白皮書 (2026/07/27)
+
+本白皮書旨在針對當前演進中的軟體供應鏈安全威脅及社交工程變種攻擊進行深度剖析，提供技術決策者與資安實踐者精準的戰情情報。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年的威脅版圖中，我們觀察到攻擊者正從「直接漏洞利用」轉向「生態系統信任侵蝕」。
+**GitHub 與 PyPI 的防禦升級** 標誌著現代軟體倉庫已進入「主動時間窗口防禦」時代，承認了純靜態掃描已不足以應對高速更迭的惡意代碼。
+與此同時，**Steam ClickFix 攻擊** 則揭示了社交工程（Social Engineering）已演化至「自動化誘導執行」階段，透過模擬系統故障與受害者互動，繞過傳統的網址黑名單過濾。
+
+**戰略建議：**
+1.  **開發流程（DevSecOps）：** 企業應全面導入具備時間限制（Time-bound）與簽章驗證的依賴項管理機制。
+2.  **終端防護（EDR/XDR）：** 針對「非檔案型」攻擊（Fileless）與命令列注入（PowerShell/CMD）實施更嚴格的行為監控。
+3.  **安全意識：** 強化員工對於「虛假報錯（ClickFix）」的辨識能力，這是目前成功率最高的新興攻擊向量。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅主題 (Chinese) | 威脅主題 (English) | 威脅等級 |
+| :--- | :--- | :--- |
+| GitHub 與 PyPI 導入時間基準防禦機制以對抗供應鏈攻擊 | GitHub, PyPI add time-based defenses against supply chain attacks | 🔴 高 |
+| Steam 論壇 ClickFix 攻擊利用 XMRig 挖礦程式感染玩家 | Steam forum ClickFix attacks infect gamers with XMRig cryptominers | 🟠 中 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ 案例 A：軟體倉庫之時間基準防禦演進
+**標題：** GitHub 與 PyPI 導入「時間基準」防禦機制以對抗供應鏈攻擊
+
+#### 🔍 技術原理
+傳統的惡意套件偵測依賴於特徵碼或行為動態分析，但攻擊者常利用「新發佈套件」的偵測空窗期（Flash Attacks）。GitHub 與 PyPI 導入的「時間基準防禦（Time-based Defenses）」核心在於**人為製造防禦緩衝期**。
+這包含：
+1.  **延時發佈機制：** 對於新註冊帳號或長期未活動帳號發佈的套件，實施短暫的「隔離審查期」，防止自動化腳本大規模推送惡意版本。
+2.  **檢舉反應加速：** 在套件發佈後的黃金 24 小時內，結合自動化檢舉指標與 AI 異常行為分析，加速下架流程。
+
+#### ⚔️ 攻擊向量
+*   **字體投毒（Typosquatting）：** 註冊與熱門套件名稱極為相似的名稱（如 `requests` 變成 `requesst`），利用開發者輸入錯誤。
+*   **帳戶接管（Account Takeover, ATO）：** 透過洩漏的憑證奪取資深開發者的維護權限，直接更新合法套件版本。
+*   **依賴混淆（Dependency Confusion）：** 利用套件管理器優先尋找私有倉庫同名套件的邏輯，注入惡意代碼。
+
+#### 🛡️ 防禦緩解
+*   **軟體清單 (SBOM)：** 強制實施 SBOM 追蹤，確保所有第三方依賴項皆可回溯。
+*   **強制多因素驗證 (MFA)：** PyPI 與 GitHub 已對熱門專案維護者強制要求硬體或 App 形式的 MFA。
+*   **鎖定版本 (Lockfiles)：** 開發者應使用 `requirements.txt.lock` 或 `package-lock.json` 並校驗 Hash 值，避免自動下載最新發佈（且可能受損）的版本。
+
+#### 🧠 名詞定義
+*   **Supply Chain Attack (供應鏈攻擊)：** 攻擊目標並非軟體本身，而是軟體開發過程中的任何上游環節。
+*   **Time-to-Check vs Time-to-Use (TOCTOU)：** 此處指在惡意軟體被安裝前，防禦系統檢查並封鎖該威脅的有效時窗。
+
+---
+
+### 🛡️ 案例 B：社交工程之 ClickFix 演化
+**標題：** Steam 論壇 ClickFix 攻擊利用 XMRig 挖礦程式感染玩家
+
+#### 🔍 技術原理
+「ClickFix」是一種高度精密的社交工程策略。攻擊者在 Steam 社群論壇中偽裝成技術支援或熱心玩家，宣稱某款遊戲有運行錯誤，並提供一個「修復網站」。
+當玩家訪問該網站時，頁面會模擬一個**偽造的瀏覽器錯誤視窗**或**Windows 診斷視窗**，並引導玩家按下「Fix It」按鈕。該按鈕實際上會將一段惡意的 **Base64 編碼命令** 複製到玩家的剪貼簿中，並誘導玩家按下 `Win+R`、輸入 `cmd` 或 `powershell` 並貼上執行。
+
+#### ⚔️ 攻擊向量
+*   **剪貼簿劫持（Clipboard Hijacking）：** 誘導用戶主動執行 `PowerShell -ExecutionPolicy Bypass` 等高度危險命令。
+*   **論壇信任利用：** 利用 Steam 論壇的社群信任感，繞過傳統的網頁掛馬（Drive-by Download）偵測。
+*   **隱蔽挖掘（Cryptojacking）：** 最終負載為 XMRig，這是一種開源的 Monero (XMR) 挖礦程式，會佔用 CPU 資源，導致遊戲效能嚴重下降。
+
+#### 🛡️ 防禦緩解
+*   **終端行為封鎖：** EDR 應攔截由 `Explorer.exe` 發起的異常 `PowerShell` 執行動作，特別是包含 `FromBase64String` 或 `iex` (Invoke-Expression) 的指令。
+*   **瀏覽器安全隔離：** 部署具備內容過濾功能的 Web Gateway，封鎖已知的 ClickFix 模組網域名稱。
+*   **安全意識訓練：** 教育用戶「官方支援絕不會要求用戶在運行視窗中貼上不明程式碼」。
+
+#### 🧠 名詞定義
+*   **XMRig：** 一款高效能、開源的 Monero 挖礦軟體，常被駭客非法植入受害者電腦進行挖礦。
+*   **Fileless Malware (無檔案惡意軟體)：** 不在硬碟留下實體檔案，直接透過記憶體或合法系統工具（如 PowerShell）執行的攻擊手段。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 自動化供應鏈投毒：** 預測 2027 年前，攻擊者將利用大型語言模型（LLM）自動生成數以萬計的偽裝套件，其程式碼邏輯將更具迷惑性，足以規避目前的時間基準審核。
+2.  **深度偽造（Deepfake）與 ClickFix 結合：** 未來的社交工程將可能結合偽造的開發者影音教學，誘導用戶關閉系統防護。
+3.  **零信任依賴性（Zero-Trust Dependencies）：** 軟體界將推動「沙盒化安裝」模式，即使下載了惡意套件，其權限也將被限制在極小的虛擬環境內，無法訪問系統機敏資訊。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   **GitHub, PyPI add time-based defenses:** [https://www.bleepingcomputer.com/news/security/github-pypi-add-time-absed-defenses-against-supply-chain-attacks/](https://www.bleepingcomputer.com/news/security/github-pypi-add-time-absed-defenses-against-supply-chain-attacks/)
+*   **Steam forum ClickFix attacks:** [https://www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/](https://www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/)
+
+---
+**戰情室備註：** 本文件內容應匯入 NotebookLM 進行 RAG 強化，以利未來針對特定供應鏈威脅進行快速檢索與應對策略生成。
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/07/26)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在深度解析 2026 年 7 月下旬之全球資安威脅動態，提供高密度的技術細節與戰略防禦建議。

@@ -1,3 +1,122 @@
+# 🛡️ 資安戰情白皮書 (2026/07/31)
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年中旬，全球資安態勢進入了「高度自動化」與「供應鏈深度滲透」的交織期。本月戰報顯示，北韓 (DPRK) 與俄羅斯等國家級駭客組織 (APT) 展現了極高的技術適應能力，特別是針對 **macOS 生態系**與 **npm 開發者供應鏈**的精準打擊。同時，**AI 模型的安全性 (Prompt Injection)** 與 **雲端基礎設施 (Azure Cosmos DB) 的核心漏洞** 成為企業防禦的最薄弱環節。
+
+**戰略建議：**
+1.  **零信任架構的深化**：不應僅限於身分驗證，須延伸至雲端資料庫的「金鑰管理」與「跨租戶隔離」審查。
+2.  **AI 安全防護網 (AI Guardrails)**：企業在導入 Copilot 等工具時，必須建立針對「隱藏提示詞 (Hidden Prompts)」的檢測機制，防止機密數據外洩。
+3.  **終端防護進化**：針對 BYOVD (帶入漏洞驅動程式) 攻擊，傳統 EDR 已不足夠，需結合內核級監控與驅動程式黑名單 (Blocklist)。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中英對照) | 威脅等級 |
+| :--- | :---: |
+| **與北韓相關的 macOS 惡意廣告：利用偽裝更新散布加密貨幣竊取軟體** (DPRK-Linked macOS Malvertising Uses Fake Updates to Deliver Crypto-Stealing Malware) | 🔴 高 |
+| **威脅日：AI 驅動駭客攻擊、370 個 Chrome 漏洞、SonicWall 攻擊、DNS 劫持及其他 22 則故事** (ThreatsDay: AI-Powered Hacking, 370 Chrome Flaws, SonicWall Attacks, DNS Hijacking + 22 More Stories) | 🔴 高 |
+| **Azure Cosmos DB 漏洞：平台級金鑰外洩，可存取任何資料庫** (Azure Cosmos DB Flaw Exposed Platform-Wide Key That Could Access Any Database) | 🟣 極高 |
+| **Microsoft Copilot for Word 風險：會將隱藏提示詞複製到新文件中** (Microsoft Copilot for Word Can Copy Hidden Prompts Into New Documents) | 🟡 中 |
+| **網路已成為 AI 安全的控制平面** (The Network Has Become the Control Plane for AI Security) | 🔵 戰略 |
+| **駭客利用南韓被駭網站漏洞繞過提示安裝 AnySign4PC 後門** (Hackers Exploit AnySign4PC via Hacked Korean Sites to Install Backdoors Without Prompts) | 🟠 中高 |
+| **SilverFox 鎖定日本製造商：使用 3-Driver BYOVD 鏈與 ValleyRAT 攻擊** (SilverFox Targets Japanese Manufacturer with 3-Driver BYOVD Chain and ValleyRAT) | 🔴 高 |
+| **俄羅斯駭客利用 Microsoft OWA 漏洞：密鑰更換後仍能維持郵箱存取** (Russian Hackers Exploit Microsoft OWA Flaw to Keep Mailbox Access After Credential Rotation) | 🔴 高 |
+| **FCC 基於資安風險封鎖新型外國生產之機器人與電源逆變器** (FCC Blocks New Foreign-Produced Robots and Power Inverters Over Cyber Risks) | 🔵 政策 |
+| **Amazon 將 debug 與 chalk npm 劫持事件關聯至北韓 Sapphire Sleet 組織** (Amazon Links Debug and Chalk npm Hijack to North Korea’s Sapphire Sleet) | 🔴 高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 1. 北韓 macOS 惡意廣告攻擊 (DPRK macOS Malvertising)
+*   **🔍 技術原理**：駭客利用 Google 廣告或高流量網站的廣告版位（Malvertising），誘導使用者下載偽裝成「瀏覽器更新」或「視訊會議插件」的 `.dmg` 檔案。
+*   **⚔️ 攻擊向量**：使用者點擊後，下載器會執行混淆過的 Swift/Rust 指令碼，繞過 macOS Gatekeeper，最終部署腳本竊取瀏覽器內存儲的加密貨幣錢包私鑰。
+*   **🛡️ 防禦緩解**：強化端點 EDR 對於非官方來源 `.app` 執行的監控；禁用瀏覽器自動執行下載檔案的功能。
+*   **🧠 名詞定義**：**Malvertising (惡意廣告)**：利用合法廣告網絡分發惡意軟體的技術。
+
+### 2. ThreatsDay 綜合威脅 (AI-Powered Hacking & Chrome Flaws)
+*   **🔍 技術原理**：本週集中爆發 370 個 Chrome 零日或高危漏洞（如 V8 引擎漏洞），同時發現駭客開始利用 LLM 自動生成釣魚郵件與自動化掃描腳本。
+*   **⚔️ 攻擊向量**：利用瀏覽器渲染引擎漏洞進行 RCE（遠端程式碼執行）；利用 AI 進行大規模、個性化的社交工程攻擊。
+*   **🛡️ 防禦緩解**：實施強制性瀏覽器自動更新機制；引入 AI 電子郵件過濾器以對抗 AI 生成的詐騙內容。
+*   **🧠 名詞定義**：**V8 Engine**：Google 開源的高效能 JavaScript 與 WebAssembly 引擎。
+
+### 3. Azure Cosmos DB 平台金鑰外洩
+*   **🔍 技術原理**：研究員發現 Cosmos DB 的管理層級中，存在一個本應受限的「Master Key」竟能在特定 API 調用下存取跨租戶的資源。
+*   **⚔️ 攻擊向量**：駭客若取得此類平台級特權，可繞過所有客戶設定的防火牆與 IAM 權限，直接進行資料拖庫。
+*   **🛡️ 防禦緩解**：微軟已修復漏洞，但建議企業應啟用 Azure Private Link 並定期更換「Primary Keys」。
+*   **🧠 名詞定義**：**Cross-Tenant Access (跨租戶存取)**：雲端架構中，一個客戶的權限意外滲透到另一個客戶環境的嚴重安全事件。
+
+### 4. Microsoft Copilot 隱藏提示詞外洩
+*   **🔍 技術原理**：當 Copilot 生成內容時，若原始文件中包含隱藏的 System Prompts（系統指令），Copilot 可能會將這些敏感邏輯一併複製到新文件中。
+*   **⚔️ 攻擊向量**：攻擊者可以設計「間接提示注入」，在文件中藏入惡意指令，當受害者用 Copilot 處理該文件時，惡意指令被觸發（如：將文件摘要發送到外部伺服器）。
+*   **🛡️ 防禦緩解**：在分享 Copilot 生成的文件前，檢查「中繼資料」與「隱藏文字」；限制 AI 工具存取外部網路連結。
+*   **🧠 名詞定義**：**Prompt Injection (提示注入)**：透過巧妙設計的輸入文字，操縱 AI 模型的輸出行為。
+
+### 5. 網路作為 AI 安全控制平面
+*   **🔍 技術原理**：由於 AI 模型內部運作機制（Blackbox）難以監控，安全重點轉移至「網路流量」。監測 AI 模型推理時的異常流量外傳。
+*   **⚔️ 攻擊向量**：模型參數竊取、資料外洩（Data Exfiltration）。
+*   **🛡️ 防禦緩解**：部署 NDR (網路偵測與回應) 方案，特別針對 AI 推理伺服器的輸出流量進行深層封包檢查 (DPI)。
+*   **🧠 名詞定義**：**Control Plane (控制平面)**：網路架構中負責制定路由決策與管理流量的部分。
+
+### 6. 南韓 AnySign4PC 後門攻擊
+*   **🔍 技術原理**：駭客利用受信任軟體 AnySign4PC（韓國常見證券軟體）的更新機制漏洞，在使用者不知情的情況下推送後門。
+*   **⚔️ 攻擊向量**：繞過 UAC 提示，直接取得系統權限並植入遠端控制木馬。
+*   **🛡️ 防禦緩解**：企業應移除不必要的第三方認證軟體；監控 `certutil.exe` 等系統工具的異常調用。
+*   **🧠 名詞定義**：**Side-Loading (側載)**：利用合法程式載入惡意 DLL 或檔案的技術。
+
+### 7. SilverFox 日本製造商攻擊 (BYOVD)
+*   **🔍 技術原理**：使用 3 個不同的「具備數位簽章但有漏洞」的驅動程式（BYOVD），逐層解除系統的安全監控（如 Windows Defender），隨後植入 ValleyRAT。
+*   **⚔️ 攻擊向量**：核心層（Kernel Mode）攻擊，這讓使用者層級的資安軟體完全失效。
+*   **🛡️ 防禦緩解**：啟用微軟的「易受攻擊驅動程式封鎖清單 (Vulnerable Driver Blocklist)」。
+*   **🧠 名詞定義**：**BYOVD (Bring Your Own Vulnerable Driver)**：駭客自備有漏洞的合法驅動程式，藉此獲得核心權限。
+
+### 8. 俄羅斯駭客 OWA 漏洞持久化
+*   **🔍 技術原理**：利用 Outlook Web Access (OWA) 的特定漏洞，即使 IT 管理員重設了使用者的密碼，駭客持有的舊 Session Token 或特定身分驗證 Key 依然有效。
+*   **⚔️ 攻擊向量**：長期潛伏（Persistence），在密碼變更後仍能持續讀取郵件內容。
+*   **🛡️ 防禦緩解**：在重設密碼後，必須強制撤銷所有活動工作階段 (Revoke All Sessions)。
+*   **🧠 名詞定義**：**Credential Rotation (憑證更換)**：定期或在遭駭後更換密碼與密鑰的作業。
+
+### 9. FCC 封鎖外國機器人與逆變器
+*   **🔍 技術原理**：發現部分外國製造的物聯網設備（IoT）含有硬編碼指令碼，可將環境數據或電網負載資訊回傳至境外伺服器。
+*   **⚔️ 攻擊向量**：供應鏈攻擊、關鍵基礎設施破壞。
+*   **🛡️ 防禦緩解**：建立受信任設備清單；將 IoT 設備與企業辦公網路進行實體隔離（Air-gap）。
+*   **🧠 名詞定義**：**Power Inverters (電源逆變器)**：將直流電轉為交流電的設備，常用於太陽能系統，是智慧電網的關鍵節點。
+
+### 10. npm 供應鏈劫持 (Sapphire Sleet)
+*   **🔍 技術原理**：北韓駭客 Sapphire Sleet 透過社交工程手段取得熱門開源套件（如 debug, chalk）維護者權限，或建立名稱極其相似的惡意套件（Typosquatting）。
+*   **⚔️ 攻擊向量**：開發者在 `npm install` 時不慎引入惡意程式碼，導致開發環境被植入後門。
+*   **🛡️ 防禦緩解**：使用 `npm audit` 進行掃描；建立內部私有倉庫，僅允許經過審核的套件進入。
+*   **🧠 名詞定義**：**Supply Chain Attack (供應鏈攻擊)**：攻擊目標軟體的上下游環節（如函式庫、構建工具）而非直接攻擊軟體本身。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 蠕蟲 (AI Worms) 的出現**：預計 2026 年末將出現能在 LLM 生態系中自我複製的惡意程式，透過 AI 代理 (Agents) 的對話與協作進行傳播。
+2.  **Kernel-Level 攻防白熱化**：隨著 EDR 技術普及，BYOVD 攻擊將成為 APT 組織的標準配置。未來作業系統廠商將面臨更大的壓力來縮減內核存取權限。
+3.  **供應鏈攻擊自動化**：駭客將利用 AI 全天候掃描 npm/PyPI 的新版本更動，尋找快速注入惡意程式碼的「時間差」。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [DPRK-Linked macOS Malvertising](https://thehackernews.com/2026/07/dprk-linked-macos-malvertising-uses.html)
+- [ThreatsDay: AI-Powered Hacking & Chrome Flaws](https://thehackernews.com/2026/07/threatsday-ai-powered-hacking-370.html)
+- [Azure Cosmos DB Flaw](https://thehackernews.com/2026/07/azure-cosmos-db-flaw-exposed-platform.html)
+- [Microsoft Copilot for Word Risks](https://thehackernews.com/2026/07/microsoft-copilot-for-word-can-copy.html)
+- [Network as AI Control Plane](https://thehackernews.com/2026/07/the-network-has-become-control-plane.html)
+- [AnySign4PC Exploitation](https://thehackernews.com/2026/07/hackers-exploit-anysign4pc-via-hacked.html)
+- [SilverFox Targets Japanese Manufacturer](https://thehackernews.com/2026/07/silverfox-targets-japanese-manufacturer.html)
+- [Russian Hackers Exploit OWA](https://thehackernews.com/2026/07/russian-hackers-exploit-microsoft-owa.html)
+- [FCC Blocks Foreign Robots](https://thehackernews.com/2026/07/fcc-blocks-new-foreign-produced-robots.html)
+- [npm Hijack: Sapphire Sleet](https://thehackernews.com/2026/07/amazon-links-debug-and-chalk-npm-hijack.html)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/07/30)
 
 此文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在提供高度結構化、技術詳盡且具備戰略深度的資安情報分析。

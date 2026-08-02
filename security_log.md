@@ -1,3 +1,86 @@
+# 🛡️ 資安戰情白皮書 (2026/08/03)
+
+本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在提供高度結構化、具備技術深度且易於檢索的資安威脅情資。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年的核心威脅環境中，我們正目睹從「軟體漏洞」轉向「基礎邏輯與硬體根源」的攻擊趨勢。本期的兩大核心事件揭示了當前資安防禦的脆弱點：
+
+*   **供應鏈與硬體信任根源的崩解**：COLDCARD 的 RNG（隨機數產生器）缺陷提醒我們，即使是號稱最安全的「冷錢包」，其安全性也完全取決於底層數學邏輯與物理熵值的品質。一旦隨機數生成過程可被預測，所有的密碼學防禦將形同虛設。**戰略建議：** 企業與高資產個體應採行「多簽章 (Multi-Sig)」機制，不應過度依賴單一硬體廠商的隨機數邏輯。
+*   **端點瀏覽器生態系統的收緊**：Google Chrome 針對擴充功能劫持行為的強制干預，標誌著瀏覽器廠商正試圖重奪對使用者介面的控制權。**戰術觀察：** 惡意擴充功能已成為滲透企業內網的主要跳板，瀏覽器層級的預設攔截將大幅降低企業環境中 PUA (Potentially Unwanted Application) 的存活率。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中英對照) | 威脅等級 | 受影響範圍 |
+| :--- | :---: | :--- |
+| **COLDCARD wallet RNG flaw likely linked to $88 million Bitcoin theft**<br>COLDCARD 錢包隨機數產生器 (RNG) 缺陷疑與 8,800 萬美元比特幣竊案有關 | 🔴 極高 (Critical) | 硬體冷錢包使用者、高淨值加密貨幣持有者 |
+| **Google Chrome may soon block New Tab hijacker extensions by default**<br>Google Chrome 可能很快會預設攔截「新分頁」劫持擴充功能 | 🟡 中等 (Medium) | 瀏覽器使用者、數位廣告與 SEO 從業者 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ 案例 A：COLDCARD 硬體隨機數產生器缺陷分析
+
+#### 🔍 技術原理
+隨機數產生器 (RNG, Random Number Generator) 是所有密碼學金鑰生成的基礎。COLDCARD 錢包應透過其安全晶片生成高品質的「熵 (Entropy)」。然而，本次揭露的缺陷源於其 **混合熵 (Entropy Mixing)** 的邏輯存在漏洞，或在特定韌體版本中，硬體 RNG 未能如預期提供足夠的隨機性。如果產生的私鑰不是從廣大的 2^256 空間中隨機挑選，而是落入一個可預測的、較小的子集中，攻擊者即可透過預先計算的彩虹表或窮舉攻擊，推算出使用者的私鑰。
+
+#### ⚔️ 攻擊向量
+1.  **種子預測攻擊 (Seed Prediction Attack)**：攻擊者分析大量受害地址，回溯發現其生成的助記詞具有統計學上的關聯性。
+2.  **韌體供應鏈攻擊/弱點利用**：利用舊版韌體中未修補的 RNG 邏輯錯誤，對特定時間點生成的錢包進行掃描。
+3.  **邊帶攻擊 (Side-Channel Attack)**：雖然此案傾向於邏輯錯誤，但 RNG 弱點常伴隨電壓或電磁干擾，導致硬體產生低熵輸出的狀況。
+
+#### 🛡️ 防禦緩解
+*   **手動增加熵值 (Manual Entropy)**：強烈建議使用者在設置錢包時使用「擲骰子 (Dice Roll)」功能，手動輸入物理隨機數據，而非百分之百依賴硬體內建的 RNG。
+*   **實施多重簽章 (Multi-Signature)**：使用不同廠商（如 Trezor + Ledger + COLDCARD）的硬體組合。即使其中一家廠商的 RNG 出現缺陷，攻擊者也無法在沒有其他金鑰的情況下轉移資金。
+*   **韌體強制審核**：定期檢查廠商發布的安全性公告，並確保在生成金鑰前已更新至最新、經社群驗證的韌體版本。
+
+#### 🧠 名詞定義
+*   **熵 (Entropy)**：衡量混亂程度的指標，在資安中代表隨機性。熵值越高，私鑰越難被破解。
+*   **BIP-39**：比特幣改進提案第 39 號，定義了如何將隨機種子轉化為一組易於記憶的單字（助記詞）。
+*   **HSM (Hardware Security Module)**：硬體安全模組，用於保護金鑰並在內部執行加密運算。
+
+---
+
+### 🛡️ 案例 B：Chrome 攔截「新分頁」劫持擴充功能分析
+
+#### 🔍 技術原理
+許多惡意或灰色的 Chrome 擴充功能會利用 `chrome_url_overrides` 權限來替換使用者的「新分頁 (New Tab Page)」。技術上，當使用者開啟新標籤時，瀏覽器會載入擴充功能指定的本地 HTML 檔案而非預設頁面。攻擊者藉此植入搜尋框（導向廣告分潤搜尋引擎）、投放惡意腳本或竊取 Cookie。Google 擬議的更新將強制檢查此類行為，若擴充功能未經明確授權或被檢舉，將會被預設停用或顯示強烈警示。
+
+#### ⚔️ 攻擊向量
+1.  **瀏覽器劫持 (Browser Hijacking)**：透過竄改搜尋引擎與首頁，獲取廣告流量費（Adware）。
+2.  **憑證竊取 (Credential Harvesting)**：在假冒的新分頁中偽造 Google 或 Microsoft 登入視窗，誘導使用者輸入帳密。
+3.  **SEO 毒化 (SEO Poisoning)**：強制將流量導入特定網站以提升其搜尋排名。
+
+#### 🛡️ 防禦緩解
+*   **Manifest V3 遷移**：開發者應轉向 Manifest V3 規範，該規範對 API 調用有更嚴格的限制與審查。
+*   **企業政策控制 (GPO)**：企業網管應使用 `ExtensionInstallBlocklist` 或 `ExtensionSettings` 原則，僅允許核准清單內的擴充功能。
+*   **用戶介面保護 (User Prompting)**：瀏覽器在分頁被修改時會跳出「這是否為您預期的變動？」彈窗，使用者不應盲目點選「保留」。
+
+#### 🧠 名詞定義
+*   **Manifest V3**：Google Chrome 擴充功能的最新規範，旨在提升安全性、隱私性與效能，限制了部分強大但具危險性的 API。
+*   **PUA/PUP**：Potentially Unwanted Application/Program，潛在有害程式，通常不具備病毒特徵，但會造成負面使用者體驗。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **RNG 武器化趨勢**：未來針對區塊鏈協議與加密硬體的攻擊將更多集中在「次標準隨機數 (Substandard Randomness)」的自動化掃描。攻擊者將開發專門的爬蟲，即時監控鏈上交易，尋找那些因為 RNG 瑕疵而產生的弱金鑰地址。
+2.  **擴充功能沙箱化進程加速**：隨著 Google 對「新分頁」劫持的攔截，攻擊者將轉向更隱蔽的「背景腳本注入 (Background Script Injection)」或利用瀏覽器與作業系統之間的 IPC (Inter-Process Communication) 通訊漏洞進行滲透。
+3.  **AI 賦能的釣魚擴充功能**：預計會出現能根據使用者瀏覽習慣，動態生成高度客製化分頁內容的 AI 惡意擴充功能，避開傳統的特徵碼偵測。
+
+---
+
+## 5. 🔗 參考文獻
+*   [BleepingComputer: COLDCARD wallet RNG flaw linked to $88 million Bitcoin theft](https://www.bleepingcomputer.com/news/security/coldcard-wallet-rng-flaw-likely-linked-to-88-million-bitcoin-theft/)
+*   [BleepingComputer: Google Chrome may soon block New Tab hijacker extensions by default](https://www.bleepingcomputer.com/news/google/google-chrome-may-soon-block-new-tab-hijacker-extensions-by-default/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/08/02)
 
 本報告旨在為資安長 (CISO)、資安架構師及技術決策者提供即時威脅情報。本期焦點集中於硬體錢包實體漏洞、供應鏈腳本投毒、關鍵雲端服務隔離失效以及 AI 驅動的自動化瀏覽器安全風險。

@@ -1,3 +1,125 @@
+# 🛡️ 資安戰情白皮書 (2026/08/05)
+
+本文件旨在為企業決策者、資安架構師及技術團隊提供當前全球威脅態勢的深度剖析。透過整合最新漏洞利用、釣魚技術演進及供應鏈攻擊案例，協助建立具備韌性的防禦體系。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年 8 月初的威脅環境中，我們觀察到三個核心趨勢的匯流：**身分驗證協議的濫用 (Protocol Abuse)**、**開發者環境的精準打擊 (Developer-Centric Attacks)** 以及 **人工智慧武器化的平民化 (AI Democratization for Adversaries)**。
+
+*   **繞過 MFA 已成為標準作業：** 傳統的簡訊或 App 認證已不足夠。攻擊者（如 Greatness PhaaS）正利用「裝置代碼流 (Device Code Flow)」等合法協議，誘導用戶主動放棄權杖控制權。
+*   **軟體供應鏈的寄生進化：** npm 蠕蟲不再僅僅是竊取環境變數，而是開始植入 VS Code 鉤子與 AI 工具插件，試圖從原始碼編寫階段就劫持開發邏輯。
+*   **邊緣設備與託管平台的脆弱性：** cPanel 與 TP-Link Omada 等基礎設施級別的漏洞，顯示出攻擊者正致力於獲取「管理員之上的權限」，以達成大規模、跨租戶的滲透。
+
+**戰略建議：** 企業應立即從「基於認證的信任」轉向「基於行為的持續檢測」，並針對開發環境 (CI/CD) 與遠端管理工具 (RMM) 實施更嚴格的微隔離 (Micro-segmentation)。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (Title) | 威脅類別 |
+| :--- | :--- |
+| **Greatness PhaaS Adds Device Code Phishing to Bypass MFA** <br> (Greatness PhaaS 新增裝置代碼釣魚以繞過多因素驗證並竊取權杖) | 身分存取 / 釣魚服務化 |
+| **Keyv-Linked npm Worm Poisons Hundreds of Packages** <br> (Keyv 相關 npm 蠕蟲污染數百個套件，植入 Claude Code 與 VS Code 鉤子) | 供應鏈攻擊 / 開發者威脅 |
+| **Fake Adobe and Zoom Updates Install ScreenConnect for Persistence** <br> (偽造 Adobe 與 Zoom 更新程式以安裝 ScreenConnect 達成持續性遠端存取) | 社交工程 / 遠端存取木馬 (RAT) |
+| **When Vibe Hacking Turns AI into the Junior Hacker** <br> (當 Vibe Hacking 將 AI 轉化為每個對手都想要的初級駭客) | AI 安全 / 對抗性攻擊 |
+| **Google Deletes 3 ADK AI Workflows After Malicious GitHub Issue** <br> (Google 刪除 3 個 ADK AI 工作流，因惡意 GitHub Issue 可能觸發特權代理) | CI/CD 安全 / AI 基礎設施 |
+| **New cPanel Critical Flaw: SQL Execution as Database Root** <br> (cPanel 新發布嚴重漏洞，允許代管客戶以資料庫 Root 身份執行 SQL) | 權限提升 / 代管平台安全 |
+| **DOUBLECUP Uses ClickFix and Cached PNGs to Deliver RAT** <br> (DOUBLECUP 利用 ClickFix 與快取 PNG 交付 CountLoader 與 DeviceManager RAT) | 惡意軟體分發 / 瀏覽器漏洞 |
+| **CISA Adds Exploited N-able N-central Flaw to KEV** <br> (CISA 將已遭利用的 N-able N-central 漏洞加入已知利用漏洞清單) | 託管服務 (MSP) / RMM 安全 |
+| **TP-Link patches Omada ZTP flaws allowing hackers to breach networks** <br> (TP-Link 修補 Omada ZTP 漏洞，避免駭客入侵網路基礎設施) | 物聯網與網路設備 / 零接觸佈署 |
+| **Phishing service spoofs RingCentral to steal Microsoft 365 accounts** <br> (釣魚服務冒充 RingCentral 語音信箱以竊取 Microsoft 365 帳戶) | 商務郵件詐騙 (BEC) / 雲端身分 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 1️⃣ Greatness PhaaS 裝置代碼釣魚分析
+*   **🔍 技術原理**：利用 Microsoft OAuth 2.0 中的 `device_code` 流。此流程原設計用於無瀏覽器設備（如智慧電視）。攻擊者產生一個代碼，引導受害者在合法頁面 (`microsoft.com/devicelogin`) 輸入，隨後攻擊者可獲得完整的存取權杖 (Access Token)。
+*   **⚔️ 攻擊向量**：透過電子郵件發送偽造的「登入異常」通知，要求用戶在官方頁面輸入「驗證碼」。
+*   **🛡️ 防禦緩解**：實施條件式存取原則 (Conditional Access Policies)，限制非特定設備類型或非信任 IP 範圍使用裝置代碼流。
+*   **🧠 名詞定義**：**Phaas (Phishing-as-a-Service)**：釣魚即服務，攻擊者租用現成的釣魚平台基礎設施。
+
+### 2️⃣ npm 蠕蟲與 VS Code 鉤子植入
+*   **🔍 技術原理**：攻擊者修改了流行的 `Keyv` 相關套件，利用 `postinstall` 腳本在開發者機器上執行。它會掃描 `.vscode` 目錄並修改設定，劫持開發者使用的 AI 助手（如 Claude Code）。
+*   **⚔️ 攻擊向量**：開發者執行 `npm install` 時觸發惡意腳本。
+*   **🛡️ 防禦緩解**：使用 `npm audit` 或 Socket.dev 檢測異常腳本；在開發環境禁用自動執行的安裝腳本 (`ignore-scripts`)。
+*   **🧠 名詞定義**：**Supply Chain Poisoning (供應鏈污染)**：在軟體構建塊中植入惡意代碼，使下游所有使用者受害。
+
+### 3️⃣ 偽造更新與 ScreenConnect 持續存取
+*   **🔍 技術原理**：利用偽造的網頁彈窗（Drive-by Download）提示更新 Adobe Reader 或 Zoom，實際下載的是封裝好的 ScreenConnect 客戶端，並自動連接至攻擊者的中繼伺服器。
+*   **⚔️ 攻擊向量**：水坑攻擊 (Watering Hole) 或 SEO 投毒。
+*   **🛡️ 防禦緩解**：限制終端用戶安裝未經授權的遠端桌面軟體 (Remote Desktop Software)；強化 EDR 對合法工具被異常調用的監控。
+*   **🧠 名詞定義**：**Persistence (持續性)**：駭客確保在重啟系統或更換網路後仍能保有對目標機器的控制權。
+
+### 4️⃣ Vibe Hacking 與 AI 初級駭客化
+*   **🔍 技術原理**：透過精細的 Prompt Engineering（提示工程）繞過大型語言模型 (LLM) 的安全護欄，使其協助編寫惡意程式片段或解釋複雜漏洞。
+*   **⚔️ 攻擊向量**：攻擊者與 AI 進行對話，將攻擊意圖偽裝成「安全研究」或「代碼除錯」。
+*   **🛡️ 防禦緩解**：強化 LLM 端的對抗性訓練；開發端應認知 AI 生成的代碼可能包含隱蔽的後門。
+*   **🧠 名詞定義**：**Vibe Hacking**：一種非傳統的駭客手段，透過操縱 AI 的語境與情感傾向來獲取其原始限制以外的資訊。
+
+### 5️⃣ Google ADK AI 工作流漏洞
+*   **🔍 技術原理**：攻擊者在 GitHub 上提交惡意 Issue，其內容被設計為能被 Google 的自動化 AI 工作流解析，進而觸發具有高度權限的 GitHub Actions 代理執行非法命令。
+*   **⚔️ 攻擊向量**：間接提示注入 (Indirect Prompt Injection) 透過 GitHub Issue 觸發。
+*   **🛡️ 防禦緩解**：對所有外部輸入（Issue、PR 註釋）進行嚴格過濾；運行 AI 工作流時應採用最小權限原則。
+*   **🧠 名詞定義**：**Privileged Agent (特權代理)**：在自動化流程中擁有高權限（如雲端部署權限）的執行個體。
+
+### 6️⃣ cPanel 關鍵 SQL 注入漏洞
+*   **🔍 技術原理**：cPanel 某個管理介面未能正確過濾輸入，允許具有低權限的代管客戶端注入 SQL 命令，並最終以 MySQL `root` 帳戶執行。
+*   **⚔️ 攻擊向量**：租用共享主機的惡意用戶。
+*   **🛡️ 防禦緩解**：立即更新 cPanel 至最新補丁版本；限制資料庫帳戶的檔案系統存取權限。
+*   **🧠 名詞定義**：**Root Escalation (Root 權限提升)**：攻擊者從受限用戶權限獲取作業系統或服務的最高管理權限。
+
+### 7️⃣ DOUBLECUP 與快取 PNG 傳輸
+*   **🔍 技術原理**：利用瀏覽器快取機制存放加密的惡意酬載（偽裝成 PNG 檔案），再透過 ClickFix 釣魚頁面（提示用戶按組合鍵修復顯示問題）觸發 PowerShell 解碼並執行。
+*   **⚔️ 攻擊向量**：受害者訪問被植入腳本的合法網站。
+*   **🛡️ 防禦緩解**：強化瀏覽器安全策略；監控 PowerShell 執行異常長度或編碼過的命令行參數。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：遠端存取木馬，允許駭客完全控制受感染設備。
+
+### 8️⃣ N-able N-central (CISA KEV) 漏洞利用
+*   **🔍 技術原理**：針對 MSP 廣泛使用的遠端監控管理 (RMM) 平台進行身份驗證繞過。攻擊者一旦進入，即可操控所有由該 MSP 管理的客戶端。
+*   **⚔️ 攻擊向量**：暴露在網際網路上的 RMM 管理端點。
+*   **🛡️ 防禦緩解**：依據 CISA KEV 指令立即更新；確保 RMM 管理介面僅限透過 VPN 或 Zero Trust Tunnel 存取。
+*   **🧠 名詞定義**：**KEV (Known Exploited Vulnerabilities)**：CISA 維護的已被實戰利用的漏洞清單。
+
+### 9️⃣ TP-Link Omada ZTP 網路滲透
+*   **🔍 技術原理**：零接觸佈署 (Zero-Touch Provisioning) 協議中存在缺陷，允許未經身份驗證的攻擊者偽裝成控制器，接管網路設備（路由器、交換機）。
+*   **⚔️ 攻擊向量**：區域網路或廣域網路中的設備初始化廣播。
+*   **🛡️ 防禦緩解**：停用不必要的 ZTP 功能；將管理 VLAN 與數據流量徹底隔離。
+*   **🧠 名詞定義**：**ZTP (Zero-Touch Provisioning)**：設備上電後自動從雲端或本地伺服器下載配置的功能。
+
+### 🔟 冒充 RingCentral 竊取 M365 憑據
+*   **🔍 技術原理**：攻擊者發送偽造的「錯過語音留言」郵件，點擊連結後跳轉至精確模擬 Microsoft 365 登入頁面的偽造網站。
+*   **⚔️ 攻擊向量**：電子郵件社交工程。
+*   **🛡️ 防禦緩解**：部署進階郵件過濾系統 (SEG) 偵測相似網域名稱；對用戶進行「連結懸停」檢查訓練。
+*   **🧠 名詞定義**：**Spoofing (冒充)**：偽造電子郵件標頭或顯示名稱，使其看起來像來自可信來源。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 注入攻擊將成為主流：** 隨著企業內部紛紛部署 AI Agent，攻擊者將開發出專門針對 LLM 記憶 (Memory) 和工具調用 (Function Calling) 的惡意指令。
+2.  **身分驗證代碼的「合法化」利用：** 攻擊者將減少開發複雜漏洞，轉而尋找如 OAuth 2.0、Device Flow 等標準協議中的「邊緣設計特性」來繞過 MFA。
+3.  **開發者環境即戰場：** 未來的攻擊將更頻繁地出現在 IDE 插件、GitHub 工作流與 npm 依賴項中，實現「原始碼級別」的滲透。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Greatness PhaaS Adds Device Code Phishing](https://thehackernews.com/2026/08/greatness-phaas-adds-device-code.html)
+*   [Keyv-Linked npm Worm Analysis](https://thehackernews.com/2026/08/keyv-linked-npm-worm-poisons-hundreds.html)
+*   [Fake Adobe/Zoom Updates & ScreenConnect](https://thehackernews.com/2026/08/fake-adobe-and-zoom-updates-install.html)
+*   [Vibe Hacking and AI Risks](https://thehackernews.com/2026/08/when-vibe-hacking-turns-ai-into-junior.html)
+*   [Google ADK AI Workflows Vulnerability](https://thehackernews.com/2026/08/google-deletes-3-adk-ai-workflows-after.html)
+*   [cPanel SQL Injection Critical Flaw](https://thehackernews.com/2026/08/new-cpanel-critical-flaw-could-let.html)
+*   [DOUBLECUP Campaign Details](https://thehackernews.com/2026/08/doublecup-uses-clickfix-and-cached-pngs.html)
+*   [CISA KEV: N-able N-central](https://thehackernews.com/2026/08/cisa-adds-exploited-n-able-n-central.html)
+*   [TP-Link Omada ZTP Patches](https://www.bleepingcomputer.com/news/security/tp-link-patches-omada-ztp-flaws-allowing-hackers-to-breach-networks/)
+*   [RingCentral Spoofing M365 Phishing](https://www.bleepingcomputer.com/news/security/phishing-service-spoofing-ringcentral-to-steal-microsoft-365-accounts/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/08/04)
 
 本報告旨在為企業資安決策者 (CISO)、架構師及資安從業人員提供最新的全球威脅情報分析。本文件特別針對 2026 年 8 月初發生的重大資安事件進行技術解構，並提供對應的防禦策略建議，適用於 AI 知識庫之結構化訓練。

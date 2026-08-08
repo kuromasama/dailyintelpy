@@ -1,3 +1,120 @@
+# 🛡️ 資安戰情白皮書 (2026/08/09)
+
+本報告旨在為企業決策者、資安架構師及 SOC 團隊提供深度的技術洞察，針對近期發生的重大資安事件進行解構。此文件特別優化以供 **NotebookLM** 等 AI 知識庫進行訓練與關聯分析。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+### 🕵️ 態勢觀察：
+2026 年（及回溯至 2024 下半年）的威脅態勢顯示出明顯的「**基礎架構精準打擊**」趨勢。駭客組織已不再僅僅滿足於釣魚郵件，而是將目標鎖定在：
+1.  **AI 輔助工具 (AI Agents)**：利用提示詞注入（Prompt Injection）操控企業內部知識庫。
+2.  **開發與運維供應鏈 (DevSecOps Infrastructure)**：如 Gitea、Metabase、N-able 等核心管理平台。
+3.  **邊緣設備與負載平衡器**：Progress Kemp 等位於邊界第一線的設備成為進入內網的跳板。
+
+### 🛡️ 戰略建議：
+-   **實施 AI 護欄 (AI Guardrails)**：針對 Rovo 等企業級 AI，應強化內容過濾與權限最小化，防止跨應用數據洩漏。
+-   **強化關鍵設備補丁時效**：CISA KEV 清單中的漏洞必須在 24-48 小時內完成修補或緩解。
+-   **零信任架構落地**：推動「多重管理員驗證 (MAV)」，避免單一帳號遭劫持導致整個存儲或資料庫系統淪陷。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中/英對照) | 威脅類別 | 嚴重程度 |
+| :--- | :--- | :--- |
+| **Atlassian Rovo 可能被誘騙將 Jira/Confluence 數據傳送給攻擊者**<br>Atlassian Rovo Can Be Tricked Into Sending Jira and Confluence Data to Attackers | AI 安全 / 提示詞注入 | 🟠 高 |
+| **新型 CSS 攻擊可突破 Webmail 防禦竊取密碼與 Token**<br>New CSS Attacks Can Break Webmail Defenses to Steal Passwords and Tokens | Web 前端安全 / 側向洩漏 | 🟠 高 |
+| **Metabase 零日漏洞遭利用，允許無須驗證的管理員訪問**<br>Metabase Zero-Day Exploited in Wild Allows Admin Access Without Authentication | 身份驗證繞過 | 🔴 緊急 |
+| **N-able 發布 N-central Hotfix 2 應對駭客持久化攻擊**<br>N-able Issues N-central Hotfix 2 as Attackers Reach Managed Systems and Persist | 遠端管理工具 (RMM) 安全 | 🔴 緊急 |
+| **Progress Kemp LoadMaster 漏洞在 792 次攻擊嘗試後進入 CISA KEV**<br>Progress Kemp LoadMaster Flaw Hits CISA KEV After 792 Reported Exploit Attempts | 邊際設備 RCE | 🔴 緊急 |
+| **駭客入侵 TrueConf 並在客戶安裝程式中植入後門**<br>Hackers breach TrueConf to trojanize client installers with backdoors | 供應鏈攻擊 | 🔴 緊急 |
+| **NetApp 物件儲存系統新增多重管理員驗證 (MAV)**<br>NetApp StorageGRID Updates with Multi-Admin Verification | 防禦加強 / 存儲安全 | 🟢 建議 |
+| **Oracle 資料庫遭入侵並作為跳板在 Windows 執行指令**<br>Hackers Breach Oracle DB to Execute Malicious Commands on Windows | 資料庫安全 / 橫向移動 | 🟠 高 |
+| **Gitea 修補 CVSS 9.8 重大漏洞，無須登入即可遠端執行程式碼**<br>Gitea Fixes Critical CVSS 9.8 Pre-auth RCE Flaw | DevSecOps 安全 / RCE | 🔴 災難級 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Atlassian Rovo AI 數據洩漏漏洞
+*   **🔍 技術原理**：Atlassian Rovo 作為企業 AI 助手，具備跨應用程式（Jira, Confluence）讀取資料的能力。研究發現可透過「間接提示詞注入 (Indirect Prompt Injection)」，在 Confluence 頁面中嵌入惡意指令。當管理員使用 Rovo 查詢該頁面時，Rovo 會執行惡意指令。
+*   **⚔️ 攻擊向量**：攻擊者在公共頁面植入隱藏指令，要求 Rovo 將敏感專案細節透過 HTTP 請求（如使用 Markdown 圖片連結）發送至外部伺服器。
+*   **🛡️ 防禦緩解**：限制 AI 代理的導出能力；實施嚴格的內容安全策略 (CSP)；對 AI 輸出的 Markdown 進行轉義檢查。
+*   **🧠 名詞定義**：**Prompt Injection (提示詞注入)**：指透過惡意構造的輸入，改變大型語言模型 (LLM) 的預期行為。
+
+### 3.2 新型 CSS 側路徑攻擊 (Webmail)
+*   **🔍 技術原理**：利用 CSS 的屬性選擇器（Attribute Selectors）與字型加載機制。透過檢查輸入框的 `value` 屬性前綴，若匹配則觸發遠端資源加載，攻擊者藉此逐字元猜測 Token。
+*   **⚔️ 攻擊向量**：攻擊者向受害者發送一封包含精心設計 `<style>` 標籤的電子郵件，若 Webmail 未正確過濾 CSS，則會導致敏感字串（如 CSRF Token）洩漏。
+*   **🛡️ 防禦緩解**：徹底清洗（Sanitize）HTML 郵件中的 CSS；禁用敏感屬性的 CSS 選擇器匹配。
+*   **🧠 名詞定義**：**CSS Injection**：一種攻擊技術，攻擊者注入惡意 CSS 程式碼來改變網頁外觀或竊取資訊。
+
+### 3.3 Metabase Pre-auth Admin Access (Zero-day)
+*   **🔍 技術原理**：該漏洞存在於 Metabase 的初始化或特定 API 路由中，由於邏輯判斷缺失，攻擊者可以繞過登入驗證直接獲取最高管理權限。
+*   **⚔️ 攻擊向量**：發送特定的 HTTP 請求至 `/api/setup/validate` (或類似路徑)，強制重置管理員密碼或建立新的管理帳號。
+*   **🛡️ 防禦緩解**：立即更新至最新版本；在 WAF 上阻斷未經授權的 API 調用。
+*   **🧠 名詞定義**：**Zero-Day (零日漏洞)**：尚未有官方補丁且已被攻擊者利用的漏洞。
+
+### 3.4 N-able N-central 供應鏈入侵
+*   **🔍 技術原理**：攻擊者利用 N-central 管理平台中的漏洞獲取存取權，並藉此進一步滲透到 MSP（託管服務供應商）所管理的成千上萬個客戶終端。
+*   **⚔️ 攻擊向量**：獲取權限後，利用平台內建的腳本分發功能部署後門腳本，實現跨系統的持久化。
+*   **🛡️ 防禦緩解**：強制執行 MFA（多因素驗證）；應用官方發布的 Hotfix 2。
+*   **🧠 名詞定義**：**Persistence (持久化)**：指攻擊者在目標系統中建立長期存取權的能力，即使系統重啟也不會消失。
+
+### 3.5 Progress Kemp LoadMaster RCE (CVE-2024-1212)
+*   **🔍 技術原理**：該漏洞源於 Web 管理介面對輸入參數的驗證不全，導致未經身份驗證的遠端命令注入。
+*   **⚔️ 攻擊向量**：攻擊者透過 443 埠發送惡意 API 請求，直接在設備的操作系統底層執行 Shell 指令。
+*   **🛡️ 防禦緩解**：禁止管理介面暴露於公網；檢查受影響設備的異常連線紀錄。
+*   **🧠 名詞定義**：**CISA KEV**：美國資安局維護的「已知被利用漏洞清單」，具有極高的修補優先級。
+
+### 3.6 TrueConf 客戶端軟體後門化
+*   **🔍 技術原理**：傳統的供應鏈攻擊。攻擊者滲透了 TrueConf 的開發或分發伺服器，並將惡意 DLL 或後門程式碼注入到合法的安裝程序中。
+*   **⚔️ 攻擊向量**：用戶下載並安裝「官方」軟體，實際上卻啟動了名為「Trojanized Installer」的病毒，允許駭客控制電腦。
+*   **🛡️ 防禦緩解**：校對安裝檔的數位簽章與 Hash 值；部署端點偵測與回應 (EDR) 監控異常進程。
+*   **🧠 名詞定義**：**Trojanize (木馬化)**：指將惡意程式碼植入正常軟體的過程。
+
+### 3.7 NetApp StorageGRID 多重管理員驗證 (MAV)
+*   **🔍 技術原理**：為了應對管理員帳號遭劫持的風險，NetApp 引入了 MAV 機制。關鍵操作（如刪除存儲桶、關閉安全功能）需要第二名管理員的審核。
+*   **⚔️ 攻擊向量**：防止單點失效。即便駭客拿到一個 Admin 密碼，也無法執行毀滅性操作。
+*   **🛡️ 防禦緩解**：啟用 MAV 設定，並定義嚴格的審核工作流。
+*   **🧠 名詞定義**：**MAV (Multi-Admin Verification)**：一種安全控制機制，確保關鍵指令必須經過多方授權。
+
+### 3.8 Oracle 資料庫作為橫向移動跳板
+*   **🔍 技術原理**：駭客利用 Oracle 的 `dbms_scheduler` 或特定的 Java 存儲過程，獲取操作系統級別的執行權限。
+*   **⚔️ 攻擊向量**：在資料庫內執行 SQL 指令調用底層 Cmd.exe，從而跨越資料庫隔離區，在 Windows 伺服器上安裝惡意軟體。
+*   **🛡️ 防禦緩解**：限制資料庫服務帳戶的權限（不應具備 Local Admin）；監控資料庫發出的 OS 指令。
+*   **🧠 名詞定義**：**Lateral Movement (橫向移動)**：攻擊者在進入內網後，從一台機器移動到另一台機器的過程。
+
+### 3.9 Gitea Pre-auth RCE (CVSS 9.8)
+*   **🔍 技術原理**：該漏洞通常與惡意的 Git Hook 或特定的伺服器端渲染邏輯有關，允許遠端攻擊者在未登入的情況下執行任意程式碼。
+*   **⚔️ 攻擊向量**：向 Gitea 實例發送畸形的 Git 請求或 API 呼叫，直接觸發系統指令。
+*   **🛡️ 防禦緩解**：立即升級 Gitea 至最新安全版本；關閉不必要的公開訪問。
+*   **🧠 名詞定義**：**RCE (Remote Code Execution)**：遠端程式碼執行，是資安威脅中最嚴重的一類。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 蠕蟲的誕生**：隨著 Atlassian Rovo 等工具的普及，未來可能會出現能在企業 AI 代理之間自動傳播的惡意提示詞（Prompt Worms）。
+2.  **CSS 攻擊精細化**：前端安全將成為防禦重點，攻擊者將開發出更隱蔽的方法繞過傳統的 HTML Sanitizer。
+3.  **基礎架構軟體成為首選目標**：駭客將持續鎖定 Metabase、Gitea 等開源/商用管理軟體，因為一旦攻破即可獲取大量核心原始碼或資料數據。
+
+---
+
+## 5. 🔗 參考文獻
+
+- [Atlassian Rovo AI Security Risk - The Hacker News](https://thehackernews.com/2026/08/atlassian-rovo-can-be-tricked-into.html)
+- [New CSS Attacks on Webmail - The Hacker News](https://thehackernews.com/2026/08/new-css-attacks-can-break-webmail.html)
+- [Metabase Zero-Day Exploitation - The Hacker News](https://thehackernews.com/2026/08/metabase-zero-day-exploited-in-wild.html)
+- [N-able N-central Security Update - The Hacker News](https://thehackernews.com/2026/08/n-central-attackers-reach-managed.html)
+- [Progress Kemp LoadMaster CISA KEV - The Hacker News](https://thehackernews.com/2026/08/progress-kemp-loadmaster-flaw-hits-cisa.html)
+- [TrueConf Supply Chain Attack - BleepingComputer](https://www.bleepingcomputer.com/news/security/hackers-breach-trueconf-to-trojanize-client-installers-with-backdoors/)
+- [NetApp StorageGRID MAV - iThome](https://www.ithome.com.tw/review/177980)
+- [Oracle Database Exploitation Tactics - iThome](https://www.ithome.com.tw/news/177979)
+- [Gitea Critical RCE Fix - iThome](https://www.ithome.com.tw/news/177977)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/08/08)
 
 本報告旨在針對 2026 年 8 月初發生的重大資安事件進行深度技術拆解，專為 AI 知識庫 (NotebookLM) 訓練與資安決策人員設計，提供高密度的技術細節與防禦建議。

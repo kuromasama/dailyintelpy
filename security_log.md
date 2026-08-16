@@ -1,3 +1,89 @@
+# 🛡️ 資安戰情白皮書 (2026/08/17)
+
+本文件旨在為企業資訊安全長 (CISO)、資安架構師及技術團隊提供深度威脅分析，揭示當前網路空間中針對加密通訊平台與 macOS 生態系統的演進式攻擊，並作為 AI 知識庫 (NotebookLM) 之訓練基石。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年的威脅版圖中，我們觀察到攻擊者正採取「**雙軌併行**」的戰略：一邊透過**大規模分散式阻斷服務 (DDoS)** 癱瘓具備高度隱私性的通訊基礎設施，試圖強制用戶轉向安全性較低的渠道；另一邊則針對傳統被視為較安全的 **macOS 環境** 開發精密的 **AmnesiaStealer**，利用遠端控制技術直接劫持瀏覽器會話（Session Hijacking），繞過多因素驗證 (MFA) 的防線。
+
+**戰略建議：**
+1.  **韌性建構**：加密通訊服務商應強化邊緣清洗能力，面對非對稱式的應用層 DDoS 攻擊需具備動態擴展與流量特徵識別能力。
+2.  **身分核心防禦**：鑑於 Session 劫持技術的成熟，企業應從「憑證驗證」轉向「持續性授權驗證」，並在 macOS 設備上部署具備行為分析能力的 EDR（端點偵測與回應）系統。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中/英) | 來源連結 |
+| :--- | :--- |
+| **大規模 DDoS 攻擊癱瘓 Threema 安全通訊服務**<br>Large-scale DDoS attacks disrupted Threema secure messaging service | [BleepingComputer](https://www.bleepingcomputer.com/news/security/large-scale-ddos-attacks-disrupted-threema-secure-messaging-service/) |
+| **新型 AmnesiaStealer macOS 惡意軟體透過遠端控制劫持瀏覽器會話**<br>New AmnesiaStealer macOS malware hijacks browser sessions via remote control | [BleepingComputer](https://www.bleepingcomputer.com/news/security/new-amnesiastealer-macos-malware-hijacks-browser-sessions-via-remote-control/) |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 【演練一】Threema 加密通訊平台之大規模 DDoS 衝擊分析
+
+#### 🔍 技術原理
+Threema 作為強調端到端加密 (E2EE) 的瑞士通訊服務，其架構高度依賴後端伺服器進行公鑰交換與離線訊息暫存。本次攻擊並非針對加密協議本身，而是鎖定**網路邊界 (Edge)** 與 **API 閘道 (API Gateway)**。攻擊者利用海量的僵屍網路流量（可能是基於 HTTP/3 或 QUIC 協議的放大攻擊）灌滿 Threema 的進入點頻寬，導致合法用戶無法建立連線（Handshake Failure）或遭遇嚴重的訊息延遲。
+
+#### ⚔️ 攻擊向量
+*   **應用層氾濫 (L7 Flooding)**：針對 Threema 的認證 API 發送大量偽造請求，消耗伺服器 CPU 與記憶體資源。
+*   **協定放大攻擊**：利用未經防護的 UDP 服務將微小請求放大數百倍後導向 Threema 伺服器。
+*   **混合式威脅**：在發動 DDoS 的同時，可能伴隨掃描漏洞的嘗試，利用維運團隊忙於恢復服務的混亂時期進行滲透。
+
+#### 🛡️ 防禦緩解
+*   **Anycast 網路部署**：將流量分散至全球多個清洗中心 (Scrubbing Centers)，降低單一節點承載壓力。
+*   **行為模式限流 (Behavioral Rate Limiting)**：不僅根據 IP，更需根據 TLS 指紋 (TLS Fingerprinting) 或要求標頭特徵識別異常流量。
+*   **零信任存取限制**：對關鍵的管理 API 實施更嚴格的來源驗證與地理位置過濾。
+
+#### 🧠 名詞定義
+*   **DDoS (Distributed Denial of Service)**：分散式阻斷服務攻擊，藉由多台受控電腦同時向目標發送請求，導致服務癱瘓。
+*   **E2EE (End-to-End Encryption)**：端到端加密，確保只有通訊雙方能解密訊息，連服務供應商也無法讀取。
+*   **TLS Fingerprinting**：透過 TLS 握手參數特徵來識別客戶端身份（如作業系統、瀏覽器版本）的技術。
+
+---
+
+### 【演練二】AmnesiaStealer 針對 macOS 之遠端 Session 劫持分析
+
+#### 🔍 技術原理
+**AmnesiaStealer** 標誌著 macOS 威脅的進化。它不再僅是簡單的檔案竊取程式，而是一套集成了 **RAT (遠端存取木馬)** 功能的竊資軟體。其核心邏輯在於規避 macOS 的 TCC (Transparency, Consent, and Control) 機制，透過腳本化的方式定位瀏覽器（如 Chrome, Safari）的 `SQLite` 資料庫，直接提取內存或磁碟中的 **Session Cookies**。
+
+#### ⚔️ 攻擊向量
+*   **偽裝應用程式 (Masquerading)**：包裝成破解軟體、翻譯工具或虛擬貨幣錢包，誘導用戶繞過 Gatekeeper 執行。
+*   **API Hooking**：攔截瀏覽器與系統底層的通訊，獲取即時輸入的憑證或攔截二階段驗證 (2FA) 代碼。
+*   **遠端指令下達 (C2 Command)**：攻擊者可遠端控制受感染主機，在用戶登入狀態下直接操作瀏覽器進行轉帳或敏感資料下載。
+
+#### 🛡️ 防禦緩解
+*   **加強 TCC 權限監控**：部署監控工具偵測是否有未授權程式試圖存取 `~/Library/Application Support/` 下的瀏覽器目錄。
+*   **Token 綁定技術 (Token Binding)**：推動企業應用支援將 Session Token 與設備硬體特徵綁定，使竊取後的 Cookie 在其他設備失效。
+*   **端點檢測回應 (EDR)**：即時分析 macOS 上的進程鏈，識別非典型的 Python 或 AppleScript 執行行為。
+
+#### 🧠 名詞定義
+*   **Session Hijacking (會話劫持)**：攻擊者獲取用戶的合法會話密鑰，無需密碼即可冒充用戶身分存取系統。
+*   **RAT (Remote Access Trojan)**：遠端存取木馬，允許攻擊者像操作自己電腦一樣控制受害者主機。
+*   **TCC (Transparency, Consent, and Control)**：macOS 用於管理 App 存取敏感資料（如相機、檔案系統）的權限架構。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **DDoS 作為掩護 (DDoS as a Smoke Screen)**：未來的大規模 DDoS 將更多地被用作「誘餌」，當資安團隊專注於流量清洗時，真正的攻擊者會利用 AmnesiaStealer 之類的工具進行精準的資料竊取。
+2.  **macOS 威脅大爆發**：隨著企業高管與開發者大量使用 Mac，針對該系統的 C++ 或 Rust 編寫的跨平台惡意軟體將呈爆炸式增長，傳統針對 Windows 的防護思維必須轉型。
+3.  **無密碼時代的 Session 之戰**：隨著 Passkeys 的普及，攻擊者將重心完全轉向「劫持已驗證的會話」， Session 保護將成為未來三年的資安主戰場。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   **Threema DDoS Attack Report**: [https://www.bleepingcomputer.com/news/security/large-scale-ddos-attacks-disrupted-threema-secure-messaging-service/](https://www.bleepingcomputer.com/news/security/large-scale-ddos-attacks-disrupted-threema-secure-messaging-service/)
+*   **AmnesiaStealer Malware Analysis**: [https://www.bleepingcomputer.com/news/security/new-amnesiastealer-macos-malware-hijacks-browser-sessions-via-remote-control/](https://www.bleepingcomputer.com/news/security/new-amnesiastealer-macos-malware-hijacks-browser-sessions-via-remote-control/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/08/16)
 
 ---

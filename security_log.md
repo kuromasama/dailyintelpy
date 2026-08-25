@@ -1,3 +1,124 @@
+# 🛡️ 資安戰情白皮書 (2026/08/26)
+
+本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在提供高密度的技術洞察、戰術分析與防禦建議。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年 8 月的當下，我們正處於「AI 整合性風險」與「地緣政治網路戰」的交叉點。資安長（CISO）與架構師必須體認到，攻擊者的戰略已從單純的漏洞利用（Exploit）演進為**供應鏈信任鏈的全面污染**。
+
+**核心態勢分析：**
+1.  **國家級威脅常態化**：伊朗等受制裁國家持續針對關鍵基礎設施（Critical Infrastructure）進行滲透，這不僅是技術挑戰，更是國家安全層級的博弈。
+2.  **AI 安全模型破裂**：隨著 NVIDIA NemoClaw 等邊緣 AI 框架的普及，針對大型語言模型（LLM）的「間接提示注入」與「模型中毒」已從理論轉向實際攻擊案例。
+3.  **身份認證攻防戰升級**：雖然 WhatsApp 推行 Passkeys 以增強安全性，但 Mirage2FA 等新型態攻擊顯示，針對 Microsoft 365 的 Adversary-in-the-Middle (AiTM) 攻擊正以大規模自動化腳本繞過雙因素驗證（MFA）。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 標題 (中英對照) | 威脅範疇 |
+| :--- | :--- |
+| **U.S. Sanctions Iran-Linked Hackers Behind Critical Infrastructure Breaches**<br>美國制裁涉及關鍵基礎設施入侵的伊朗相關駭客 | 國家級威脅 / 關鍵基礎設施 |
+| **A Malicious Webpage Could Poison Your Local AI Model Behind NVIDIA NemoClaw**<br>惡意網頁可能毒化基於 NVIDIA NemoClaw 的本地 AI 模型 | AI 安全 / 資料中毒 |
+| **WhatsApp Adds Multiple Passkeys for Phishing-Resistant Sign-Ins Across iOS and Android**<br>WhatsApp 新增多重金鑰支援，強化跨平台抗釣魚登入能力 | 身份存取管理 (IAM) |
+| **Marimo Notebook Flaw Could Run MCP Commands Before Cells Execute in Edit Mode**<br>Marimo Notebook 漏洞允許在編輯模式執行 Cell 前先行觸發 MCP 指令 | 開發環境安全 / RCE |
+| **Mirage2FA Surge Hits 4,500 US and EU Companies, Abusing Microsoft 365 Login Flows**<br>Mirage2FA 激增波及 4,500 家美歐企業，濫用 Microsoft 365 登入流程 | 社交工程 / MFA 繞過 |
+| **24 npm Packages Abuse unpkg Mirrors to Host Fake Cloudflare CAPTCHA Pages**<br>24 個 npm 套件濫用 unpkg 鏡像站代管虛假 Cloudflare CAPTCHA 頁面 | 軟體供應鏈 / 網路釣魚 |
+| **E4del and PINHOLE RATs Turn FTP Banners Into Dead Drops for Malware Commands**<br>E4del 與 PINHOLE 遠端存取木馬將 FTP 旗標訊息轉化為惡意指令中轉站 | 惡意軟體 / C2 通訊 |
+| **Frontier AI: Vulnerability Management's Systemic Revolution**<br>前瞻 AI：漏洞管理的系統性革命 | 防禦自動化 / AI 賦能 |
+| **Attackers Target miniOrange SAML Flaws That Can Grant WordPress Admin Access**<br>攻擊者鎖定 miniOrange SAML 漏洞以獲取 WordPress 管理員權限 | 身份驗證繞過 / 插件安全 |
+| **Actively Exploited Oracle WebLogic Flaw Lets Unauthenticated Attackers Access Critical Data**<br>遭積極利用的 Oracle WebLogic 漏洞允許未授權攻擊者存取關鍵數據 | 伺服器端漏洞 / 未授權存取 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 伊朗關鍵基礎設施入侵事件
+*   **🔍 技術原理**：駭客利用針對工業控制系統（Industrial Control Systems, ICS）的特定協議（如 Modbus 或 S7Comm）漏洞，滲透營運技術（Operational Technology, OT）網路。
+*   **⚔️ 攻擊向量**：通常透過未加密的遠端桌面協定（Remote Desktop Protocol, RDP）或過時的 VPN 設備進入企業 IT 環境，再橫向移動至生產線。
+*   **🛡️ 防禦緩解**：實施嚴格的網路分段（Network Segmentation），將 IT 與 OT 環境物理或邏輯隔離；部署工業級入侵偵測系統（IDS）。
+*   **🧠 名詞定義**：**Critical Infrastructure (關鍵基礎設施)**：涉及電力、水務、交通等對社會運作至關重要的系統。
+
+### 3.2 NVIDIA NemoClaw AI 模型中毒
+*   **🔍 技術原理**：利用「間接提示注入」（Indirect Prompt Injection）。當 AI 模型解析含有惡意隱藏指令的網頁內容時，該指令會覆蓋系統原始設定。
+*   **⚔️ 攻擊向量**：使用者引導 AI 閱讀一個特製網頁，網頁中包含不可見的文字指令，強制 AI 洩漏歷史對話或執行惡意程式碼。
+*   **🛡️ 防禦緩解**：對 LLM 的輸入與輸出進行過濾（Output Filtering）；限制 AI 代理人執行危險系統呼叫的權限。
+*   **🧠 名詞定義**：**Data Poisoning (資料中毒)**：透過輸入污染數據來影響 AI 模型預測結果或行為的攻擊手法。
+
+### 3.3 WhatsApp Passkeys 強化
+*   **🔍 技術原理**：基於 FIDO2 L1/L2 規範，使用非對稱加密（Asymmetric Cryptography）。私鑰存儲於設備安全隔區（Secure Enclave）。
+*   **⚔️ 攻擊向量**：主要防禦中間人攻擊（AiTM），因為 Passkey 與特定域名綁定，釣魚網站無法獲取合法簽章。
+*   **🛡️ 防禦緩解**：鼓勵用戶將 Passkeys 同步至雲端鑰匙圈，並設置設備檢索密碼。
+*   **🧠 名詞定義**：**Passkeys (通行金鑰)**：一種旨在取代密碼的數位憑證，基於 WebAuthn 標準。
+
+### 3.4 Marimo Notebook MCP 漏洞
+*   **🔍 技術原理**：Marimo 在加載 Notebook 時，其 Model Context Protocol (MCP) 解析器未對初始化指令進行適當過濾，導致在代碼單元（Cell）正式執行前即可觸發指令。
+*   **⚔️ 攻擊向量**：惡意開發者在開源平台上發布受污的 `.py` 或 `.ipynb` 檔案，當受害者以編輯模式開啟時即遭入侵。
+*   **🛡️ 防禦緩解**：更新 Marimo 至最新版本；在沙箱環境（Sandbox）或 Container 中運行不可信的數據科學腳本。
+*   **🧠 名詞定義**：**RCE (遠端程式碼執行)**：攻擊者能夠在受害者機器上執行任意指令的漏洞類型。
+
+### 3.5 Mirage2FA 與 Microsoft 365 濫用
+*   **🔍 技術原理**：使用反向代理（Reverse Proxy）技術架設虛假登入頁面，即時攔截用戶輸入的帳號、密碼以及多因素驗證生成的 Session Cookie。
+*   **⚔️ 攻擊向量**：透過電子郵件發送偽造的「文件共享」連結，引導用戶進入模擬程度極高的 Microsoft 365 登入介面。
+*   **🛡️ 防禦緩解**：部署 FIDO2 硬體安全性金鑰；啟用 Microsoft Entra ID 的「條件式存取」（Conditional Access）限制地理位置與設備狀態。
+*   **🧠 名詞定義**：**AiTM (Adversary-in-the-Middle)**：中間人攻擊的進階形式，專門針對現代認證流程。
+
+### 3.6 npm 套件與虛假 CAPTCHA
+*   **🔍 技術原理**：攻擊者利用 `unpkg` 等 CDN 鏡像服務會自動解析並託管 npm 套件內容的特性，將惡意網頁偽裝成 Cloudflare 的驗證頁面。
+*   **⚔️ 攻擊向量**：當開發者在應用中引用這些惡意套件時，用戶會看到一個彈窗要求點擊「我是人類」，隨後下載惡意酬載（Payload）。
+*   **🛡️ 防禦緩解**：使用 `npm audit` 進行依賴性掃描；限制前端代碼從不可信的 CDN 加載資源。
+*   **🧠 名詞定義**：**Supply Chain Attack (供應鏈攻擊)**：透過破壞軟體開發生命週期中的第三方組件來感染下游用戶。
+
+### 3.7 E4del 與 PINHOLE RATs
+*   **🔍 技術原理**：這類木馬利用「死掉的數據點」（Dead Drop Resolvers）。它們不直接連接 C2 伺服器，而是讀取公共 FTP 伺服器的 Welcome Banner（標語）來獲取加密指令。
+*   **⚔️ 攻擊向量**：初始感染透過惡意文檔或漏洞利用發生，隨後建立極其隱蔽的通訊頻道，躲避流量分析。
+*   **🛡️ 防禦緩解**：監控異常的 FTP (Port 21) 通訊流量；對外連行為實施「白名單」管控。
+*   **🧠 名詞定義**：**RAT (Remote Access Trojan)**：允許攻擊者完全控制受感染系統的惡意程式。
+
+### 3.8 Frontier AI 與漏洞管理革命
+*   **🔍 技術原理**：利用前瞻 AI 模型（如 GPT-5 等級或專門訓練的資安模型）自動掃描原始碼（Static Analysis）並動態模擬攻擊場景（Fuzzing）。
+*   **⚔️ 攻擊向量**：反面應用在於攻擊者也能利用相同技術快速尋找 0-day 漏洞。
+*   **🛡️ 防禦緩解**：整合 AI 驅動的自動修補（Auto-patching）流程，縮短從漏洞發現到修復的平均時間（MTTR）。
+*   **🧠 名詞定義**：**Frontier AI (前瞻 AI)**：指代表現超越當前最先進水平的大規模 AI 模型。
+
+### 3.9 miniOrange SAML 插件漏洞
+*   **🔍 技術原理**：由於 SAML 回應處理邏輯錯誤，攻擊者可以偽造具有最高權限（Administrator）的 XML 聲明。
+*   **⚔️ 攻擊向量**：直接訪問特定的身份驗證端點，提交構造好的 XML Payload 即可無密碼登入 WordPress 後台。
+*   **🛡️ 防禦緩解**：立即停用舊版 miniOrange 插件並升級；強化 WordPress 管理介面的來源 IP 限制。
+*   **🧠 名詞定義**：**SAML (安全性斷言標記語言)**：基於 XML 的開放標準，用於在認證提供者（IdP）與服務提供者（SP）之間交換身份數據。
+
+### 3.10 Oracle WebLogic 積極利用漏洞
+*   **🔍 技術原理**：存在於 T3 或 IIOP 協議的序列化漏洞，允許未經身份驗證的遠端攻擊者透過構造惡意序列化對象來執行程式碼。
+*   **⚔️ 攻擊向量**：對網際網路暴露的 WebLogic 伺服器進行大規模掃描。
+*   **🛡️ 防禦緩解**：禁用 T3/IIOP 協議（如果不需要）；部署 Web 應用程式防火牆 (WAF) 攔截特定特徵碼。
+*   **🧠 名詞定義**：**Unauthenticated Access (未經授權存取)**：不需提供任何憑證即可訪問敏感資源的情況。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 化社交工程 (AI-Driven Social Engineering)**：預計未來 6 個月，Mirage2FA 這類攻擊將整合 Deepfake 語音，實現在通話中誘導用戶提供 MFA 驗證碼。
+2.  **無文件 C2 隱寫術 (Steganography in C2)**：E4del 顯示了利用 FTP 旗標通訊的傾向，未來攻擊者可能利用區塊鏈交易訊息或社群媒體圖像元數據（Metadata）作為指令中轉站。
+3.  **零信任的軟體開發 (Zero-Trust Dev)**：隨著 Marimo 與 npm 漏洞頻傳，開發環境將不再被視為「安全區」，開發者桌面虛擬化（VDI）將成為大型企業的標配。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [U.S. Sanctions Iran-Linked Hackers Behind Critical Infrastructure Breaches](https://thehackernews.com/2026/08/us-sanctions-iran-linked-hackers-behind.html)
+*   [A Malicious Webpage Could Poison Your Local AI Model Behind NVIDIA NemoClaw](https://thehackernews.com/2026/08/a-malicious-webpage-could-poison-your.html)
+*   [WhatsApp Adds Multiple Passkeys for Phishing-Resistant Sign-Ins](https://thehackernews.com/2026/08/whatsapp-adds-multiple-passkeys-for.html)
+*   [Marimo Notebook Flaw Could Run MCP Commands Before Cells Execute](https://thehackernews.com/2026/08/marimo-notebook-flaw-could-run-mcp.html)
+*   [Mirage2FA Surge Hits 4,500 US and EU Companies](https://thehackernews.com/2026/08/mirage2fa-surge-hits-4500-us-and-eu.html)
+*   [24 npm Packages Abuse unpkg Mirrors to Host Fake CAPTCHA](https://thehackernews.com/2026/08/24-npm-packages-abuse-unpkg-mirrors-to.html)
+*   [E4del and PINHOLE RATs Turn FTP Banners Into Dead Drops](https://thehackernews.com/2026/08/e4del-and-pinhole-rats-turn-ftp-banners.html)
+*   [Frontier AI: Vulnerability Management's Systemic Revolution](https://thehackernews.com/2026/08/frontier-ai-vulnerability-managements.html)
+*   [Attackers Target miniOrange SAML Flaws (WordPress Admin Access)](https://thehackernews.com/2026/08/attackers-target-miniorange-saml-flaws.html)
+*   [Actively Exploited Oracle WebLogic Flaw](https://thehackernews.com/2026/08/actively-exploited-oracle-weblogic-flaw.html)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/08/25)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練與資安決策者分析所設計，涵蓋 2026 年 8 月底全球最嚴峻的資安威脅態勢。

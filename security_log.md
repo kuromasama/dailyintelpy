@@ -1,3 +1,96 @@
+# 🛡️ 資安戰情白皮書 (2026/09/14)
+
+此文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在提供高密度、技術詳盡的資安威脅分析，協助決策者與技術專家掌握最新攻擊手法。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在 2026 年的威脅版圖中，我們正處於「後 MFA (多因素驗證) 時代」的轉折點。本次戰情顯示了兩大核心趨勢：
+1. **驗證機制的降級攻擊與繞過**：即便被視為「防禦標竿」的 Passkey (FIDO2) 也並非絕對安全。攻擊者正利用社會工程與中繼攻擊 (AiTM) 尋求劫持雲端帳戶的新途徑，這直接挑戰了無密碼驗證的信任基礎。
+2. **應用層級的精準打擊**：駭客不再僅依賴系統漏洞，而是轉向高市佔率的第三方應用程式（如騰訊軟體生態）。透過供應鏈或應用程式內部的逻辑漏洞部署惡意軟體（如 GrayRabbit），顯示出「寄生攻擊」的深度演進。
+
+**戰略建議**：
+*   **強化 Attestation (證明) 機制**：必須驗證 Passkey 的硬體來源，防止軟體模擬的 Passkey 被用於釣魚。
+*   **終端行為分析 (UEBA)**：針對合法應用程式（如 Tencent App）產生的異常子程序進行嚴格監控。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 威脅標題 (中英對照) | 威脅等級 | 受影響範圍 |
+| :--- | :---: | :--- |
+| **攻擊者利用 Passkey 網路釣魚劫持微軟雲端帳戶並外洩數據**<br>Attackers Use Passkey Phishing to Hijack Microsoft Cloud Accounts and Exfiltrate Data | 🔴 極高 | Microsoft 365, Azure AD, Entra ID 企業用戶 |
+| **駭客利用騰訊應用程式漏洞部署 GrayRabbit 惡意軟體**<br>Hackers exploit Tencent app flaw to deploy GrayRabbit malware | 🟠 高 | 安裝特定騰訊應用程式之 Windows/Android 用戶 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ 案例一：Passkey Phishing 雲端劫持分析
+
+#### 🔍 技術原理
+儘管 Passkey 基於 FIDO2/WebAuthn 協議，理論上能抵抗傳統網路釣魚，但攻擊者採用了 **「敵手中間人」(Adversary-in-the-Middle, AiTM)** 的進階變體。攻擊者並非竊取私鑰（私鑰儲存在硬體安全模組中），而是透過偽造的註冊頁面或降級攻擊，誘導用戶在攻擊者控制的設備上「註冊」一個新的 Passkey，或者劫持通過驗證後的 **Session Token (會話令牌)**。一旦攻擊者將自己的設備連結至受害者的 Microsoft 帳戶，即可達成持久化的雲端存取。
+
+#### ⚔️ 攻擊向量
+1.  **引誘階段**：發送精密的釣魚郵件，聲稱「帳戶安全性升級」或「認證過期」。
+2.  **攔截階段**：使用代理工具（如改良後的 EvilProxy）架設透明代理，攔截用戶與 Microsoft 認證伺服器之間的流量。
+3.  **註冊注入**：在用戶完成 MFA 驗證的瞬間，利用腳本自動在帳戶設置中新增一個攻擊者的 Passkey 憑證。
+4.  **數據外洩**：利用已獲取的存取權限，透過 Graph API 靜默導出電子郵件、OneDrive 檔案及 SharePoint 機密。
+
+#### 🛡️ 防禦緩解
+*   **設備繫結限制**：在 Entra ID 中實施「條件式存取原則」(Conditional Access)，僅允許來自「合規設備」或「公司管理設備」的 Passkey 註冊。
+*   **FIDO2 證明要求 (Attestation)**：強制執行 AAGUID 過濾，僅接受受信任硬體製造商（如 YubiKey）的 Passkey，拒絕瀏覽器內建或不可追溯的軟體 Passkey。
+*   **縮短會話存活期**：縮短雲端服務的存取令牌有效期，並開啟 Continuous Access Evaluation (CAE)。
+
+#### 🧠 名詞定義
+*   **Passkey**: 基於 FIDO2 標準的無密碼認證技術，使用公鑰加密學取代傳統密碼。
+*   **AiTM (Adversary-in-the-Middle)**: 攻擊者置身於用戶與合法伺服器之間，實時轉發並修改流量的攻擊手法。
+*   **Exfiltration**: 數據外洩，指未經授權將內部數據傳輸至外部伺服器。
+
+---
+
+### 🛡️ 案例二：Tencent App Flaw 與 GrayRabbit 惡意軟體
+
+#### 🔍 技術原理
+此攻擊利用了騰訊系列應用程式中的 **任意檔案寫入 (Arbitrary File Write)** 或 **遠端代碼執行 (RCE)** 漏洞。GrayRabbit 是一種高度隱蔽的遠端存取木馬 (RAT)，其核心技術在於 **反射式 DLL 注入 (Reflective DLL Injection)**。它不將惡意代碼寫入磁碟，而是直接在記憶體中執行，避開傳統防毒軟體的特徵碼掃描。
+
+#### ⚔️ 攻擊向量
+1.  **漏洞觸發**：利用騰訊應用程式在處理特定 URL Scheme 或自動更新機制時的邏輯錯誤。
+2.  **載荷投遞**：透過加密通道下載 GrayRabbit 的加載器 (Loader)。
+3.  **權限提升**：利用系統服務漏洞繞過 UAC (使用者帳戶控制)，取得 SYSTEM 權限。
+4.  **控制與維持**：GrayRabbit 建立 C2 (指揮與控制) 連線，並利用側向移動工具在企業內網尋找高價值目標。
+
+#### 🛡️ 防禦緩解
+*   **應用程式白名單與版本管控**：強制更新騰訊相關軟體至修復版本，或透過 GPO 禁止未授權的第三方軟體運行。
+*   **記憶體掃描 (EDR)**：部署具備記憶體取證功能的 EDR 解決方案，偵測反射式注入行為。
+*   **網路分段 (Segmentation)**：限制一般辦公應用程式伺服器的對外連線，特別是針對未知的海外 C2 IP 位址。
+
+#### 🧠 名詞定義
+*   **GrayRabbit**: 一種專門針對亞洲地區開發的進階持續性威脅 (APT) 木馬，具備強大的資訊竊取與控制功能。
+*   **Reflective DLL Injection**: 將 DLL 從記憶體加載而無需透過 Windows 加載器的技術，常用於規避偵測。
+*   **C2 (Command and Control)**: 駭客用來發送指令給受感染電腦的伺服器架構。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 賦能的 AiTM 攻擊**：未來一年內，預計會出現自動化程度更高的 AiTM 工具，能即時生成與用戶語言、環境完全一致的偽造頁面，大幅提高 Passkey 釣魚的成功率。
+2.  **供應鏈組件深度寄生**：駭客將不再攻擊軟體主體，而是攻擊軟體內部使用的第三方 Open Source SDK，透過這些隱蔽管道部署類似 GrayRabbit 的輕量化載荷。
+3.  **量子後密碼學 (PQC) 的對抗演習**：隨著計算力提升，傳統 FIDO2 的 ECC 加密可能面臨挑戰，資安架構需開始考慮過渡至 PQC 相容的驗證機制。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Attackers Use Passkey Phishing to Hijack Microsoft Cloud Accounts and Exfiltrate Data](https://thehackernews.com/2026/09/attackers-use-passkey-phishing-to.html)
+*   [Hackers exploit Tencent app flaw to deploy GrayRabbit malware](https://www.bleepingcomputer.com/news/security/hackers-exploit-tencent-app-flaw-to-deploy-grayrabbit-malware/)
+
+---
+**文件結尾** - *本文由資安戰情中心自動生成，供 NotebookLM 深度學習使用。*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/09/13)
 
 ---

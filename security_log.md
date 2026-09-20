@@ -1,3 +1,112 @@
+# 🛡️ 資安戰情白皮書 (2026/09/21)
+
+本文件專為 AI 知識庫 (NotebookLM) 訓練設計，旨在提供高度結構化、技術密集的資安情報分析，涵蓋供應鏈安全、大型語言模型 (LLM) 基礎設施安全及身分存取管理 (IAM) 的最新演進。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第三季的威脅態勢顯示，攻擊者正從「靜態滲透」轉向「動態規避」。傳統基於特徵碼或腳本封鎖（如 `ignore-scripts`）的防禦手段在供應鏈攻擊面前顯得日益乏力。同時，隨著企業深度整合 AI 能力，AI 沙箱（Sandbox）的隔離強度成為新型態的企業邊界。
+
+**戰略建議：**
+1.  **深化供應鏈監控**：不應僅依賴包管理工具的安裝檢查，必須導入執行期（Runtime）行為分析，監測不明的網路外連與系統呼叫。
+2.  **AI 安全加固**：針對內部使用的 LLM 服務，應採取「零信任容器」架構，預防開發者或攻擊者透過 Prompt 誘導實現底層主機逃逸。
+3.  **身份認證無密碼化**：隨著 FIDO2 與 Passkey 技術成熟，應強制要求網管平台（Infrastructure Control Plane）棄用傳統密碼，轉向抗釣魚的身分聯合架構。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 狀態 | 標題 (中/英) | 影響範疇 | 威脅等級 |
+| :--- | :--- | :--- | :--- |
+| 🔴 嚴重 | **惡意 npm 套件繞過執行期安裝腳本防禦** <br> Malicious npm packages evade install-script defenses at runtime | 開發者環境、CI/CD 流水線 | 高 (High) |
+| 🔴 嚴重 | **研究人員逃逸 OpenAI Codex 沙箱並在主機執行命令** <br> Researchers escape OpenAI Codex sandbox to run commands on host | AI 基礎設施、雲端運算環境 | 極高 (Critical) |
+| 🟢 優化 | **兆勤網管雲支援身分聯合與 Passkey 強化登入安全** <br> Zyxel Nebula supports Identity Federation and Passkey | 網路設備管理、企業身分認證 | 安全增強 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 🛡️ 案例一：惡意 npm 套件之執行期規避技術
+
+*   **🔍 技術原理**：
+    傳統 npm 安全實踐建議開發者使用 `--ignore-scripts` 來防止套件在安裝階段執行 `preinstall` 或 `postinstall` 腳本。然而，最新發現的惡意套件利用了 **「執行期注入」(Runtime Injection)**。攻擊者將惡意邏輯直接嵌入在 `exports` 或套件的入口點（如 `index.js`），當開發者在代碼中執行 `require()` 或 `import` 時，惡意代碼才會在應用程式的上下文中被觸發，徹底繞過了安裝階段的靜態防禦。
+
+*   **⚔️ 攻擊向量**：
+    1.  **Typosquatting (拼字錯誤攻擊)**：上傳名稱與熱門套件極為相似的包（如 `lodsh` 而非 `lodash`）。
+    2.  **Dependency Confusion (依賴混淆)**：利用內部與外部倉庫的命名重疊，誘使系統下載惡意外部包。
+    3.  **Runtime Trigger**：惡意代碼監聽特定的環境變數，僅在生產環境中啟動反向 Shell。
+
+*   **🛡️ 防禦緩解**：
+    *   使用 **Socket.dev** 或 **Snyk** 等工具進行動態依賴分析。
+    *   導入 **EBA (Execution Behavior Analysis)**，監控 Node.js 進程的異常文件系統存取。
+    *   建立企業內部私有倉庫（Artifactory），並實施嚴格的套件白名單審核機制。
+
+*   **🧠 名詞定義**：
+    *   **Install-script**：npm 套件定義在 `package.json` 中的腳本，用於安裝時自動化配置。
+    *   **Hooking**：攔截程式執行的技術，用於在合法功能執行前插入自定義代碼。
+
+---
+
+### 🛡️ 案例二：OpenAI Codex 沙箱逃逸漏洞
+
+*   **🔍 技術原理**：
+    OpenAI Codex（及類似的 GitHub Copilot 模型）透過沙箱環境執行產出的程式碼以進行驗證。研究人員發現，透過精心設計的 Python 指令（如利用 `ctypes` 模組直接操作記憶體位址，或透過 `os` 模組未被限制的系統調用），可以突破 Python 解釋器的邏輯限制，進而獲取宿主機（Host Machine）的作業系統級權限。
+
+*   **⚔️ 攻擊向量**：
+    1.  **Prompt Injection (提示詞注入)**：誘導 AI 產生具有破壞性的底層系統程式碼。
+    2.  **Sandbox Escape (沙箱逃逸)**：利用虛擬化技術或容器配置錯誤（如以 Root 運行容器）存取宿主機文件系統（`/etc/shadow` 或雲端憑證）。
+    3.  **Remote Code Execution (RCE)**：在 AI 伺服器上建立持久化後門。
+
+*   **🛡️ 防禦緩解**：
+    *   實施 **gVisor** 或 **Kata Containers** 等強隔離容器技術，限制系統調用（Syscall）。
+    *   對 AI 產出的程式碼實施「人機雙重稽核」與「執行期權限最小化」。
+    *   定期進行 AI 模型的紅隊演練，測試邊界案例。
+
+*   **🧠 名詞定義**：
+    *   **Codex**：OpenAI 開發的 AI 模型，能將自然語言翻譯成程式碼。
+    *   **Sandbox (沙箱)**：一種安全機制，為執行中的程式提供隔離環境，防止影響外部系統。
+
+---
+
+### 🛡️ 案例三：兆勤 (Zyxel) 網管雲之身分認證演進
+
+*   **🔍 技術原理**：
+    兆勤 (Zyxel Networks) 在其 Nebula 雲端平台中導入了 **身分聯合 (Identity Federation)** 與 **Passkey (FIDO2)**。身分聯合透過 SAML 2.0 或 OIDC 協議，允許企業使用現有的 Google Workspace 或 Azure AD 帳號進行登入；而 Passkey 則基於公鑰加密技術（Asymmetric Cryptography），將私鑰儲存在硬體（如手機或 YubiKey）中，驗證過程不傳輸任何密碼。
+
+*   **⚔️ 攻擊向量**：
+    1.  **Credential Stuffing (撞庫攻擊)**：攻擊者利用外流的密碼嘗試登入網管平台，若啟用 Passkey 則此法失效。
+    2.  **Man-in-the-Middle (MITM/中間人攻擊)**：Passkey 綁定域名（Origin-bound），傳統釣魚網站無法攔截並偽造登入憑證。
+
+*   **🛡️ 防禦緩解**：
+    *   **多因素驗證 (MFA)**：強制管理員帳戶啟用抗釣魚的 FIDO2 認證。
+    *   **SSO (單一登入)**：減少管理多組密碼帶來的安全風險，集中管理權限生命週期。
+
+*   **🧠 名詞定義**：
+    *   **Passkey**：由 FIDO 聯盟推動的無密碼認證標準，利用生物辨識或硬體密鑰進行登入。
+    *   **Identity Federation**：一種跨組織的認證機制，讓用戶能用一組憑證存取多個系統。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 驅動的自動化供應鏈攻擊**：預計 2027 年前，攻擊者將利用 AI 生成數萬個具有合法外觀但隱藏微小漏洞的 npm/PyPI 套件，進行大規模「撒網式」滲透。
+2.  **多模態模型逃逸**：隨著 AI 開始處理影像與音訊，未來可能出現「惡意圖片」觸發 LLM 內部邏輯錯誤，進而引發沙箱逃逸的新型漏洞。
+3.  **無密碼化成為法規強制要求**：隨著歐盟 CRA (Cyber Resilience Act) 等法規推動，關鍵基礎設施之網管介面將被強制要求移除「預設密碼」並全面採用 Passkey。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   **BleepingComputer**: [Malicious npm packages evade install-script defenses at runtime](https://www.bleepingcomputer.com/news/security/malicious-npm-packages-evade-install-script-defenses-at-runtime/)
+*   **BleepingComputer**: [Researchers escape OpenAI Codex sandbox to run commands on host](https://www.bleepingcomputer.com/news/security/researchers-escape-openai-codex-sandbox-to-run-commands-on-host/)
+*   **iThome**: [支援身分聯合服務與Passkey，兆勤網管雲大幅強化登入安全](https://www.ithome.com.tw/review/179044)
+
+---
+**文件結尾**
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/09/20)
 
 這是一份針對 2026 年第三季末期全球資安威脅態勢的深度分析報告。本文件旨在提供給資安決策者（CISO）、架構師及技術人員，作為 AI 知識庫（如 NotebookLM）的訓練基石，協助建立自動化防禦思維。

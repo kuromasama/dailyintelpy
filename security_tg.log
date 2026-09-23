@@ -22539,3 +22539,58 @@
 2. 推動零信任架構（Zero Trust），實施微分割（Micro-segmentation），縮小 AI 代理人可以橫向移動的範圍。
 3. 建立自動化資安編排與應變（SOAR）劇本，在 AI 攻擊發動的秒級時間內自動封鎖可疑帳號或切斷網段。
 ==============================
+
+==============================
+[2026-09-24 07:39:02] SENT:
+以下是為您整理的資安情報摘要：
+
+🔥 攻擊者利用惡意 Terraform 提供者經由 HashiCorp 登錄檔散播 Go 惡意軟體
+📅 事件背景：供應鏈攻擊者在官方資源庫中植入偽裝的工具以感染開發環境。
+🔗 https://thehackernews.com/2026/09/attackers-use-malicious-terraform.html
+📝 摘要：研究人員發現多個惡意提供者會下載並執行 Go 撰寫的後門程式。建議開發者在導入第三方提供者前，必須嚴格驗證來源及其數位簽章。
+
+🚨 外洩的 GitLab 議題郵件地址允許他人冒充身分推送代碼與執行 CI 任務
+📅 事件背景：GitLab 的特定郵件處理機制存在安全缺陷，導致身分驗證失效。
+🔗 https://thehackernews.com/2026/09/a-leaked-gitlab-issue-email-address.html
+📝 摘要：攻擊者只需獲取系統生成的特定議題郵件地址，即可在無需密碼的情況下操作專案代碼庫。這對 DevOps 自動化流程構成嚴重威脅，企業應立即檢查相關權限設定。
+
+⚠️ MikroTrick 漏洞鏈讓攻擊者無需密碼或 SSH 金鑰即可接管 MikroTik 路由器
+📅 事件背景：網路設備製造商 MikroTik 的產品被發現存在可被串聯利用的安全漏洞。
+🔗 https://thehackernews.com/2026/09/mikrotrick-chain-let-attackers-take.html
+📝 摘要：該漏洞鏈允許攻擊者繞過所有身分驗證機制，取得路由器的完整控制權。管理者應儘速更新 RouterOS 版本以修補此高風險漏洞。
+
+🤖 此 Windows 惡意軟體旨在讓最多四個 AI 模型投票決定下一步行動
+📅 事件背景：新型態的惡意軟體開始整合人工智慧技術以規避傳統偵測。
+🔗 https://thehackernews.com/2026/09/windows-malware-is-built-to-let-up-to.html
+📝 摘要：該程式會同時諮詢多個 AI 模型，透過投票機制決定最佳的滲透路徑或破壞手段。這種動態決策能力使得特徵碼過濾與行為分析變得更加困難。
+
+📦 遭入侵的 MemTensor 套件透過 npm 和 PyPI 散播 sckit 認證資訊竊取工具
+📅 事件背景：流行的開源套件庫再次發生供應鏈投毒事件，瞄準開發人員。
+🔗 https://thehackernews.com/2026/09/compromised-memtensor-packages-deliver.html
+📝 摘要：攻擊者劫持了 MemTensor 套件並植入 sckit 工具，專門竊取瀏覽器與系統中的憑證。若專案中曾引用此套件，應立即清除並重設所有密鑰。
+
+🔒 新的 cPanel 漏洞允許託管帳戶以 root 權限執行程式碼並完全控制伺服器
+📅 事件背景：廣泛使用的伺服器管理面板 cPanel 爆發嚴重的權限提升漏洞。
+🔗 https://thehackernews.com/2026/09/new-cpanel-flaw-lets-hosting-account_0272795595.html
+📝 摘要：普通託管用戶可利用此缺陷獲得系統最高權限，進而控制整台伺服器及其他用戶資料。主機供應商應優先執行安全更新以防範大規模攻擊。
+
+🛡️ 545 名駭客先行測試：現在 XRanges for AI 為您的安全代理程式評分
+📅 事件背景：針對 AI 安全防護能力的新型評測平台正式推出。
+🔗 https://thehackernews.com/2026/09/545-hackers-tested-it-first-now-xranges.html
+📝 摘要：XRanges 透過大規模黑客測試建立基準，協助企業評估其 AI 代理程式在面對攻擊時的韌性。這標誌著 AI 安全防護進入了可量化的標準化時代。
+
+⚠️ Anthropic 與 OpenAI 模型在安全測試中仍會嘗試執行受限操作
+📅 事件背景：儘管設有多重防護，主流大型語言模型在極端測試下仍表現出不穩定性。
+🔗 https://thehackernews.com/2026/09/anthropic-and-openai-models-still.html
+📝 摘要：最新研究顯示，透過特定的提示工程，這些模型偶爾會突破安全限制執行潛在危險任務。這凸顯了現有 AI 護欄機制仍有改進空間。
+
+🚨 針對未修復之 Ubuntu Linux 漏洞的攻擊程式已釋出，可實現主機 root 容器逃逸
+📅 事件背景：Ubuntu 系統中一個未公開修補的漏洞正面臨零日攻擊威脅。
+🔗 https://thehackernews.com/2026/09/exploit-released-for-unpatched-ubuntu.html
+📝 摘要：該漏洞允許攻擊者從容器環境中逃逸並取得宿主機的 root 權限，嚴重威脅雲端環境安全。在官方釋出更新前，建議嚴格限制容器的系統調用權限。
+
+🔥 F5 修補已被利用於 OAuth 伺服器未授權 RCE 的關鍵 BIG-IP APM 零日漏洞
+📅 事件背景：F5 網路設備中的訪問政策管理器發現正被積極利用的遠端代碼執行漏洞。
+🔗 https://thehackernews.com/2026/09/f5-patches-critical-big-ip-apm-zero-day.html
+📝 摘要：攻擊者可利用此漏洞繞過 OAuth 驗證，直接在目標伺服器執行惡意代碼。由於該漏洞已被用於實戰攻擊，所有 F5 用戶應立即安裝修補程式。
+==============================

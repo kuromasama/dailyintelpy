@@ -1,3 +1,114 @@
+# 🛡️ 資安戰情白皮書 (2026/09/27)
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在本週的資安態勢觀察中，我們發現攻擊者的戰術正經歷顯著的範式轉移。核心趨勢集中於 **「合法工具與環境的武器化」**。從利用 AMD 合法驅動程式繞過安全監控，到鎖定 AI Agent 的可視化缺口，再到透過高級 WAF 繞過技術滲透企業 ERP 系統。
+
+**戰略建議：**
+1.  **深化端點深度防護 (EDR/XDR)：** 僅靠特徵碼已不足夠，應加強對「帶有漏洞的合法驅動程式」(BYOVD) 載入行為的行為監測。
+2.  **重新評估周邊防禦機制：** WAF 繞過技術日益成熟，應採取「縱深防護」策略，在應用層內建自我保護 (RASP)。
+3.  **AI 治理自動化：** 隨著 AI Agent 介入業務流程，必須將其納入零信任架構，解決「零可視化」帶來的身份認證風險。
+4.  **漏洞響應優先級：** SharePoint RCE 與 MikroTik 漏洞正被積極利用，應立即啟動緊急補丁程序。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 序號 | 標題 (中英對照) | 威脅等級 |
+| :--- | :--- | :--- |
+| 01 | **Lunex Stealer 利用 AMD 驅動程式禁用安全監控並竊取瀏覽器憑證**<br>Lunex Stealer Abuses AMD Driver to Disable Security Monitoring | 🔴 極高 |
+| 02 | **攻擊者繞過 WAF 漏洞利用 Oracle PeopleSoft 並部署 Web Shell**<br>Attackers Bypass WAFs to Exploit Oracle PeopleSoft Flaw | 🔴 極高 |
+| 03 | **AI Agent 的零信任始於修復可視化缺口**<br>Zero Trust for AI Agents Starts With Fixing Zero Visibility | 🟡 中 |
+| 04 | **Elementor CSRF 漏洞允許攻擊者在管理員點擊連結後接管網站**<br>Elementor CSRF Flaw Lets Attackers Take Over Sites | 🟠 高 |
+| 05 | **SharePoint RCE 與 MikroTik RouterOS 漏洞正被積極利用**<br>SharePoint RCE and MikroTik RouterOS Flaws Actively Exploited | 🔴 極高 |
+| 06 | **Kiteworks 因應潛在網絡攻擊要求客戶關閉系統 9 小時**<br>Kiteworks Urges Customers to Shut Down Systems for 9 Hours | 🟠 高 |
+| 07 | **ShinyHunters 在 Oracle PeopleSoft 攻擊中使用 WAF 繞過技巧**<br>ShinyHunters uses WAF bypass trick in Oracle PeopleSoft attacks | 🔴 極高 |
+| 08 | **Claude Opus 5.5 減少 95% 長破折號使用，但答案變長**<br>Claude Opus 5.5 uses 95% fewer em dashes, but answers are getting longer | ⚪ 資訊 |
+| 09 | **Microsoft 因 Office 授權停用問題暫停 KB5002907 更新**<br>Microsoft pauses KB5002907 update after Office license deactivations | 🟡 中 |
+| 10 | **GitHub Actions 重新啟用，Mini Shai-Hulud 有害酬載仍活躍**<br>GitHub Actions re-enabled with Mini Shai-Hulud payload still active | 🟠 高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 1️⃣ Lunex Stealer: BYOVD 核心威脅
+*   **🔍 技術原理：** Lunex Stealer 採用了 **BYOVD (Bring Your Own Vulnerable Driver)** 技術。它將一個已知具有安全漏洞的合法 AMD 驅動程式加載到目標系統中，利用該驅動程式的內核權限來終止端點防護軟體 (EDR/AV) 的進程，並在不被發現的情況下訪問瀏覽器的 SQLite 資料庫。
+*   **⚔️ 攻擊向量：** 釣魚郵件或惡意軟體下載 -> 提升權限 -> 加載惡意驅動程式 (Kernel Mode) -> 禁用監控 -> 竊取憑證 (Chrome, Edge, Firefox)。
+*   **🛡️ 防禦緩解：** 啟用微軟的「易受攻擊驅動程式阻止清單」(Vulnerable Driver Blocklist)；實施強大的程式碼簽名驗證策略；監控 `ntoskrnl.exe` 的異常調用。
+*   **🧠 名詞定義：** **BYOVD (帶上你自己的脆弱驅動程式)**：攻擊者利用受信任但有漏洞的驅動程式來獲取核心級限權限。
+
+### 2️⃣ & 7️⃣ Oracle PeopleSoft WAF 繞過 (ShinyHunters)
+*   **🔍 技術原理：** 駭客組織 **ShinyHunters** 利用特定的編碼技巧 (如二次 URL 編碼或分段傳輸) 繞過網頁應用程式防火牆 (WAF) 的特徵檢測，成功觸發 Oracle PeopleSoft 的內部漏洞，進而植入 Web Shell。
+*   **⚔️ 攻擊向量：** 構造特殊 HTTP 請求 -> WAF 誤判為正常流量 -> 攻擊到達 Oracle 後台 -> 執行命令 -> 植入持久化 Web Shell。
+*   **🛡️ 防禦緩解：** 更新 WAF 規則集以識別高度編碼的 Payloads；升級 Oracle PeopleSoft 至最新補丁版本；限制 Web 伺服器對外的寫入權限。
+*   **🧠 名詞定義：** **Web Shell**：上傳至伺服器的惡意腳本，允許攻擊者透過瀏覽器遠端控制伺服器。
+
+### 3️⃣ AI Agent 的零信任挑戰
+*   **🔍 技術原理：** AI Agent (如自動化執行任務的 LLM 實例) 在運作時往往具有高權限，但其決策過程對傳統資安監控工具是「黑箱」，導致出現 **"Zero Visibility" (零可視化)**。
+*   **⚔️ 攻擊向量：** 提示詞注入 (Prompt Injection) -> 指令 AI Agent 調用機密 API -> 數據外洩。
+*   **🛡️ 防禦緩解：** 為 AI Agent 建立獨立的身份標識；實施 API 調用的最小權限原則；對 Agent 的輸出進行內容過濾與行為稽核。
+*   **🧠 名詞定義：** **AI Agent**：基於大型語言模型，能自主規劃路徑並調用外部工具完成任務的智能體。
+
+### 4️⃣ Elementor CSRF 帳號接管
+*   **🔍 技術原理：** WordPress 著名插件 Elementor 存在 **CSRF (跨站請求偽造)** 漏洞。攻擊者誘使已登錄的管理員點擊特定連結，該連結會觸發後台函數，修改管理員電子郵件或直接創建新的高權限帳戶。
+*   **⚔️ 攻擊向量：** 社交工程連結 -> 管理員點擊 -> 背景執行修改權限請求 -> 攻擊者獲取後台控制權。
+*   **🛡️ 防禦緩解：** 立即更新 Elementor 插件；確保 Web 應用程式檢查請求中的 Nonce (隨機數) Token。
+*   **🧠 名詞定義：** **CSRF (Cross-Site Request Forgery)**：強迫用戶在當前已驗證的瀏覽器中執行非預期操作的攻擊。
+
+### 5️⃣ SharePoint RCE & MikroTik 積極利用
+*   **🔍 技術原理：** SharePoint 的 **CVE-2024-38094** RCE 漏洞允許遠程攻擊者在伺服器上下文中執行代碼。同時，MikroTik RouterOS 漏洞正被 Botnet 用於橫向移動。
+*   **⚔️ 攻擊向量：** 未經身份驗證的遠端請求 -> 解析器漏洞觸發 -> 獲取系統 Shell。
+*   **🛡️ 防禦緩解：** 封閉不必要的 SharePoint 對外埠；針對 MikroTik 路由器禁用 WinBox 遠端管理功能並限制來源 IP。
+*   **🧠 名詞定義：** **RCE (Remote Code Execution)**：遠端程式碼執行，是最嚴重的資安漏洞類型。
+
+### 6️⃣ Kiteworks 系統緊急停機
+*   **🔍 技術原理：** 為了應對極其隱蔽的供應鏈攻擊或潛在的零日漏洞利用，Kiteworks 採取了極端的 **「防禦性停機」(Preventative Shutdown)**。
+*   **⚔️ 攻擊向量：** 懷疑伺服器遭到潛在滲透，為防止數據外洩擴大而主動切斷連接。
+*   **🛡️ 防禦緩解：** 制定 BCP (業務連續性計劃)；在復歸前進行完整的完整性校驗與日誌審查。
+
+### 8️⃣ Claude Opus 5.5 行為演進
+*   **🔍 技術原理：** Anthropic 更新了其旗艦模型，顯著改變了符號使用偏好 (破折號減少) 與輸出長度。
+*   **⚔️ 攻擊向量：** 無直接威脅，但模型行為的改變可能影響依賴精確格式的自動化安全檢測腳本。
+*   **🛡️ 防禦緩解：** 測試並調整 Prompt Engineering 以適應新版模型的回應特徵。
+
+### 9️⃣ Microsoft 更新災難 (KB5002907)
+*   **🔍 技術原理：** 由於更新腳本錯誤，導致 Office 授權驗證失敗，將合法授權識別為無效。
+*   **⚔️ 攻擊向量：** 非攻擊，為運維風險導致的 **可用性 (Availability)** 受損。
+*   **🛡️ 防禦緩解：** 實施補丁分階段推送 (Staged Rollout)；配置 WSUS 以便在發現問題時能迅速撤回。
+
+### 🔟 GitHub Actions: Mini Shai-Hulud 殘留
+*   **🔍 技術原理：** 儘管 GitHub 採取了行動，但名為 **"Mini Shai-Hulud"** 的惡意酬載仍透過複雜的 Workflow 引用鏈路存在於 CI/CD 流水中。
+*   **⚔️ 攻擊向量：** 供應鏈投毒 -> 自動化構建時執行惡意腳本 -> 竊取 GitHub Secret。
+*   **🛡️ 防禦緩解：** 鎖定 GitHub Actions 的版本 Hash 而非 Tag；定期審查外部 Action 的安全性。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **BYOVD 攻擊平民化：** 隨著 Lunex 等 Stealer 集成此技術，未來即使是低技術門檻的駭客也能輕鬆禁用 EDR。
+2.  **AI 影子資產 (Shadow AI) 增加：** 員工私自使用的 AI Agent 將成為企業新的數據洩漏窗口。
+3.  **WAF 攻防戰升級：** 傳統基於正則表達式的 WAF 將被「語義分析型 WAF」取代，因為 ShinyHunters 等組織的編碼技術已達爐火純青。
+4.  **基礎設施的持續打擊：** MikroTik 與 SharePoint 等核心組件將繼續作為勒索軟體與國家級駭客的首選切入點。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Lunex Stealer Abuses AMD Driver to Disable Security Monitoring](https://thehackernews.com/2026/09/lunex-stealer-abuses-amd-driver-to.html)
+*   [Attackers Bypass WAFs to Exploit Oracle PeopleSoft Flaw](https://thehackernews.com/2026/09/attackers-bypass-wafs-to-exploit-oracle.html)
+*   [Zero Trust for AI Agents Starts With Fixing Zero Visibility](https://thehackernews.com/2026/09/zero-trust-for-ai-agents-starts-with.html)
+*   [Elementor CSRF Flaw Lets Attackers Take Over Sites](https://thehackernews.com/2026/09/elementor-csrf-flaw-lets-attackers-take.html)
+*   [SharePoint RCE and MikroTik RouterOS Flaws Actively Exploited](https://thehackernews.com/2026/09/sharepoint-rce-and-mikrotik-routeros.html)
+*   [Kiteworks Urges Customers to Shut Down Systems](https://thehackernews.com/2026/09/kiteworks-urges-customers-to-shut-down.html)
+*   [ShinyHunters uses WAF bypass trick in Oracle PeopleSoft attacks](https://www.bleepingcomputer.com/news/security/shinyhunters-uses-waf-bypass-trick-in-oracle-peoplesoft-attacks/)
+*   [Claude Opus 5.5 Behavioral Changes](https://www.bleepingcomputer.com/news/artificial-intelligence/claude-opus-55-uses-95-percent-fewer-em-dashes-but-its-answers-are-getting-longer/)
+*   [Microsoft pauses KB5002907 update](https://www.bleepingcomputer.com/news/microsoft/microsoft-365-kb5002907-update-paused-after-office-license-deactivations/)
+*   [GitHub Actions Mini Shai-Hulud active payload](https://www.bleepingcomputer.com/news/security/github-actions-re-enabled-with-mini-shai-hulud-payload-still-active/)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/09/26)
 
 這份白皮書旨在為企業決策者與資安專家提供最新的全球威脅情報。本報告整合了 2026 年 9 月下旬最關鍵的資安事件，從 CI/CD 供應鏈攻擊、macOS 惡意軟體演化，到雲端多租戶隔離漏洞，提供深度的技術分析與防禦建議，適用於 AI 知識庫（如 NotebookLM）的深度學習與檢索。

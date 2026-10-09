@@ -1,3 +1,135 @@
+# 🛡️ 資安戰情白皮書 (2026/10/09)
+
+本報告旨在為 CISO、資安架構師及技術決策者提供 2026 年 10 月份關鍵威脅情資之深度分析，用於強化 AI 知識庫 (NotebookLM) 之訓練基礎，並提升組織對新興威脅的韌性。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+2026 年第四季的威脅態勢顯示出 **「攻擊武器化 AI」** 與 **「供應鏈寄生性攻擊」** 的顯著合流。我們觀察到以下核心趨勢：
+1.  **國家級駭客門戶化**：APT 組織不再僅限於竊密，而是建立自動化門戶將盜取數據商業化。
+2.  **供應鏈投毒蠕蟲化**：如 Tensorlake 事件，攻擊者利用開源生態系 (npm) 進行蠕蟲式傳播。
+3.  **防禦工具雙向性**：攻擊者正頻繁挪用 AI 滲透測試工具（如 ARTEX）進行真實攻擊。
+
+**戰略建議**：
+*   **推動 SBOM (軟體清單) 實時監控**：針對 npm/PyPI 等動態依賴進行行為分析。
+*   **API 零信任架構**：針對日本 API 濫用事件，應強化行動端 API 的身分驗證與速率限制。
+*   **資安治理透明化**：嚴查第三方救援公司（如 MonsterCloud 事件），落實盡職調查。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+1.  **FBI Says China-Linked Hackers Ran Portal Giving Third Parties Access to Stolen Emails**
+    (FBI 指出中國關聯駭客運行門戶，允許第三方存取盜取的電子郵件)
+2.  **ThreatsDay: Ransomware Affiliate Betrayal, WhatsApp RAT, Exposed Hacker Tools and 12 More Stories**
+    (威脅日報：勒索軟體加盟商背叛、WhatsApp 遠端控制木馬、外洩駭客工具及其他 12 則故事)
+3.  **Japan Sees Sharp Rise in Web Data Leaks Amid Mobile API Abuse and Metabase Attacks**
+    (日本網頁數據外洩急遽上升：聚焦行動 API 濫用與 Metabase 攻擊)
+4.  **UAC-0099 Targets Ukrainian Government Personnel With ASHVEIN RAT Hiding Commands in HTML**
+    (UAC-0099 鎖定烏克蘭政府人員：利用 HTML 隱藏指令的 ASHVEIN RAT)
+5.  **ARTEX AI Pentesting Tool Used in Data Theft Attacks on South Korean Financial Firms**
+    (ARTEX AI 滲透測試工具被用於攻擊南韓金融機構並竊取數據)
+6.  **Wazza Phishkit Targets Banking, Government, and Manufacturing Across the US, EU, and Australia**
+    (Wazza 釣魚套件鎖定美、歐、澳之銀行、政府與製造業)
+7.  **16 Malicious Firefox Extensions Pose as Rabby and OKX Wallets to Steal Recovery Phrases**
+    (16 款惡意 Firefox 擴充功能偽裝成 Rabby 與 OKX 錢包以竊取助記詞)
+8.  **U.S. Offers Up to $10 Million for Tips on Zhang Yu, Charged in HAFNIUM Hacks**
+    (美國懸賞 1,000 萬美元徵求張宇情資，其涉入 HAFNIUM 駭客行動)
+9.  **MonsterCloud Owner Accused of Billing Over $19M While Secretly Paying Ransoms to Decrypt Data**
+    (MonsterCloud 負責人被控詐取 1,900 萬美元：祕密支付勒索金以偽裝數據修復)
+10. **Tensorlake npm Package Compromised to Deliver Shai-Hulud Credential-Stealing Worm**
+    (Tensorlake npm 套件遭植入惡意代碼，散布 Shai-Hulud 憑證竊取蠕蟲)
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 中國關聯駭客的電子郵件門戶案
+*   **🔍 技術原理**：攻擊者利用已獲取的 Exchange 或 O365 憑證，建立了一個後端對接的 Web Portal。這不是傳統的資料庫轉儲，而是一個「搜尋引擎化」的介面，讓其他關聯團體能即時檢索特定關鍵字郵件。
+*   **⚔️ 攻擊向量**：憑證填充 (Credential Stuffing)、Token 盜取。
+*   **🛡️ 防禦緩解**：實施嚴格的條件存取 (Conditional Access)；監測不尋常的電子郵件同步 (IMAP/EWS) 流量。
+*   **🧠 名詞定義**：**Initial Access Broker (IAB)** - 初始存取經紀人，專門獲取權限並轉賣。
+
+### 3.2 ThreatsDay: 勒索軟體加盟商背叛與 WhatsApp RAT
+*   **🔍 技術原理**：RaaS (勒索軟體即服務) 成員內部糾葛導致解密金鑰外洩。同時，WhatsApp RAT 利用 Web 版本的漏洞，透過發送惡意媒體檔案觸發緩衝區溢位。
+*   **⚔️ 攻擊向量**：社會工程學、零日漏洞利用。
+*   **🛡️ 防禦緩解**：禁用非必要的即時通訊軟體 Web 版；對勒索軟體金鑰進行多重備份。
+*   **🧠 名詞定義**：**Affiliate Betrayal** - 指犯罪集團成員因分贓不均流出敏感資料。
+
+### 3.3 日本 Mobile API 濫用與 Metabase 攻擊
+*   **🔍 技術原理**：攻擊者針對未經妥善驗證的行動端 API 進行 Mass Assignment 攻擊，直接修改或查詢後台數據。此外利用 Metabase 舊版本的 RCE (遠端代碼執行) 漏洞滲透分析平台。
+*   **⚔️ 攻擊向量**：API BOLA (不安全對象級授權)、版本過低的資產利用。
+*   **🛡️ 防禦緩解**：API Gateway 應強制執行 JWT 驗證；落實補丁管理 (Patch Management)。
+*   **🧠 名詞定義**：**Mass Assignment** - 當軟體自動將用戶輸入綁定至內部變數時，導致未授權的數據修改。
+
+### 3.4 UAC-0099 的 ASHVEIN RAT (HTML 指令隱藏)
+*   **🔍 技術原理**：ASHVEIN 採用了 HTML Smuggling 技術。惡意指令被編碼在 `<script>` 標籤或隱形的 HTML 元素屬性中，避開靜態掃描。
+*   **⚔️ 攻擊向量**：魚叉式釣魚郵件 (Spear Phishing)。
+*   **🛡️ 防禦緩解**：阻斷常見的下載行為 (如 Blob 物件下載)；檢查 HTML 檔案中的高度模糊化 (Obfuscation) 代碼。
+*   **🧠 名詞定義**：**HTML Smuggling** - 利用 HTML5 和 JavaScript 在客戶端瀏覽器中生成惡意檔案，以繞過網頁過濾器。
+
+### 3.5 ARTEX AI 滲透測試工具之惡用
+*   **🔍 技術原理**：ARTEX 本為自動化紅隊工具，攻擊者將其修改後，利用其內建的 AI 引擎自動識別南韓金融網站的防禦弱點並自動生成漏洞利用載荷。
+*   **⚔️ 攻擊向量**：AI 輔助的漏洞自動化挖掘。
+*   **🛡️ 防禦緩解**：部署基於行為的 WAF；建立「攻擊路徑預測」模型。
+*   **🧠 名詞定義**：**Weaponized AI** - 將機器學習模型應用於攻擊生命週期中的偵察、開發或自動化攻擊階段。
+
+### 3.6 Wazza Phishkit 全球跨產業釣魚
+*   **🔍 技術原理**：Wazza 是一個高度模組化的釣魚包 (Phishkit)，支持 AiTM (中間人) 攻擊，能繞過傳統 MFA。
+*   **⚔️ 攻擊向量**：假冒登入頁面、即時 Token 攔截。
+*   **🛡️ 防禦緩解**：採用 FIDO2/Passkey 硬體金鑰；教育員工識別 URL 異常。
+*   **🧠 名詞定義**：**AiTM (Adversary-in-the-Middle)** - 攻擊者介於用戶與真實服務之間，實時轉發流量以竊取 Session Cookie。
+
+### 3.7 Firefox 惡意擴充功能 (Rabby/OKX 偽裝)
+*   **🔍 技術原理**：這 16 款擴充功能在底層監聽 DOM 事件，當用戶輸入助記詞 (Recovery Phrases) 時，立即將內容回傳至 C2 伺服器。
+*   **⚔️ 攻擊向量**：瀏覽器擴充功能商店投毒。
+*   **🛡️ 防禦緩解**：鎖定企業瀏覽器之擴充功能安裝權限；使用硬體錢包而非純軟體插件。
+*   **🧠 名詞定義**：**Seed Phrase Theft** - 竊取用於生成加密貨幣錢包私鑰的原始 12-24 個單字。
+
+### 3.8 美國懸賞 HAFNIUM 核心人物張宇
+*   **🔍 技術原理**：HAFNIUM 曾利用 Microsoft Exchange 的「ProxyLogon」漏洞。張宇被指控開發了關鍵的 Web Shell 工具。
+*   **⚔️ 攻擊向量**：國家級 APT 行動、零日漏洞串聯。
+*   **🛡️ 防禦緩解**：針對關鍵基礎設施進行威脅獵捕 (Threat Hunting)；強化跨國資安司法合作。
+*   **🧠 名詞定義**：**APT (Advanced Persistent Threat)** - 進階持續性威脅，通常指受國家支持的長期網路入侵。
+
+### 3.9 MonsterCloud 偽數據修復詐騙
+*   **🔍 技術原理**：該公司聲稱擁有專利技術可解密數據，實則是向駭客購買解密金鑰，隨後向受害者收取高額「修復費」。這助長了勒索軟體的獲利循環。
+*   **⚔️ 攻擊向量**：商業欺詐 (Business Fraud)。
+*   **🛡️ 防禦緩解**：選擇獲信任的資安服務商；在支付任何費用前要求第三方技術審計。
+*   **🧠 名詞定義**：**Double Dipping** - 指在同一事件中從兩端獲利，此處指收受害者錢並資助攻擊者。
+
+### 3.10 Tensorlake npm 供應鏈攻擊 (Shai-Hulud 蠕蟲)
+*   **🔍 技術原理**：攻擊者接管了 Tensorlake 相關的維護者帳號，並發布了惡意更新。該更新包含 Shai-Hulud 蠕蟲，會搜尋本地環境變數 (.env)、SSH Key 並自動擴散至開發者參與的其他專案。
+*   **⚔️ 攻擊向量**：軟體供應鏈投毒、帳號接管 (ATO)。
+*   **🛡️ 防禦緩解**：使用 `npm audit`；對 CI/CD 流程中的相依性套件實施靜態代碼掃描。
+*   **🧠 名詞定義**：**Supply Chain Attack** - 通過攻擊上游軟體供應商或開源庫，影響下游所有用戶。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 攻防不對稱性**：隨著 ARTEX 這類工具普及，攻擊者的技術門檻將大幅降低，未來 6 個月內「多變量自動化攻擊」將成為主流。
+2.  **供應鏈隱形化**：類似 Tensorlake 的攻擊將不再侷限於 npm，未來可能出現針對 AI 模型庫 (Hugging Face) 的惡意權重植入 (Malicious Weights)。
+3.  **地緣政治與數據門戶**：國家級駭客將更多地利用「數據門戶」作為外交籌碼或長期監控工具，重點不再是破壞，而是精準的「按需檢索」。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [FBI Says China-Linked Hackers Ran Portal Giving Third Parties Access to Stolen Emails](https://thehackernews.com/2026/10/fbi-says-china-linked-hackers-ran.html)
+*   [ThreatsDay: Ransomware Affiliate Betrayal, WhatsApp RAT, Exposed Hacker Tools](https://thehackernews.com/2026/10/threatsday-ransomware-affiliate.html)
+*   [Japan Sees Sharp Rise in Web Data Leaks Amid Mobile API Abuse](https://thehackernews.com/2026/10/japan-sees-sharp-rise-in-web-data-leaks.html)
+*   [UAC-0099 Targets Ukrainian Government Personnel With ASHVEIN RAT](https://thehackernews.com/2026/10/uac-0099-targets-ukrainian-government.html)
+*   [ARTEX AI Pentesting Tool Used in Data Theft Attacks](https://thehackernews.com/2026/10/artex-ai-pentesting-tool-used-in-data.html)
+*   [Wazza Phishkit Targets Banking, Government, and Manufacturing](https://thehackernews.com/2026/10/wazza-phishkit-targets-banking.html)
+*   [16 Malicious Firefox Extensions Pose as Rabby and OKX Wallets](https://thehackernews.com/2026/10/16-malicious-firefox-extensions-pose-as.html)
+*   [U.S. Offers Up to $10 Million for Tips on Zhang Yu](https://thehackernews.com/2026/10/us-offers-up-to-10-million-for-tips-on.html)
+*   [MonsterCloud Owner Accused of Billing Over $19M](https://thehackernews.com/2026/10/monstercloud-owner-accused-of-billing.html)
+*   [Tensorlake npm Package Compromised to Deliver Shai-Hulud Worm](https://thehackernews.com/2026/10/tensorlake-npm-package-compromised-to.html)
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/10/08)
 
 本文件專為 AI 知識庫 (NotebookLM) 訓練設計，彙整 2026 年 10 月初之關鍵資安威脅指標、技術深度分析與戰略防禦建議。

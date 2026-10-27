@@ -1,3 +1,130 @@
+# 🛡️ 資安戰情白皮書 (2026/10/27)
+
+這是一份針對 2026 年 10 月末全球資安威脅態勢的深度分析報告，旨在為企業決策者、安全架構師及 AI 知識庫提供高密度的技術情資。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+在本週的威脅觀察中，我們看到攻擊者的戰術正經歷顯著的「範式轉移」。**供應鏈攻擊與身分憑證劫持**已不再是單純的技術突破，而是演變為針對「自動化系統」與「信任鏈結」的精準打擊。
+
+*   **自動化信任的崩潰**：從 Magento 電商平台的腳本注入到 AI 編碼代理（AI Coding Agents）的誘導攻擊，顯示出攻擊者正利用開發流程與自動化運維中的信任盲點。
+*   **身分驗證的脆弱性**：Microsoft 365 的 Token 重放攻擊（Token-Replay）與 GitHub Secret 的洩漏，證明了即使具備 MFA，若缺乏持續性的 Session 管理與日誌監控，防禦體系依然如履薄冰。
+*   **底層架構的危機**：PHP Windows 版本與 Wasmtime 的漏洞提醒我們，現代軟體堆棧的基礎組件（如壓縮庫、沙箱環境）仍是高價值的攻擊目標。
+
+**戰略建議**：企業應立即從「邊界防禦」轉向「韌性架構」，落實 **Zero Trust 零信任架構** 中的持續驗證機制，並針對 AI 導入過程中的數據邊界進行嚴格審查。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+1.  **Hackers Infect 953 Online Stores With Scanner-Evading JavaScript, Mostly on Magento**
+    *   駭客利用規避掃描器的 JavaScript 感染 953 家線上商店，受害者多為 Magento 用戶。
+2.  **PHP Issues Second Windows Security Update in Five Days to Fix Brotli Code Execution Flaw**
+    *   PHP 在五天內發布第二次 Windows 安全更新，修復 Brotli 壓縮程式碼執行漏洞。
+3.  **Attackers Use Microsoft Teams IT Support Scams to Deploy Malware and Ransomware**
+    *   攻擊者利用 Microsoft Teams IT 技術支援詐騙，部署惡意軟體與勒索軟體。
+4.  **⚡ Weekly Recap: This2Shell, That2Shell, Everything's an RCE? Rogue AI, Supply Chain Chaos and More**
+    *   本週回顧：RCE 漏洞爆發、惡意 AI、供應鏈混亂及其它資安動態。
+5.  **Two Critical Wasmtime Flaws Could Let Malicious WebAssembly Modules Escape Sandboxes**
+    *   兩個關鍵 Wasmtime 漏洞可能允許惡意 WebAssembly 模組逃脫沙箱環境。
+6.  **Between alerts: What Attackers Do in the Spaces Ordinary Detection Misses**
+    *   警報之間：攻擊者如何在傳統檢測工具的盲區中活動。
+7.  **uCreator Android Spyware Can Steal Telegram 2FA Passwords and Clone WeChat Accounts**
+    *   uCreator 安卓間諜軟體可竊取 Telegram 2FA 密碼並複製微信帳號。
+8.  **Microsoft 365 Token-Replay Attacks Compromise 97 Accounts at 79 Organizations**
+    *   Microsoft 365 Token 重放攻擊導致 79 個組織的 97 個帳戶遭到入侵。
+9.  **Gheist Uses Stolen GitHub Tokens to Steal Private Repository Secrets via Actions Logs**
+    *   Gheist 利用遭竊的 GitHub Token 通過 Actions 日誌竊取私有倉庫機密。
+10. **Malicious File in Downloads Folder Tries to Trick AI Coding Agent Into Installing Malware**
+    *   下載資料夾中的惡意檔案嘗試誘導 AI 編碼代理安裝惡意軟體。
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 Magento 隱匿型腳本注入 (Magecart 變種)
+*   **🔍 技術原理**：攻擊者開發了一種高度混淆的 JavaScript 程式碼，能偵測瀏覽器環境及開發者工具（DevTools）是否開啟。若偵測到受害者的環境為真實購物結帳頁面，則執行側錄信用卡號碼（Card Skimming）的行為；若偵測到掃描器特徵，則隱藏惡意酬載。
+*   **⚔️ 攻擊向量**：利用 Magento 插件中的已知漏洞或強行破解後台帳密（Brute-force），獲取模板編輯權限後植入程式碼。
+*   **🛡️ 防禦緩解**：實施內容安全策略 (CSP) 以限制外部腳本加載；使用 Subresource Integrity (SRI) 驗證腳本完整性；部署伺服器端文件變動監控 (FIM)。
+*   **🧠 名詞定義**：**Magecart Attack** 指針對電子商務平台結帳頁面的側錄攻擊，旨在竊取支付卡資訊。
+
+### 3.2 PHP Windows Brotli 遠端程式碼執行 (RCE)
+*   **🔍 技術原理**：Brotli 壓縮算法在庫實現中存在緩衝區溢位漏洞（Buffer Overflow）。在 Windows 環境下，PHP 處理由惡意伺服器回傳的 Brotli 壓縮內容時，可能觸發記憶體破壞。
+*   **⚔️ 攻擊向量**：誘使 PHP 應用程式透過 `curl` 或 `file_get_contents` 向攻擊者控制的伺服器發送請求，回傳精心構造的 Brotli 壓縮流。
+*   **🛡️ 防禦緩解**：立即升級 PHP 至官方最新修補版本；關閉非必要的 Brotli 擴展支援。
+*   **🧠 名詞定義**：**Brotli** 是由 Google 開發的一種通用無損數據壓縮算法。
+
+### 3.3 MS Teams 社交工程詐騙
+*   **🔍 技術原理**：攻擊者偽裝成組織內的 IT 支援人員，利用 External Access 功能向員工發送訊息。透過誘導員工安裝「遠端協助工具」（實際上是惡意軟體載體），繞過傳統 Email 網關的過濾。
+*   **⚔️ 攻擊向量**：利用 Teams 的外部租戶溝通功能發起對話（Smishing 變種）。
+*   **🛡️ 防禦緩解**：限制 Microsoft Teams 的外部存取權限；啟用「僅限已知網域」通信；對員工進行「非預期遠端協助請求」的安全意識培訓。
+*   **🧠 名詞定義**：**Smishing** 是簡訊詐騙（SMS Phishing）的延伸，現泛指所有即時通訊軟體上的釣魚攻擊。
+
+### 3.4 Wasmtime 沙箱逃逸
+*   **🔍 技術原理**：Wasmtime 是 WebAssembly 的運行時環境。其漏洞源於線性記憶體邊界檢查的設計錯誤，允許編譯後的 WASM 模組存取主機進程的記憶體空間。
+*   **⚔️ 攻擊向量**：上傳惡意的 `.wasm` 模組至雲原生或邊緣運算平台（如 Cloudflare Workers 的私有實現）。
+*   **🛡️ 防禦緩解**：更新 Wasmtime 到最新版本；限制 WASM 模組的可調用資源權限。
+*   **🧠 名詞定義**：**Wasmtime** 一個開源的、輕量級的 WebAssembly 執行引擎，常用於邊緣運算。
+
+### 3.5 偵測盲區 (Between Alerts) 技術分析
+*   **🔍 技術原理**：攻擊者利用 Living-off-the-Land (LotL) 技術，使用系統內建工具（如 PowerShell, WMI）進行「低頻率、長時間」的操作，避開以「異常行為閾值」為主的警報系統。
+*   **⚔️ 攻擊向量**：在兩次安全掃描或警報觸發的空檔期間執行權限提升或數據外洩。
+*   **🛡️ 防禦緩解**：導入持續性的端點偵測與響應 (EDR)；建立基於行為基準線（Baseline）的分析模型，而非僅依賴特徵碼。
+*   **🧠 名詞定義**：**Living-off-the-Land (LotL)** 指攻擊者不使用自製惡意程式，而是利用系統合法工具執行非法操作。
+
+### 3.6 uCreator 安卓間諜軟體
+*   **🔍 技術原理**：該軟體偽裝成合法應用，利用 Android 的輔助功能服務 (Accessibility Services) 攔截螢幕內容，從而繞過加密通訊軟體的防護。
+*   **⚔️ 攻擊向量**：透過第三方應用商店或色情/非法下載網站散布 APK 文件。
+*   **🛡️ 防禦緩解**：禁止安裝來源不明的應用 (Sideloading)；定期檢查輔助功能權限清單；使用行動裝置管理 (MDM) 解決方案。
+*   **🧠 名詞定義**：**2FA (Two-Factor Authentication)** 雙因素驗證，此攻擊證明了當設備核心權限失控時，2FA 亦無法保證安全。
+
+### 3.7 M365 Token 重放攻擊 (Token-Replay)
+*   **🔍 技術原理**：攻擊者透過釣魚或惡意軟體竊取用戶已登錄的 Session Token。由於 Token 包含認證資訊，攻擊者可將其導入自己的瀏覽器，直接接管用戶 Session，無需 MFA。
+*   **⚔️ 攻擊向量**：針對高權限帳戶進行中間人攻擊 (AiTM) 或使用竊取 Cookie 的惡意軟體。
+*   **🛡️ 防禦緩解**：實施 Token 綁定 (Token Binding) 策略；強制執行基於設備合規性的條件訪問控制。
+*   **🧠 名詞定義**：**Token-Replay** 攻擊者使用截獲的合法驗證令牌來冒充受害者存取受保護資源。
+
+### 3.8 Gheist GitHub 憑證竊取
+*   **🔍 技術原理**：攻擊者獲取低權限 GitHub Token 後，觸發自定義的 GitHub Actions。透過在 CI/CD 流派日誌中故意觸發報錯並 dump 記憶體，從而提取隱藏在 Actions Secrets 中的高權限金鑰。
+*   **⚔️ 攻擊向量**：外洩的個人存取令牌 (PAT) 或配置錯誤的 Actions 權限。
+*   **🛡️ 防禦緩解**：對 Actions 日誌進行自動化敏感資訊過濾；限制 Token 作用範圍（Fine-grained PATs）；定期輪換 Secrets。
+*   **🧠 名詞定義**：**CI/CD Pipeline** 持續集成與持續部署流程，現代開發的核心環節。
+
+### 3.9 AI 編碼代理 (AI Coding Agent) 誘導攻擊
+*   **🔍 技術原理**：這是一種間接指令注入 (Indirect Prompt Injection)。攻擊者在專案的 Readme 或下載資料夾中放置惡意隱藏文件，當 AI Agent 掃描目錄以提供代碼建議時，會讀取到「指令」要求 AI 執行惡意 Python 腳本。
+*   **⚔️ 攻擊向量**：針對依賴 AI 助手（如 Cursor, GitHub Copilot）的開發者，透過惡意開源專案散布。
+*   **🛡️ 防禦緩解**：限制 AI Agent 執行本地 Shell 腳本的權限；在執行 AI 生成的命令前必須經由人工審查。
+*   **🧠 名詞定義**：**AI Coding Agent** 指能自動閱讀、編寫及執行代碼的自主人工智慧系統。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI-to-AI 攻擊鏈**：未來我們將看到更多「專為欺騙 AI 審查系統」而設計的惡意代碼，攻擊者將利用對抗性攻擊 (Adversarial Attacks) 讓 AI 安全防護網失效。
+2.  **供應鏈攻擊深度化**：攻擊重點將從「程式庫」下沉至「編譯工具」與「硬體抽象層」(如 Wasm, WebGPU)。
+3.  **身分無邊界化**：身分將成為新的防火牆，但同時也是最脆弱的一環。Token 盜取將比帳密破解更為普遍。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [Hackers Infect 953 Online Stores With Scanner-Evading JavaScript](https://thehackernews.com/2026/10/hackers-infect-953-online-stores-with.html)
+*   [PHP Issues Second Windows Security Update - Brotli Flaw](https://thehackernews.com/2026/10/php-issues-second-windows-security.html)
+*   [Microsoft Teams IT Support Scams](https://thehackernews.com/2026/10/attackers-use-microsoft-teams-it.html)
+*   [Weekly Recap: This2Shell, RCE, and Supply Chain Chaos](https://thehackernews.com/2026/10/weekly-recap-this2shell.html)
+*   [Two Critical Wasmtime Flaws - Sandbox Escape](https://thehackernews.com/2026/10/two-critical-wasmtime-flaws-could-let.html)
+*   [Between alerts: Spaces Ordinary Detection Misses](https://thehackernews.com/2026/10/between-alerts-what-attackers-do-in.html)
+*   [uCreator Android Spyware - Telegram/WeChat](https://thehackernews.com/2026/10/ucreator-android-spyware-can-steal.html)
+*   [Microsoft 365 Token-Replay Attacks](https://thehackernews.com/2026/10/microsoft-365-token-replay-attacks.html)
+*   [Gheist GitHub Token Abuse](https://thehackernews.com/2026/10/gheist-uses-stolen-github-tokens-to.html)
+*   [Malicious File Trick AI Coding Agent](https://thehackernews.com/2026/10/malicious-file-in-downloads-folder.html)
+
+---
+**文件結尾** - *本報告供資安研究與企業內訓使用。*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/10/26)
 
 ## 1. 👨‍💼 CISO 架構師總結

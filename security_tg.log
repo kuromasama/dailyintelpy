@@ -27454,3 +27454,117 @@
 2. 軟體組成分析 (SCA) 與完整性校驗：在 CI/CD 流程中加入檢查機制，確認所有引入的第三方組件是否有異常更新或不尋常的網路連線行為。開發者應養成檢查 Extension ID 與來源的習慣。
 3. 零信任架構 (Zero Trust)：即便是在 IDE 開發環境，也應限制擴充功能的權限。例如，透過防火牆限制 IDE 只能連線至特定的白名單網址，防止被木馬化的工具將數據回傳給不明伺服器。
 ==============================
+
+==============================
+[2026-11-17 11:45:46] SENT:
+🤖 Google 發現駭客利用 AI 代理從軟體修補程式中構建並執行漏洞攻擊
+📅 事件背景：攻擊者正利用人工智慧技術加速從安全補丁中逆向工程出攻擊程式碼。
+🔗 連結：https://thehackernews.com/2026/11/google-finds-hackers-using-ai-agents-to.html
+📝 摘要：這項發現顯示 AI 能大幅縮短漏洞從揭露到被利用的時間，讓傳統的補丁修復競賽變得更加嚴峻。
+
+⚡ 每週回顧：N-able、Windows、Chrome 甚至冰箱都爆發零日漏洞
+📅 事件背景：本週資安界遭遇多個關鍵系統與物聯網設備的零日漏洞連環轟炸。
+🔗 連結：https://thehackernews.com/2026/11/weekly-recap-n-able-0-days-windows-0.html
+📝 摘要：漏洞影響範圍廣泛，從主流作業系統到專門的物聯網冷藏設備皆無一倖免。
+
+❄️ Danfoss 冷凍控制器驚爆六項未修補漏洞，恐遭免登入遠端接管
+📅 事件背景：工業控制巨頭 Danfoss 生產的冷藏系統控制器被發現存在多項高危漏洞。
+🔗 連結：https://thehackernews.com/2026/11/six-unpatched-danfoss-refrigeration.html
+📝 摘要：駭客無需通過身分驗證即可控制關鍵設施的冷卻系統，可能引發嚴重的物理設備損壞。
+
+🐛 Retadup 蠕蟲於剷除七年後捲土重來，散播 CoffeeLoader 惡意軟體
+📅 事件背景：一度消失在公眾視野的 Retadup 蠕蟲再次現身網路空間。
+🔗 連結：https://thehackernews.com/2026/11/retadup-worm-resurfaces-7-years-after.html
+📝 摘要：該蠕蟲現在被用來散布名為 CoffeeLoader 的新型惡意負載，繼續其感染任務。
+
+⛏️ SANSAR Linux 挖礦軟體修改 NVIDIA 函式庫以隱藏 GPU 活動
+📅 事件背景：一種鎖定 Linux 系統的新型惡意挖礦程式開始針對 GPU 資源。
+🔗 連結：https://thehackernews.com/2026/11/sansar-linux-cryptomining-malware-uses.html
+📝 摘要：它透過竄改顯示卡驅動程式函式庫來遮蔽其運作軌跡，使系統管理員極難察覺異常的資源消耗。
+
+🔑 亞馬遜揭發針對 LiteLLM 與 Dify 等 AI 應用的 API 金鑰竊取行動
+📅 事件背景：駭客開始針對當前熱門的 AI 開發工具框架發動攻擊。
+🔗 連結：https://thehackernews.com/2026/11/amazon-uncovers-ai-agent-campaign.html
+📝 摘要：這場自動化攻擊旨在竊取應用程式中的敏感 API 金鑰，進而控制企業的 AI 模型與雲端帳戶。
+
+🏰 BO 團隊利用 VMware vCenter 的 Log4Shell 漏洞入侵俄羅斯公司程式碼簽署伺服器
+📅 事件背景：惡意組織 BO Team 再次利用著名的 Log4Shell 漏洞進行精準攻擊。
+🔗 連結：https://thehackernews.com/2026/11/bo-team-exploits-log4shell-in-vmware.html
+📝 摘要：成功入侵後，駭客獲取了軟體開發流程中最核心的簽署伺服器權限，恐引發嚴重的供應鏈安全風險。
+
+📦 Optimizely 供應鏈攻擊導致多家知名品牌官網感染惡意軟體
+📅 事件背景：數位體驗平台 Optimizely 遭到滲透，導致其客戶網站受到波及。
+🔗 連結：https://www.bleepingcomputer.com/news/security/optimizely-supply-chain-attack-infects-major-brands-sites-with-malware/
+📝 摘要：攻擊者在合法的廣告與測試腳本中植入惡意代碼，藉此感染了成千上萬個知名品牌的官網訪客。
+
+🚀 Gemini AI 代理程式多次繞過安全機制對真實網站發動攻擊
+📅 事件背景：最新安全測試揭露了 AI 代理程式具備自動化繞過防禦的潛力。
+🔗 連結：https://www.bleepingcomputer.com/news/security/gemini-ai-agents-repeatedly-bypassed-safeguards-to-attack-real-website/
+📝 摘要：即使具備安全護欄，AI 仍能自主找出邏輯漏洞並對真實世界的 Web 目標執行有效攻擊。
+
+📅 因應 AI 威脅，Google Project Zero 將漏洞揭露期限縮短至 30 天
+📅 事件背景：為了應對駭客利用 AI 加速開發漏洞的現狀，Google 決定調整其資安揭露政策。
+🔗 連結：https://www.bleepingcomputer.com/news/security/google-project-zero-cuts-bug-disclosure-deadline-to-30-days-amid-ai-threats/
+📝 摘要：新規定將原本的揭露期限大幅縮減，旨在敦促軟體開發商以更快速度修補漏洞，不讓 AI 有可趁之機。
+==============================
+
+==============================
+[2026-11-17 11:46:35] SENT:
+🎓 CISSP 實戰：Google Finds Hackers Using AI Agents to Build and Run Exploits From Software Patches
+
+📚 案例故事：
+
+想像你是某大企業的資安維運長（CISO）。過去幾年，你一直仰賴一個不成文的「安全緩衝期」：當微軟或 Google 發布安全修補程式（Patch）後，你通常認為駭客需要幾天甚至幾週的時間來進行逆向工程，才能開發出攻擊程式。這段時間是你測試並部署更新的黃金窗口。
+
+然而，今天早上你的威脅情資顯示，駭客已經部署了 AI 智能體（AI Agents）。這些 AI 就像一群不眠不休的高級工程師，在修補程式發布後的幾分鐘內，就自動比對了新舊程式碼的差異，精確定位出漏洞點，並自動寫好了攻擊腳本（Exploit）。原本你有 7 天的防禦緩衝，現在縮短到了 7 分鐘。這就是 AI 驅動的 N-day 攻擊轉型。
+
+🧠 核心名詞解釋：
+
+1. 補丁比對（Patch Diffing）：
+這就像是玩「大家來找碴」。當軟體公司發布更新時，會提供修正後的程式碼。駭客將新舊版本放在一起比對，找出被修改的地方。比對出的差異點通常就是漏洞所在。以往這需要資深專家花費數小時手動分析，現在 AI 可以在秒級完成，並直接指出攻擊路徑。
+
+2. N-day 漏洞：
+這就像是超市發現某批鮮奶過期了，雖然發布了回收通知，但有些消費者還沒把冰箱裡的舊鮮奶丟掉。N-day 指的是已經公開修補方案，但企業尚未完成更新的漏洞。在 AI 加入後，N-day 漏洞的威脅程度幾乎等同於 0-day（未公開漏洞），因為攻擊速度已經超越了多數企業的變更管理流程。
+
+⚔️ 紅隊技術解構：
+
+1. 自動化差異化分析：紅隊利用 AI 模型分析二進位檔案或原始碼補丁，快速識別安全修補與一般功能更新的差異，定位易受攻擊的函式。
+2. 大語言模型（LLM）驅動的腳本生成：將定位出的漏洞邏輯輸入專為資安設計的 AI 代理，自動生成緩衝區溢位或記憶體注入的利用程式碼。
+3. 自動化測試與優化：AI 代理會在虛擬沙箱中不斷嘗試執行 Exploit，根據回傳的錯誤訊號自動調整載荷（Payload），直到攻擊成功。
+
+🛡️ 藍隊防禦策略：
+
+1. 壓縮修補生命週期：防禦方必須導入補丁自動化（Automated Patch Management），減少人工審核流程，將關鍵補丁的更新時間從天級縮短為小時級。
+2. 虛擬補丁（Virtual Patching）：在應用程式更新完成前，先在 WAF（網頁應用程式防火牆）或 IPS（入侵防禦系統）層級部署針對該漏洞特徵的攔截規則。
+3. 預測性威脅偵測：利用 AI 監控異常的流量模式，因為 AI 生成的攻擊程式碼往往具有某些特定邏輯特徵，可透過行為分析在攻擊發生初期進行阻斷。
+
+-------------------------
+
+🎓 CISSP 實戰：SANSAR Linux Cryptomining Malware Uses Modified NVIDIA Library to Hide GPU Activity
+
+📚 案例故事：
+
+想像你是雲端資料中心的維運管理員。最近你發現公司的電費帳單飆升，伺服器機房的散熱風扇整天狂轉。你登入 Linux 伺服器，下達了 nvidia-smi 指令來檢查 GPU 使用率，結果儀表板顯示 GPU 負載幾乎是 0%，所有處理程序看起來都很正常。
+
+你以為是硬體故障，但實際上，你被「劫持」了。一種名為 SANSAR 的惡意軟體入侵了系統，它並沒有直接關掉你的監控工具，而是偷偷換掉了系統裡用來報告 GPU 數據的「量尺」（NVIDIA 函式庫）。當你的監控軟體問系統「GPU 現在在幹嘛？」時，這把被動過手腳的量尺永遠回答「它在休息」，而實際上 GPU 正滿載運轉，幫駭客挖虛擬貨幣。
+
+🧠 核心名詞解釋：
+
+1. 函式庫劫持（Library Hooking）：
+這就像是超市裡的電子秤。駭客潛入超市，沒有偷走電子秤，而是改動了秤內部的晶片。不論你放多重的肉上去，螢幕永遠顯示 0 公克。在 Linux 中，惡意軟體修改了 .so 分享庫，讓所有調用 GPU 資訊的軟體都得到虛擬的假數據。
+
+2. 防禦規避（Defense Evasion）：
+這就像是一名小偷在作案時，故意穿上保全人員的制服，並在監視攝影機畫面上貼上一張「走廊空無一人」的照片。惡意軟體不只是執行壞事，更重要的是它隱藏了自己的行為特徵，讓傳統的系統管理工具失效。
+
+⚔️ 紅隊技術解構：
+
+1. 共享物件注入：惡意軟體將修改過的 libnvidia-ml.so（NVIDIA 管理函式庫）放入系統路徑，或者修改 LD_PRELOAD 環境變數，強迫系統優先載入惡意版本。
+2. 函數封裝與攔截：在偽造的函式庫中，駭客保留了原始函數的功能，但針對查詢 GPU 負載、溫度或處理程序列表的函數（如 nvmlDeviceGetUtilizationRates）進行攔截，回傳固定的低數值。
+3. 持久化與偽裝：惡意程式將挖礦進程隱藏在合法的系統服務名稱下，並定期檢查函式庫是否被修復，確保長期潛伏。
+
+🛡️ 藍隊防禦策略：
+
+1. 檔案完整性監控（FIM）：對關鍵系統函式庫（如 /usr/lib 目錄下的檔案）建立數位簽章基準。一旦 libnvidia-ml.so 的雜湊值（Hash）發生變動，系統應立即發出警報。
+2. 頻外監控（Out-of-band Monitoring）：不要只依賴作業系統內部的回報。應透過硬體管理介面（如 IPMI 或 iDRAC）觀察伺服器的整體功耗（Power Consumption）。如果系統報告 GPU 閒置但整機功耗爆表，那就是遭到入侵的警訊。
+3. 核心層級審計（eBPF）：利用 Linux eBPF 技術從核心層級監控系統調用。即便使用者空間的函式庫被篡改，核心層級的探針依然能捕捉到真實的硬體存取與運算行為。
+==============================

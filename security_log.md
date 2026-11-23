@@ -1,3 +1,117 @@
+# 🛡️ 資安戰情白皮書 (2026/11/23)
+
+本白皮書旨在彙整近期關鍵資安事件，透過深度技術解構與戰略分析，為企業決策者（CISO）與資安架構師提供 AI 知識庫（NotebookLM）訓練所需的高質量結構化資料。
+
+---
+
+## 1. 👨‍💼 CISO 架構師總結
+
+當前的威脅態勢已從單純的系統漏洞利用，演進為**「AI 生態系供應鏈」**與**「隱私邊界攻防」**的混合戰場。
+
+*   **AI 供應鏈信任危機**：OpenRouter 事件揭示了 AI 模型託管商（Providers）可能存在系統性的「提示詞竊取（Prompt Theft）」，這意味著企業投入的大量 Prompt Engineering 資產與敏感業務上下文正處於高度風險中。
+*   **端點 AI 侵略性增強**：Signal 封鎖 Siri/Gemini 反映了作業系統層級 AI 與第三方應用程式隱私間的劇烈衝突。企業必須重新評估員工移動設備上 AI 助理的權限，以防商業機密透過螢幕側錄或上下文抓取外洩。
+*   **自動化攻擊鏈成熟**：俄羅斯駭客 Cold Relic 的行動證明了「數據竊取」與「身分偽裝」的無縫銜接。未來攻擊將不再只是單次入侵，而是長期潛伏並利用受害者身分進行二次擴散。
+
+---
+
+## 2. 🌍 全球威脅深度列表
+
+| 日期 | 事件標題 (中/英對照) | 威脅等級 |
+| :--- | :--- | :--- |
+| 2026/11 | **OpenRouter 移除 3 家供應商：研究人員發現其託管商存在長達數月的提示詞竊取行為**<br>OpenRouter Drops 3 Providers After Researchers Catch Months of Prompt Theft | 🔴 極高 |
+| 2026/11 | **研究人員展示 Ghostscript 沙箱逃逸 RCE：透過熱門 App 的檔案上傳漏洞發動攻擊**<br>Researchers Demonstrate Ghostscript Sandbox-Escape RCE via Crafted File Uploads | 🔴 極高 |
+| 2026/11 | **駭客利用 GL.iNet 雲端漏洞感染路由器與 KVM 設備**<br>Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices | 🟠 高 |
+| 2026/11 | **Cleverbridge 警告駭客在資料外洩中盜取信用卡號與 CVV**<br>Cleverbridge warns hackers stole credit card numbers, CVVs in data breach | 🟠 高 |
+| 2026/11 | **Signal 宣布在 iOS/Android 上封鎖 Siri 與 Gemini AI 抓取對話紀錄**<br>Signal to block Siri, Gemini AI from capturing chats on iOS, Android | 🟡 中 |
+| 2026/11 | **微軟揭露 GitHub Copilot CLI 釣魚攻擊風險：駭客利用合法登入程序操控 AI 代理**<br>Phishing Risk in GitHub Copilot CLI via Legitimate Login Processes | 🟠 高 |
+| 2026/11 | **俄羅斯駭客 Cold Relic 竊取企業資料後，冒充受害員工發動網釣攻擊**<br>Russian Hacker Cold Relic Impersonates Victims After Data Theft | 🟠 高 |
+
+---
+
+## 3. 🎯 全面技術攻防演練
+
+### 3.1 OpenRouter AI 供應鏈提示詞竊取事件
+*   **🔍 技術原理**：OpenRouter 作為一個 AI 聚合器，將請求轉發至底層託管商（Hosting Providers）。研究人員發現部分託管商在中間層攔截並記錄了用戶發送的 `messages` 陣列。這種攻擊屬於「推理側攔截」，駭客可獲取未經去識別化的企業機密。
+*   **⚔️ 攻擊向量**：供應鏈中間人攻擊（MITM）。利用託管平台日誌溢出或惡意後台腳本，自動化過濾含有 `API_KEY`、`CONFIDENTIAL` 等關鍵字的提示詞。
+*   **🛡️ 防禦緩解**：
+    1.  **端到端加密推理**：優先選擇支持 TEE（可信執行環境）的推理服務商。
+    2.  **數據脫敏（Data Masking）**：在發送至外部 LLM 前，利用本機小模型過濾敏感資訊。
+*   **🧠 名詞定義**：**Prompt Theft** 指的是未經許可獲取用戶輸入給 AI 的結構化指令，可能導致核心商業邏輯外洩。
+
+### 3.2 Ghostscript 沙箱逃逸 (RCE)
+*   **🔍 技術原理**：Ghostscript 處理 PostScript 與 PDF 時，其 `-dSAFER` 限制存在漏洞。攻擊者透過精心構造的 PostScript 檔案，利用字體處理或緩衝區溢位觸發記憶體錯誤，進而繞過沙箱執行系統命令。
+*   **⚔️ 攻擊向量**：檔案上傳功能。任何使用 ImageMagick 或圖書處理庫的 Web 應用（若後端調用 Ghostscript）皆受影響。
+*   **🛡️ 防禦緩解**：
+    1.  更新 Ghostscript 至最新補丁版本。
+    2.  在伺服器端禁用不必要的解碼器（如 `policy.xml` 中禁用 PS, EPS, PDF）。
+*   **🧠 名詞定義**：**Sandbox Escape** 是指攻擊者突破軟體隔離限制，獲得對宿主作業系統底層資源訪問權限的過程。
+
+### 3.3 GL.iNet 雲端管理漏洞
+*   **🔍 技術原理**：該漏洞存在於 GL.iNet 的 GoodCloud 管理平台。駭客利用 API 驗證缺陷或不安全的直接對象引用（IDOR），繞過權限控制，遠端向連接至雲端的路由器發送惡意韌體更新或指令。
+*   **⚔️ 攻擊向量**：IoT 雲端劫持。駭客感染路由器後，進一步滲透內部區域網路（LAN），甚至控制 KVM（Keyboard, Video, Mouse）設備進行遠端桌面操作。
+*   **🛡️ 防禦緩解**：
+    1.  停用不必要的雲端管理功能，改用局部 VPN 存取。
+    2.  強制執行 MFA 登入管理平台。
+*   **🧠 名詞定義**：**IDOR (Insecure Direct Object Reference)** 是一種存取控制漏洞，發生在程式使用用戶輸入直接存取物件時。
+
+### 3.4 Cleverbridge 支付數據外洩
+*   **🔍 技術原理**：攻擊者入侵了 Cleverbridge 的電子商務後端基礎設施。儘管 PCI-DSS 要求嚴格，但駭客仍成功存取了包含卡號與 CVV 的交易日誌或暫存資料庫。
+*   **⚔️ 攻擊向量**：資料庫注入或伺服器端請求偽造（SSRF）。
+*   **🛡️ 防禦緩解**：
+    1.  實施**標記化（Tokenization）**，確保伺服器不儲存實際的 CVV 與完整卡號。
+    2.  加強靜態數據加密（At-rest Encryption）與密鑰循環。
+*   **🧠 名詞定義**：**CVV (Card Verification Value)** 是信用卡背面的三位或四位數字，是用於驗證持卡人在交易現場的關鍵資訊。
+
+### 3.5 Signal 封鎖作業系統 AI 抓取
+*   **🔍 技術原理**：現代手機作業系統（iOS/Android）整合了 Siri 與 Gemini，這些 AI 具備「螢幕閱讀」權限。Signal 透過設定 `FLAG_SECURE` (Android) 或防止特定系統 API 的上下文檢索來阻斷 AI 讀取訊息視窗。
+*   **⚔️ 攻擊向量**：作業系統層級的隱私側錄。惡意程式或被控的系統服務透過存取輔助功能（Accessibility Services）來竊取加密通訊內容。
+*   **🛡️ 防禦緩解**：
+    1.  應用程式應主動宣告不被 AI 掃描的屬性。
+    2.  用戶應審核「螢幕識別」功能的權限授予。
+*   **🧠 名詞定義**：**Screen Scraping** 指的是自動化工具擷取螢幕顯示內容的技術，現已被用於 AI 訓練或資訊蒐集。
+
+### 3.6 GitHub Copilot CLI 釣魚風險
+*   **🔍 技術原理**：微軟發現駭客利用 Copilot CLI 的 `gh auth login` 流程。攻擊者發送惡意的「設備代碼（Device Code）」，誘導用戶在瀏覽器中授權。一旦授權，駭客即可獲得用戶 GitHub 帳戶的令牌，進而操控 AI 代理執行惡意代碼生成。
+*   **⚔️ 攻擊向量**：設備代碼流程釣魚（Device Code Flow Phishing）。
+*   **🛡️ 防禦緩解**：
+    1.  仔細核對瀏覽器中顯示的認證代碼是否與 CLI 顯示的一致。
+    2.  限制 GitHub Token 的 Scopes 權限。
+*   **🧠 名詞定義**：**OAuth Device Flow** 是一種專為沒有瀏覽器或輸入受限設備設計的授權協定。
+
+### 3.7 Cold Relic 俄羅斯駭客身分攻擊
+*   **🔍 技術原理**：Cold Relic 組織在成功竊取組織內部檔案後，分析其通訊風格與組織架構，隨後利用受害者的真實郵件帳戶向合作夥伴發動進攻。這是一種進階版的人為驅動型攻擊（Human-Operated Attack）。
+*   **⚔️ 攻擊向量**：商業郵件詐騙 (BEC) 的變體。駭客利用已獲取的機密文件增加釣魚郵件的可信度。
+*   **🛡️ 防禦緩解**：
+    1.  實施**全域檔案完整性監控 (FIM)**。
+    2.  對內部郵件實施更嚴格的 DMARC 與身分行為分析。
+*   **🧠 名詞定義**：**Lateral Movement (橫向移動)** 是指駭客進入網絡後，從一個系統跳轉到另一個系統以擴大控制範圍的過程。
+
+---
+
+## 4. 🔮 威脅趨勢與未來預測
+
+1.  **AI 代理解構化攻擊 (AI Agent Deconstruction)**：隨著 GitHub Copilot 等工具深入開發環境，未來將出現專門針對 AI Agent 的「邏輯注入攻擊」，誘使 AI 生成具有隱蔽後門的代碼。
+2.  **隱私戰爭升級**：隱私應用（如 Signal）與 AI 作業系統（如 Apple Intelligence）之間的對抗將白熱化。我們預測將出現「反 AI 混淆技術」，專門用於干擾 AI 視覺辨識與文本摘要。
+3.  **自動化 BEC 2.0**：利用從 Cleverbridge 等地竊取的數據，駭客將使用 LLM 自動生成極其真實的偽造發票與對帳單，且能完美模仿特定高階主管的口氣。
+
+---
+
+## 5. 🔗 參考文獻
+
+*   [OpenRouter Drops 3 Providers After Researchers Catch Months of Prompt Theft](https://thehackernews.com/2026/11/openrouter-drops-3-providers-after.html)
+*   [Researchers Demonstrate Ghostscript Sandbox-Escape RCE](https://thehackernews.com/2026/11/researchers-demonstrate-ghostscript.html)
+*   [Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices](https://www.bleepingcomputer.com/news/security/hackers-exploit-glinet-cloud-flaw-to-infect-routers-kvm-devices/)
+*   [Cleverbridge warns hackers stole credit card numbers, CVVs in data breach](https://www.bleepingcomputer.com/news/security/cleverbridge-warns-hackers-stole-credit-card-numbers-cvvs-in-data-breach/)
+*   [Signal to block Siri, Gemini AI from capturing chats](https://www.bleepingcomputer.com/news/security/signal-to-block-siri-gemini-ai-from-capturing-chats-on-ios-android/)
+*   [微軟揭露 GitHub Copilot CLI 釣魚攻擊風險](https://www.ithome.com.tw/news/180676)
+*   [俄羅斯駭客 Cold Relic 冒充受害組織員工發動網釣](https://www.ithome.com.tw/news/180668)
+
+---
+**文件結束**
+*此白皮書為 2026/11/23 之戰情摘要，旨在提供深度學習模型訓練之用。*
+
+==================================================
+
 # 🛡️ 資安戰情白皮書 (2026/11/22)
 
 這是一份專為 AI 知識庫 (NotebookLM) 訓練所編寫的高密度資安情報文件，彙整了近期重大的全球資安事件、技術演進以及防禦策略。
